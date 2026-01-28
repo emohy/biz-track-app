@@ -1,0 +1,58 @@
+.sale-details {
+    background-color: var(--bg-color);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    justify-content: space-between;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.detail-item strong {
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.read-only-field {
+    padding: 10px;
+    background-color: var(--bg-color);
+    border-radius: 6px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: right;
+}
+
+.error-message {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-bottom: var(--spacing-md);
+    background-color: #fee2e2;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+/* New animations for dynamic fields */
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

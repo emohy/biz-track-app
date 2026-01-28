@@ -1,0 +1,104 @@
+.sale-card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sale-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    /* Align to top in case of multi-line name */
+}
+
+.product-info-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.sale-product {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.sale-customer {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.sale-amount {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1.125rem;
+}
+
+.sale-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.delete-sale-btn {
+    background: none;
+    color: var(--text-secondary);
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.delete-sale-btn:hover {
+    background-color: #fee2e2;
+    color: #ef4444;
+}
+
+.sale-details-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.sale-badges {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.badge.status.paid {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.badge.status.partial {
+    background-color: #fef9c3;
+    color: #854d0e;
+}
+
+.badge.status.unpaid {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.badge.mode {
+    background-color: var(--bg-color);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}

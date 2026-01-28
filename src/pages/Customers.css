@@ -1,0 +1,142 @@
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 16px;
+}
+
+.search-icon {
+    color: var(--text-secondary);
+    margin-right: 8px;
+}
+
+.search-bar input {
+    border: none;
+    padding: 0;
+    font-size: 1rem;
+    width: 100%;
+}
+
+.search-bar input:focus {
+    border-color: transparent;
+    /* Remove default focus from global styles */
+}
+
+.tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    /* Space for scrollbar if needed */
+}
+
+.tab {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+.tab.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.customer-card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.1s;
+    /* Ensure right side aligns correctly */
+    gap: 12px;
+}
+
+.customer-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    /* Space between badge and pay button */
+}
+
+.quick-pay-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    z-index: 10;
+    /* Ensure it floats above card click */
+}
+
+.quick-pay-btn:active {
+    opacity: 0.9;
+}
+
+.customer-card:active {
+    transform: scale(0.98);
+}
+
+.customer-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.customer-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.customer-phone {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.balance-badge {
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.balance-badge.owing {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.balance-badge.partial {
+    background-color: #fef9c3;
+    color: #854d0e;
+}
+
+.balance-badge.clear {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.balance-badge .amount {
+    font-size: 0.875rem;
+    margin-top: 2px;
+}

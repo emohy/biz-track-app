@@ -1,0 +1,78 @@
+.bottom-sheet-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    display: flex;
+    align-items: flex-end;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.bottom-sheet {
+    background-color: var(--surface-color);
+    width: 100%;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    padding: var(--spacing-md);
+    padding-bottom: 40px;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bottom-sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.bottom-sheet-header h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.close-btn {
+    background: none;
+    color: var(--text-secondary);
+    padding: 4px;
+}
+
+.bottom-sheet-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.action-item {
+    padding: 12px;
+    text-align: left;
+    background-color: var(--bg-color);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

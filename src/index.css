@@ -1,0 +1,210 @@
+:root {
+  /* Brand Colors */
+  --primary-color: #2563eb;
+  /* Royal Blue */
+  --primary-dark: #1e40af;
+  --accent-color: #f59e0b;
+  /* Amber */
+
+  /* Neutral Colors */
+  --bg-color: #f8fafc;
+  /* Slate 50 */
+  --surface-color: #ffffff;
+  --text-primary: #1e293b;
+  /* Slate 800 */
+  --text-secondary: #64748b;
+  /* Slate 500 */
+  --border-color: #e2e8f0;
+  /* Slate 200 */
+
+  /* Spacing */
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+
+  /* Font */
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+p {
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* Helper Classes */
+.container {
+  padding: var(--spacing-md);
+  max-width: 100%;
+  overflow-x: hidden;
+  padding-bottom: 80px;
+  /* Space for bottom nav */
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+
+/* Shared Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+  animation: fadeIn 0.15s ease-out;
+}
+
+.modal-content {
+  background-color: var(--surface-color);
+  width: 90%;
+  /* Responsive width */
+  max-width: 400px;
+  border-radius: 12px;
+  padding: var(--spacing-lg);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 90vh;
+  /* Prevent modal from being taller than screen */
+  overflow-y: auto;
+  /* Scroll if content is too long */
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.modal-header h2 {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+/* Shared Form Styles */
+.form-group {
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-row {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  /* Allow wrapping on small screens */
+}
+
+.form-row .form-group {
+  flex: 1;
+  min-width: 140px;
+  /* Ensure fields don't get too narrow before wrapping */
+}
+
+label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  /* Force full width */
+  max-width: 100%;
+  /* Prevent overflow */
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 1rem;
+  /* 16px to prevent zoom on iOS */
+  outline: none;
+  transition: border-color 0.2s;
+  background-color: var(--surface-color);
+  font-family: inherit;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--primary-color);
+}
+
+.save-btn {
+  width: 100%;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-top: var(--spacing-sm);
+  transition: opacity 0.2s;
+}
+
+.save-btn:disabled {
+  background-color: var(--border-color);
+  cursor: not-allowed;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

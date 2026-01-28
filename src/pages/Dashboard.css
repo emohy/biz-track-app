@@ -1,0 +1,248 @@
+.dashboard {
+    padding-bottom: 80px;
+    /* Space for bottom nav */
+}
+
+.dashboard-header {
+    margin-bottom: var(--spacing-lg);
+}
+
+.dashboard-header h1 {
+    font-size: 1.75rem;
+    margin-bottom: 4px;
+}
+
+.current-date {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* Summary Cards */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto auto;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.summary-card {
+    background-color: var(--surface-color);
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-card.main {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    border: none;
+}
+
+.summary-card.main .label {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.summary-card.main .value {
+    font-size: 1.75rem;
+}
+
+.summary-card .label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.summary-card .value {
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.summary-card .value.positive {
+    color: #22c55e;
+}
+
+.summary-card .value.negative {
+    color: #ef4444;
+}
+
+/* Alerts */
+.alert-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.alert-card {
+    background-color: var(--surface-color);
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+}
+
+.alert-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    width: 140px;
+    font-size: 0.875rem;
+}
+
+.alert-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.alert-value {
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.alert-meta {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.alert-card.debt .alert-header {
+    color: #ef4444;
+}
+
+.alert-card.stock .alert-header {
+    color: #f59e0b;
+}
+
+.chevron {
+    color: var(--border-color);
+}
+
+/* Content Cards */
+.content-card {
+    background-color: var(--surface-color);
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 24px;
+}
+
+.content-card h3 {
+    font-size: 1rem;
+    margin-bottom: 16px;
+}
+
+.time-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.time-row:last-child {
+    border-bottom: none;
+}
+
+.time-label {
+    font-weight: 500;
+}
+
+.time-values {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-size: 0.875rem;
+}
+
+.time-values .pos {
+    color: #22c55e;
+    font-weight: 600;
+}
+
+.time-values .neg {
+    color: #ef4444;
+}
+
+/* Watchlist */
+.watchlist-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.watchlist-item {
+    background-color: var(--surface-color);
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.watchlist-item .product-name {
+    font-weight: 500;
+}
+
+.stock-level {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.stock-level.critical {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.stock-level.warning {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+/* Actions */
+.quick-actions {
+    margin-top: 32px;
+}
+
+.action-btn {
+    width: 100%;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    border: none;
+}
+
+.action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.small-action {
+    background: none;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.875rem;
+}

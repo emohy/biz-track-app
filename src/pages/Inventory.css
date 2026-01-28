@@ -1,0 +1,14 @@
+.empty-state {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--text-secondary);
+    background-color: var(--surface-color);
+    border-radius: 12px;
+    border: 1px dashed var(--border-color);
+    margin-top: 20px;
+}
+
+.product-list {
+    margin-top: 16px;
+    padding-bottom: 20px;
+}

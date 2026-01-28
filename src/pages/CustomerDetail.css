@@ -1,0 +1,122 @@
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.back-btn {
+    background: none;
+    padding: 0;
+    color: var(--text-primary);
+}
+
+.customer-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background-color: var(--surface-color);
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-card .label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
+
+.stat-card .value {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.stat-card .value.danger {
+    color: #ef4444;
+}
+
+.stat-card .value.success {
+    color: #22c55e;
+}
+
+.history-card {
+    background-color: var(--surface-color);
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+}
+
+.history-main {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.product-name {
+    font-weight: 600;
+}
+
+.sale-date {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.history-financials {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.totals {
+    display: flex;
+    flex-direction: column;
+}
+
+.total-amount {
+    font-weight: 500;
+}
+
+.due-amount {
+    font-size: 0.875rem;
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.status-pill {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.status-pill.paid {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.status-pill.partial {
+    background-color: #fef9c3;
+    color: #854d0e;
+}
+
+.status-pill.unpaid {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.payment-context {
+    margin-bottom: 16px;
+    font-size: 1rem;
+    color: var(--text-secondary);
+}

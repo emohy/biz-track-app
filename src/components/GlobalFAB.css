@@ -1,0 +1,22 @@
+.global-fab {
+    position: fixed;
+    bottom: 80px;
+    /* Above the bottom nav */
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: transform 0.2s ease, background-color 0.2s;
+}
+
+.global-fab:active {
+    transform: scale(0.95);
+    background-color: var(--primary-dark);
+}
