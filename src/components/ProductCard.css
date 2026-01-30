@@ -2,10 +2,10 @@
     background: var(--surface-color);
     border: 1px solid var(--border-color);
     border-radius: 20px;
-    padding: 20px;
+    padding: 16px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 16px;
     margin-bottom: 16px;
     box-shadow: var(--shadow-md);
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -22,58 +22,115 @@
     border-color: rgba(220, 38, 38, 0.2);
 }
 
-.product-card.low-stock::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: var(--danger-color);
+.product-visual-cell {
+    flex-shrink: 0;
+}
+
+.product-initial {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: var(--bg-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: var(--primary-color);
+    font-size: 1.25rem;
+    border: 1px solid var(--border-color);
 }
 
 .product-main-info {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    flex: 1;
+    min-width: 0;
 }
 
-.stock-info-row {
+.product-title-row {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 8px;
-}
-
-.stock-count {
-    font-size: 1.75rem;
-    font-weight: 800;
-    color: var(--text-primary);
-    line-height: 1;
-}
-
-.stock-label {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    margin-bottom: 4px;
 }
 
 .product-name {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: var(--text-primary);
     margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profit-tag {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.product-price-row {
+    margin-bottom: 10px;
+}
+
+.price-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.price-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+}
+
+.price-value {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.stock-visual-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.stock-info-compact {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    min-width: 45px;
+}
+
+.stock-count {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.stock-label {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    font-weight: 600;
 }
 
 .stock-progress-container {
-    width: 80%;
-    height: 8px;
+    flex: 1;
+    height: 6px;
     background-color: var(--bg-color);
     border-radius: 10px;
     overflow: hidden;
-    margin-top: 4px;
 }
 
 .stock-progress-bar {
@@ -97,18 +154,19 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    margin-top: 4px;
+    margin-top: 8px;
 }
 
 .product-actions {
     display: flex;
-    gap: 10px;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .product-actions button {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -122,8 +180,6 @@
     background: var(--surface-color);
     color: var(--primary-color);
     border-color: var(--primary-color);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
 }
 
 .product-actions button.delete:hover {
@@ -135,28 +191,17 @@
 /* Responsive Adjustments */
 @media (max-width: 480px) {
     .product-card {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 16px;
-        gap: 16px;
+        padding: 12px;
+        gap: 12px;
     }
 
-    .product-actions {
-        width: 100%;
-        justify-content: flex-end;
-        padding-top: 12px;
-        border-top: 1px solid var(--border-color);
-    }
-
-    .stock-count {
-        font-size: 1.5rem;
-    }
-
-    .product-name {
+    .product-initial {
+        width: 40px;
+        height: 40px;
         font-size: 1rem;
     }
 
-    .stock-progress-container {
-        width: 100%;
+    .price-value {
+        font-size: 1rem;
     }
 }

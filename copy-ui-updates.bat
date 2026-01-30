@@ -13,8 +13,11 @@ echo Copying Components...
 copy /Y "C:\Users\Ken\.gemini\antigravity\scratch\biz-track-app\src\components\ProductCard.jsx" "src\components\ProductCard.jsx"
 copy /Y "C:\Users\Ken\.gemini\antigravity\scratch\biz-track-app\src\components\ProductCard.css" "src\components\ProductCard.css"
 copy /Y "C:\Users\Ken\.gemini\antigravity\scratch\biz-track-app\src\components\SalesForm.css" "src\components\SalesForm.css"
+copy /Y "C:\Users\Ken\.gemini\antigravity\scratch\biz-track-app\src\components\SkeletonLoader.jsx" "src\components\SkeletonLoader.jsx"
+copy /Y "C:\Users\Ken\.gemini\antigravity\scratch\biz-track-app\src\components\SkeletonLoader.css" "src\components\SkeletonLoader.css"
 
 echo Copying Pages...
+copy /Y "C:\Users\Ken\.gemini\antigravity\scratch\biz-track-app\src\pages\Inventory.jsx" "src\pages\Inventory.jsx"
 copy /Y "C:\Users\Ken\.gemini\antigravity\scratch\biz-track-app\src\pages\Inventory.css" "src\pages\Inventory.css"
 copy /Y "C:\Users\Ken\.gemini\antigravity\scratch\biz-track-app\src\pages\Expenses.jsx" "src\pages\Expenses.jsx"
 copy /Y "C:\Users\Ken\.gemini\antigravity\scratch\biz-track-app\src\pages\Expenses.css" "src\pages\Expenses.css"
