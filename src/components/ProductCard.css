@@ -1,123 +1,133 @@
 .product-card {
     background: var(--surface-color);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 16px;
+    border-radius: 20px;
+    padding: 20px;
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: 16px;
-    box-shadow: var(--shadow-sm);
-    transition: all 0.2s;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.product-card:active {
+    transform: scale(0.98);
 }
 
 .product-card.low-stock {
-    border-color: var(--danger-color);
-    background-color: #fffafb;
+    background: linear-gradient(to right, var(--surface-color), #fff1f2);
+    border-color: rgba(220, 38, 38, 0.2);
+}
+
+.product-card.low-stock::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--danger-color);
 }
 
 .product-main-info {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     flex: 1;
 }
 
-.stock-level-display {
+.stock-info-row {
     display: flex;
-    flex-direction: column;
-    line-height: 1;
+    align-items: baseline;
+    gap: 8px;
 }
 
 .stock-count {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 800;
     color: var(--text-primary);
+    line-height: 1;
 }
 
 .stock-label {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
-    text-transform: uppercase;
     font-weight: 600;
+    text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-top: 2px;
 }
 
 .product-name {
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: var(--text-secondary);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
 }
 
 .stock-progress-container {
-    width: 60%;
-    height: 4px;
-    background-color: var(--border-color);
-    border-radius: 2px;
+    width: 80%;
+    height: 8px;
+    background-color: var(--bg-color);
+    border-radius: 10px;
     overflow: hidden;
+    margin-top: 4px;
 }
 
 .stock-progress-bar {
     height: 100%;
-    border-radius: 2px;
+    border-radius: 10px;
+    transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .stock-progress-bar.normal {
-    background-color: var(--success-color);
+    background: linear-gradient(90deg, #10b981, #34d399);
 }
 
 .stock-progress-bar.low {
-    background-color: var(--danger-color);
+    background: linear-gradient(90deg, #ef4444, #f87171);
 }
 
 .low-stock-alert {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: var(--danger-color);
-    text-transform: uppercase;
     display: flex;
     align-items: center;
     gap: 4px;
+    margin-top: 4px;
 }
 
 .product-actions {
     display: flex;
-    gap: 8px;
+    gap: 10px;
 }
 
-.secondary-action-btn {
-    padding: 8px;
-    border-radius: 6px;
-    background-color: transparent;
+.product-actions button {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-color);
     color: var(--text-secondary);
-    opacity: 0.5;
+    border: 1px solid var(--border-color);
     transition: all 0.2s;
 }
 
-.secondary-action-btn:hover {
-    opacity: 1;
-    background-color: var(--bg-color);
+.product-actions button:hover {
+    background: var(--surface-color);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
 }
 
-.secondary-action-btn.delete:hover {
+.product-actions button.delete:hover {
     color: var(--danger-color);
-}
-
-.action-btn {
-    padding: 8px;
-    border-radius: 6px;
-    background-color: var(--bg-color);
-    color: var(--text-secondary);
-    transition: all 0.2s;
-}
-
-.action-btn:hover {
-    background-color: var(--border-color);
-    color: var(--text-primary);
-}
-
-.action-btn.delete:hover {
-    background-color: rgba(220, 38, 38, 0.1);
-    color: var(--danger-color);
+    border-color: var(--danger-color);
+    background: #fff1f2;
 }

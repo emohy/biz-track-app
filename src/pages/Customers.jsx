@@ -101,100 +101,109 @@ const Customers = () => {
 
     return (
         <div className="page container">
-            <h1>Customers {activeTab === 'owing' && searchQuery === '' && <span className="count-badge">{filteredCustomers.length}</span>}</h1>
+            <h1>
+                Customers
+                <span className="count-badge">{customers.length}</span>
+            </h1>
 
-            {successMessage && (
-                <div className="success-banner">
-                    <CheckCircle size={18} />
-                    <span>{successMessage}</span>
+            <div className="search-container">
+                <div className="premium-search-bar">
+                    <Search className="search-icon" size={20} />
+                    <input
+                        type="text"
+                        placeholder="Search by name or phone..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    {searchQuery && (
+                        <X
+                            size={18}
+                            style={{ cursor: 'pointer', opacity: 0.6 }}
+                            onClick={() => setSearchQuery('')}
+                        />
+                    )}
                 </div>
-            )}
-
-            {/* Search Bar */}
-            <div className="search-bar">
-                <Search size={20} className="search-icon" />
-                <input
-                    ref={searchRef}
-                    type="text"
-                    placeholder="Search name or phone..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
             </div>
 
-            {/* Tabs */}
-            <div className="tabs">
+            <div className="tabs-scroll">
                 <button
-                    className={`tab ${activeTab === 'owing' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('owing')}
-                >
-                    Owing
-                </button>
-                <button
-                    className={`tab ${activeTab === 'all' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('all')}
+                    className={`tab-pill ${activeTab === 'all' ? 'active' : ''}`}
+                    onClick={() => handleTabChange('all')}
                 >
                     All
                 </button>
                 <button
-                    className={`tab ${activeTab === 'clear' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('clear')}
+                    className={`tab-pill ${activeTab === 'owing' ? 'active' : ''}`}
+                    onClick={() => handleTabChange('owing')}
                 >
-                    Clear
+                    Owing Debt
+                </button>
+                <button
+                    className={`tab-pill ${activeTab === 'partial' ? 'active' : ''}`}
+                    onClick={() => handleTabChange('partial')}
+                >
+                    Partial
+                </button>
+                <button
+                    className={`tab-pill ${activeTab === 'clear' ? 'active' : ''}`}
+                    onClick={() => handleTabChange('clear')}
+                >
+                    Cleared
                 </button>
             </div>
 
-            {filteredCustomers.length === 0 ? (
+            {isLoading ? (
+                <SkeletonLoader type="card" count={3} />
+            ) : filteredCustomers.length === 0 ? (
                 <div className="empty-state">
-                    <p>
-                        {searchQuery ? 'No customers found.' :
-                            activeTab === 'owing' ? 'No one owes you money!' : 'Ready to build your database?'}
-                    </p>
-                    <small>
-                        {!searchQuery && (activeTab === 'owing'
-                            ? 'Record credit sales to track balances and follow up with customers.'
-                            : 'Customer records appear here automatically as you record sales.')}
-                    </small>
+                    <p>{searchQuery ? 'No customers match your search' : 'No customers found'}</p>
+                    <small>Your client list will appear here once you record sales with customer details.</small>
                 </div>
             ) : (
-                <div className="customer-list">
-                    {filteredCustomers.map(customer => (
-                        <div
-                            key={customer.id}
-                            className={`customer-card ${customer.status.toLowerCase()} ${customer.balance > 0 ? 'has-debt' : ''}`}
-                            onClick={() => navigate(`/customers/${customer.id}`)}
-                        >
-                            <div className="customer-main-info">
-                                <div className="customer-name-row">
-                                    <span className="customer-name">{customer.name}</span>
-                                    {customer.phone && <span className="customer-phone">{customer.phone}</span>}
+                <div className="customer-list fade-in">
+                    {filteredCustomers.map(customer => {
+                        const initials = customer.name
+                            .split(' ')
+                            .map(n => n[0])
+                            .join('')
+                            .toUpperCase()
+                            .substring(0, 2);
+
+                        return (
+                            <div
+                                key={customer.id}
+                                className={`customer-card ${customer.status}`}
+                                onClick={() => navigate(`/customers/${customer.id}`)}
+                            >
+                                <div className="customer-avatar">
+                                    {initials}
                                 </div>
-                                <div className="customer-balance-area">
-                                    {customer.balance > 0 ? (
-                                        <div className={`balance-display ${customer.status.toLowerCase()}`}>
-                                            <span className="amount">{formatCurrency(customer.balance)}</span>
-                                            <span className="label">{customer.status}</span>
-                                        </div>
-                                    ) : (
-                                        <div className="balance-display clear">
-                                            <span className="amount">CLEAR</span>
-                                        </div>
+
+                                <div className="customer-info-main">
+                                    <h3 className="customer-name">{customer.name}</h3>
+                                    <span className="customer-phone">{customer.phone || 'No phone number'}</span>
+                                </div>
+
+                                <div className="customer-balance-block">
+                                    <span className="balance-amount">
+                                        {formatCurrency(customer.balance)}
+                                    </span>
+                                    <span className="balance-label">
+                                        {customer.status === 'clear' ? 'Account Clear' : 'Balance Due'}
+                                    </span>
+                                    {customer.balance > 0 && (
+                                        <button
+                                            className="btn-record-payment"
+                                            onClick={(e) => openPaymentModal(e, customer)}
+                                        >
+                                            <DollarSign size={14} />
+                                            <span>Record Payment</span>
+                                        </button>
                                     )}
                                 </div>
                             </div>
-                            <div className="customer-actions-cell">
-                                {customer.balance > 0 && activeTab === 'owing' && (
-                                    <button
-                                        className="record-payment-btn"
-                                        onClick={(e) => openPaymentModal(e, customer)}
-                                    >
-                                        <DollarSign size={14} />
-                                        <span>Record Payment</span>
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
 
@@ -209,6 +218,12 @@ const Customers = () => {
                     customerSales={sales.filter(s => s.customerId === selectedCustomer.id)}
                     customerName={selectedCustomer.name}
                 />
+            )}
+            {successMessage && (
+                <div className="success-message-overlay">
+                    <CheckCircle size={24} />
+                    <span>{successMessage}</span>
+                </div>
             )}
         </div>
     );

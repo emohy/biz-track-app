@@ -1,13 +1,18 @@
 .sale-card {
-    background-color: var(--surface-color);
+    background: var(--surface-color);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
+    border-radius: 20px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    transition: transform 0.1s;
+    box-shadow: var(--shadow-md);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sale-card:active {
+    transform: scale(0.98);
 }
 
 .sale-main-row {
@@ -19,73 +24,95 @@
 .sale-primary-info {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
     flex: 1;
+}
+
+.sale-amount {
+    font-weight: 800;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    line-height: 1.1;
 }
 
 .profit-info {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.875rem;
+    margin-top: 2px;
 }
 
 .profit-amount {
-    color: #059669;
-    font-weight: 600;
+    color: #10b981;
+    font-weight: 700;
+    font-size: 0.95rem;
 }
 
-.sale-amount {
+.profit-margin-badge {
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 0.65rem;
     font-weight: 800;
-    color: var(--text-primary);
-    font-size: 1.35rem;
-    line-height: 1;
+    text-transform: uppercase;
+}
+
+.profit-margin-badge.high {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.profit-margin-badge.medium {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+}
+
+.profit-margin-badge.low {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
 }
 
 .product-info-col {
     display: flex;
     flex-direction: column;
+    margin-top: 8px;
 }
 
 .sale-product {
-    font-weight: 500;
-    font-size: 0.95rem;
-    color: var(--text-secondary);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-primary);
 }
 
 .sale-customer {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
-    opacity: 0.7;
-}
-
-.sale-header-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    font-weight: 500;
 }
 
 .delete-sale-btn {
-    background: none;
+    background: var(--bg-color);
     color: var(--text-secondary);
-    padding: 4px;
-    border-radius: 4px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
+    border: 1px solid var(--border-color);
 }
 
 .delete-sale-btn:hover {
-    background-color: #fee2e2;
+    background: #fff1f2;
     color: #ef4444;
+    border-color: #fecaca;
 }
 
 .sale-footer {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
-    padding-top: 12px;
+    align-items: center;
+    padding-top: 10px;
     border-top: 1px solid var(--border-color);
 }
 
@@ -95,34 +122,33 @@
 }
 
 .badge {
-    font-size: 0.65rem;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-weight: 700;
+    font-size: 0.6rem;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.5px;
 }
 
 .badge.status.paid {
-    background-color: #dcfce7;
-    color: #15803d;
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
 }
 
 .badge.status.partial {
-    background-color: #fef9c3;
-    color: #854d0e;
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
 }
 
 .badge.status.unpaid {
-    background-color: #fee2e2;
-    color: #991b1b;
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
 }
 
 .badge.mode-chip {
-    background-color: transparent;
+    background: var(--bg-color);
     color: var(--text-secondary);
     border: 1px solid var(--border-color);
-    opacity: 0.7;
 }
 
 .sale-meta-info {
@@ -131,9 +157,9 @@
     gap: 4px;
     font-size: 0.75rem;
     color: var(--text-secondary);
-    opacity: 0.6;
+    font-weight: 600;
 }
 
 .sale-meta-dot {
-    font-weight: bold;
+    opacity: 0.5;
 }

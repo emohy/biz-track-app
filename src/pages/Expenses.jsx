@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Edit2, Trash2 } from 'lucide-react';
+import {
+    Edit2, Trash2, Home, User, ShoppingBag,
+    Zap, Truck, FileText, MoreHorizontal
+} from 'lucide-react';
 import { useExpense } from '../context/ExpenseContext';
 import ExpenseForm from '../components/ExpenseForm';
 import { formatCurrency } from '../utils';
@@ -17,6 +20,17 @@ const Expenses = () => {
         const timer = setTimeout(() => setIsLoading(false), 400);
         return () => clearTimeout(timer);
     }, []);
+
+    const getCategoryIcon = (category) => {
+        const cat = category?.toLowerCase() || '';
+        if (cat.includes('rent')) return <Home size={20} />;
+        if (cat.includes('salary') || cat.includes('wage')) return <User size={20} />;
+        if (cat.includes('utility') || cat.includes('bill') || cat.includes('electricity')) return <Zap size={20} />;
+        if (cat.includes('stock') || cat.includes('inventory') || cat.includes('purchase')) return <ShoppingBag size={20} />;
+        if (cat.includes('transport') || cat.includes('delivery')) return <Truck size={20} />;
+        if (cat.includes('tax') || cat.includes('legal')) return <FileText size={20} />;
+        return <MoreHorizontal size={20} />;
+    };
 
     const handleEditClick = (expense) => {
         setEditingExpense(expense);
@@ -42,9 +56,10 @@ const Expenses = () => {
     };
 
     const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleString('en-US', {
+        return new Date(dateString).toLocaleDateString('en-US', {
             month: 'short',
-            day: 'numeric',
+            day: 'numeric'
+        }) + ' • ' + new Date(dateString).toLocaleTimeString('en-US', {
             hour: 'numeric',
             minute: '2-digit'
         });
@@ -58,35 +73,42 @@ const Expenses = () => {
                 <SkeletonLoader type="list" count={4} />
             ) : expenses.length === 0 ? (
                 <div className="empty-state">
-                    <p>Ready to track your spending?</p>
-                    <small>Record your first expense to see how it affects your profitability trends.</small>
+                    <p>No spending recorded yet</p>
+                    <small>Track your operational costs to get a clear view of your net profit.</small>
                 </div>
             ) : (
                 <div className="expenses-list fade-in">
                     {expenses.map(expense => (
                         <div key={expense.id} className="expense-card">
-                            <div className="expense-header">
-                                <span className="expense-category">{expense.category}</span>
-                                <span className="expense-amount">
-                                    {formatCurrency(expense.amount)}
-                                </span>
+                            <div className="category-icon-wrapper">
+                                {getCategoryIcon(expense.category)}
                             </div>
-                            <div className="expense-meta">
-                                <span>{formatDate(expense.createdAt)}</span>
-                                {expense.paymentMode && (
-                                    <span className="expense-mode">{expense.paymentMode}</span>
+
+                            <div className="expense-details">
+                                <div className="expense-top-line">
+                                    <span className="expense-category">{expense.category}</span>
+                                    <span className="expense-amount">{formatCurrency(expense.amount)}</span>
+                                </div>
+
+                                <div className="expense-footer">
+                                    <span className="expense-date">{formatDate(expense.createdAt)}</span>
+                                    {expense.paymentMode && (
+                                        <span className="expense-mode-chip">{expense.paymentMode}</span>
+                                    )}
+                                </div>
+
+                                {expense.notes && (
+                                    <div className="expense-notes-preview">
+                                        "{expense.notes}"
+                                    </div>
                                 )}
                             </div>
-                            {expense.notes && (
-                                <div className="expense-notes">
-                                    {expense.notes}
-                                </div>
-                            )}
-                            <div className="expense-actions">
-                                <button className="action-btn edit" onClick={() => handleEditClick(expense)}>
+
+                            <div className="expense-card-actions">
+                                <button title="Edit" onClick={() => handleEditClick(expense)}>
                                     <Edit2 size={16} />
                                 </button>
-                                <button className="action-btn delete" onClick={() => handleDelete(expense.id)}>
+                                <button title="Delete" className="delete" onClick={() => handleDelete(expense.id)}>
                                     <Trash2 size={16} />
                                 </button>
                             </div>

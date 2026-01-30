@@ -1,4 +1,4 @@
-import { Edit2, Trash2 } from 'lucide-react';
+import { Edit2, Trash2, AlertCircle } from 'lucide-react';
 import './ProductCard.css';
 
 const ProductCard = ({ product, onEdit, onDelete }) => {
@@ -7,9 +7,9 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
     return (
         <div className={`product-card ${isLowStock ? 'low-stock' : ''}`}>
             <div className="product-main-info">
-                <div className="stock-level-display">
+                <div className="stock-info-row">
                     <span className="stock-count">{product.stockQuantity}</span>
-                    <span className="stock-label">units in stock</span>
+                    <span className="stock-label">items in stock</span>
                 </div>
 
                 <h3 className="product-name">{product.productName}</h3>
@@ -23,16 +23,18 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
 
                 {isLowStock && (
                     <div className="low-stock-alert">
-                        <span>Low Stock Risk</span>
+                        <AlertCircle size={14} />
+                        <span>Restock suggested</span>
                     </div>
                 )}
             </div>
+
             <div className="product-actions">
-                <button className="secondary-action-btn" onClick={() => onEdit(product)}>
-                    <Edit2 size={16} />
+                <button title="Edit Product" onClick={() => onEdit(product)}>
+                    <Edit2 size={18} />
                 </button>
-                <button className="secondary-action-btn delete" onClick={() => onDelete(product.id)}>
-                    <Trash2 size={16} />
+                <button title="Delete Product" className="delete" onClick={() => onDelete(product.id)}>
+                    <Trash2 size={18} />
                 </button>
             </div>
         </div>
