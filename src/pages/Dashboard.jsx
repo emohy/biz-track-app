@@ -284,6 +284,41 @@ const Dashboard = () => {
         const outOfStock = products.filter(p => p.stockQuantity === 0);
         const lowStock = products.filter(p => p.stockQuantity > 0 && p.stockQuantity <= p.minimumStockLevel);
 
+        // Profit Calculations
+        const grossProfit = currentSalesItems.reduce((acc, sale) =>
+            acc + (sale.totalProfit || 0), 0
+        );
+
+        const previousGrossProfit = previousSalesItems.reduce((acc, sale) =>
+            acc + (sale.totalProfit || 0), 0
+        );
+
+        const netProfit = grossProfit - totalExpenses;
+
+        const avgProfitMargin = currentSalesItems.length > 0
+            ? currentSalesItems.reduce((acc, sale) => acc + (sale.profitMargin || 0), 0) / currentSalesItems.length
+            : 0;
+
+        const profitTrend = getDrift(grossProfit, previousGrossProfit);
+
+        // Most profitable products
+        const productProfits = {};
+        currentSalesItems.forEach(sale => {
+            if (!productProfits[sale.productId]) {
+                productProfits[sale.productId] = {
+                    productName: sale.productName,
+                    totalProfit: 0,
+                    unitsSold: 0
+                };
+            }
+            productProfits[sale.productId].totalProfit += sale.totalProfit || 0;
+            productProfits[sale.productId].unitsSold += sale.quantitySold;
+        });
+
+        const topProfitableProducts = Object.values(productProfits)
+            .sort((a, b) => b.totalProfit - a.totalProfit)
+            .slice(0, 5);
+
         // AI Advisory Insights
         const aiInsightsList = [];
 
@@ -370,6 +405,13 @@ const Dashboard = () => {
                 out: outOfStock.length,
                 low: lowStock.length,
                 shortlist: [...outOfStock, ...lowStock].slice(0, 5)
+            },
+            profit: {
+                gross: grossProfit,
+                net: netProfit,
+                margin: avgProfitMargin,
+                trend: profitTrend,
+                topProducts: topProfitableProducts
             }
         };
     }, [sales, expenses, products, customers, timeScope, alertHistory]);
@@ -426,6 +468,15 @@ const Dashboard = () => {
                             <div className="main-stat-card">
                                 <span className="label">Total {timeScope} Sales</span>
                                 <span className="value">{formatCurrency(stats.scope.sales)}</span>
+                            </div>
+
+                            <div className="main-stat-card profit">
+                                <span className="label">Net Profit ({timeScope})</span>
+                                <span className="value">{formatCurrency(stats.profit.net)}</span>
+                                <span className="meta">
+                                    Margin: {stats.profit.margin.toFixed(1)}%
+                                    <TrendIcon drift={stats.profit.trend} />
+                                </span>
                             </div>
 
                             <div className="compact-grid">

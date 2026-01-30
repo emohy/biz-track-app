@@ -19,7 +19,20 @@
 .sale-primary-info {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
+    flex: 1;
+}
+
+.profit-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+}
+
+.profit-amount {
+    color: #059669;
+    font-weight: 600;
 }
 
 .sale-amount {

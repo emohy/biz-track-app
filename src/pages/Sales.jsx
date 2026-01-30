@@ -77,6 +77,19 @@ const Sales = () => {
                                     <span className="sale-amount">
                                         {formatCurrency(sale.totalAmount)}
                                     </span>
+
+                                    {/* Profit Display */}
+                                    {sale.totalProfit !== undefined && (
+                                        <div className="profit-info">
+                                            <span className="profit-amount">
+                                                +{formatCurrency(sale.totalProfit)}
+                                            </span>
+                                            <span className={`profit-margin-badge ${sale.profitMargin >= 30 ? 'high' : sale.profitMargin >= 15 ? 'medium' : 'low'}`}>
+                                                {sale.profitMargin.toFixed(1)}%
+                                            </span>
+                                        </div>
+                                    )}
+
                                     <div className="product-info-col">
                                         <span className="sale-product">{sale.productName}</span>
                                         {sale.customerName && (

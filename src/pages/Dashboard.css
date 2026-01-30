@@ -87,6 +87,21 @@
     font-weight: 800;
 }
 
+.main-stat-card .meta {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.main-stat-card.profit {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    box-shadow: 0 8px 20px rgba(5, 150, 105, 0.2);
+}
+
 .compact-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;

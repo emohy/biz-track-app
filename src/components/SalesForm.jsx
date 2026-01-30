@@ -190,6 +190,12 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
             amountDue = totalAmount - amountPaid;
         }
 
+        // Calculate profit metrics
+        const costPrice = selectedProduct.costPrice || 0;
+        const profitPerUnit = selectedProduct.sellingPrice - costPrice;
+        const totalProfit = profitPerUnit * qty;
+        const profitMargin = totalAmount > 0 ? (totalProfit / totalAmount) * 100 : 0;
+
         onSubmit({
             productId: selectedProduct.id,
             productName: selectedProduct.productName,
@@ -201,7 +207,12 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
             customerId: finalCustomerId || null,
             customerName: finalCustomerName,
             amountPaid,
-            amountDue
+            amountDue,
+            // Profit tracking
+            costPrice,
+            profitPerUnit,
+            totalProfit,
+            profitMargin
         });
 
         notify(`Sold ${qty}x ${selectedProduct.productName}`);
@@ -273,6 +284,30 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
                             <div className="read-only-field">{formatCurrency(totalAmount)}</div>
                         </div>
                     </div>
+
+                    {/* Profit Preview */}
+                    {selectedProduct && formData.quantitySold && (
+                        <div className="profit-preview fade-in">
+                            {(() => {
+                                const costPrice = selectedProduct.costPrice || 0;
+                                const profitPerUnit = selectedProduct.sellingPrice - costPrice;
+                                const totalProfit = profitPerUnit * Number(formData.quantitySold);
+                                const profitMargin = totalAmount > 0 ? (totalProfit / totalAmount) * 100 : 0;
+
+                                return (
+                                    <>
+                                        <span className="profit-label">Profit:</span>
+                                        <span className={`profit-amount ${totalProfit >= 0 ? 'positive' : 'negative'}`}>
+                                            {formatCurrency(totalProfit)}
+                                        </span>
+                                        <span className={`profit-margin-badge ${profitMargin >= 30 ? 'high' : profitMargin >= 15 ? 'medium' : 'low'}`}>
+                                            {profitMargin.toFixed(1)}%
+                                        </span>
+                                    </>
+                                );
+                            })()}
+                        </div>
+                    )}
 
                     {/* 3. Customer Selection (Search-as-you-type) */}
                     <div className="form-group" style={{ position: 'relative' }}>
