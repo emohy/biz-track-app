@@ -163,3 +163,25 @@
 .sale-meta-dot {
     opacity: 0.5;
 }
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+    .sale-card {
+        padding: 12px 14px;
+    }
+
+    .sale-amount {
+        font-size: 1.25rem;
+    }
+
+    .sale-main-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .delete-sale-btn {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+    }
+}

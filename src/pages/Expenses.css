@@ -120,3 +120,30 @@
     color: var(--danger-color);
     background: #fff1f2;
 }
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+    .expense-card {
+        padding: 12px 14px;
+        gap: 12px;
+    }
+
+    .category-icon-wrapper {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+    }
+
+    .expense-category {
+        font-size: 0.95rem;
+    }
+
+    .expense-amount {
+        font-size: 1rem;
+    }
+
+    .expense-card-actions {
+        flex-direction: column;
+        gap: 4px;
+    }
+}

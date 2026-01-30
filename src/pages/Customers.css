@@ -190,3 +190,31 @@ h1 {
     border-radius: 50%;
     color: var(--border-color);
 }
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+    .customer-card {
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .customer-avatar {
+        width: 44px;
+        height: 44px;
+        font-size: 1rem;
+        border-radius: 12px;
+    }
+
+    .customer-name {
+        font-size: 1rem;
+    }
+
+    .balance-amount {
+        font-size: 1.1rem;
+    }
+
+    .tab-pill {
+        padding: 6px 14px;
+        font-size: 0.75rem;
+    }
+}

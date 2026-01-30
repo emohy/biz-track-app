@@ -110,3 +110,15 @@
     background: #fee2e2;
     color: #991b1b;
 }
+
+@media (max-width: 480px) {
+    .profit-preview {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .profit-margin-badge {
+        margin-left: 0;
+    }
+}

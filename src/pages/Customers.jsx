@@ -5,6 +5,7 @@ import { useCustomer } from '../context/CustomerContext';
 import { useSales } from '../context/SalesContext';
 import { formatCurrency } from '../utils';
 import QuickPaymentModal from '../components/QuickPaymentModal';
+import SkeletonLoader from '../components/SkeletonLoader';
 import './Customers.css';
 
 const Customers = () => {
@@ -14,11 +15,17 @@ const Customers = () => {
     const location = useLocation();
     const searchRef = useRef(null);
 
-    const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'owing'); // 'owing', 'all', 'clear'
+    const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'owing'); // 'owing', 'all', 'clear', 'partial'
     const [searchQuery, setSearchQuery] = useState('');
     const [paymentModalOpen, setPaymentModalOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoading(false), 400);
+        return () => clearTimeout(timer);
+    }, []);
 
     useEffect(() => {
         if (location.state?.focusSearch && searchRef.current) {
@@ -26,16 +33,20 @@ const Customers = () => {
         }
     }, [location.state]);
 
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+    };
+
     const customerStats = useMemo(() => {
         return customers.map(customer => {
             const customerSales = sales.filter(s => s.customerId === customer.id);
             const balance = customerSales.reduce((acc, sale) => acc + (sale.amountDue || 0), 0);
 
-            let status = 'CLEAR';
+            let status = 'clear';
             if (balance > 0) {
                 const outstandingSales = customerSales.filter(s => s.amountDue > 0);
                 const hasPartialPayments = outstandingSales.some(s => (s.amountPaid || 0) > 0);
-                status = hasPartialPayments ? 'PARTIAL' : 'OWING';
+                status = hasPartialPayments ? 'partial' : 'owing';
             }
 
             const lastPurchase = customerSales.reduce((latest, sale) => {
@@ -59,13 +70,15 @@ const Customers = () => {
         }
 
         if (activeTab === 'owing') {
-            filtered = filtered.filter(c => c.balance > 0);
+            filtered = filtered.filter(c => c.status === 'owing' || c.status === 'partial');
+        } else if (activeTab === 'partial') {
+            filtered = filtered.filter(c => c.status === 'partial');
         } else if (activeTab === 'clear') {
-            filtered = filtered.filter(c => c.balance === 0);
+            filtered = filtered.filter(c => c.status === 'clear');
         }
 
         return filtered.sort((a, b) => {
-            if (activeTab === 'owing') {
+            if (activeTab === 'owing' || activeTab === 'partial') {
                 if (b.balance !== a.balance) return b.balance - a.balance;
             }
             return b.lastPurchase - a.lastPurchase;
