@@ -47,14 +47,63 @@
 }
 
 .action-item {
-    padding: 12px;
+    padding: 14px 16px;
     text-align: left;
-    background-color: var(--bg-color);
-    border-radius: 8px;
-    color: var(--text-secondary);
-    font-weight: 500;
-    opacity: 0.7;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-item.primary {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.action-item.primary .action-icon {
+    color: white;
+}
+
+.action-item:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
+    background-color: var(--bg-color);
+}
+
+.action-icon {
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+}
+
+.action-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.action-label {
+    font-size: 1rem;
+    line-height: 1.2;
+}
+
+.action-subtitle {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: normal;
+    margin-top: 2px;
+}
+
+.action-separator {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 8px 0;
 }
 
 @keyframes slideUp {

@@ -4,20 +4,19 @@ import { ArrowLeft, DollarSign } from 'lucide-react';
 import { useCustomer } from '../context/CustomerContext';
 import { useSales } from '../context/SalesContext';
 import { formatCurrency, parseCurrency } from '../utils';
+import QuickPaymentModal from '../components/QuickPaymentModal';
 import './CustomerDetail.css';
 
 const CustomerDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { customers } = useCustomer();
-    const { sales, updateSale } = useSales(); // Need updateSale to record payments
+    const { sales, updateSale } = useSales();
 
     const customer = customers.find(c => c.id === id);
     const customerSales = sales.filter(s => s.customerId === id).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     const [paymentModalOpen, setPaymentModalOpen] = useState(false);
-    const [selectedSale, setSelectedSale] = useState(null);
-    const [paymentAmount, setPaymentAmount] = useState('');
 
     const stats = useMemo(() => {
         return customerSales.reduce((acc, sale) => ({
@@ -30,34 +29,19 @@ const CustomerDetail = () => {
         return <div className="page container">Customer not found</div>;
     }
 
-    const openPaymentModal = (sale) => {
-        if (sale.amountDue <= 0) return; // Already paid
-        setSelectedSale(sale);
-        setPaymentAmount('');
-        setPaymentModalOpen(true);
-    };
+    const handlePaymentSubmit = (saleId, amount) => {
+        const sale = sales.find(s => s.id === saleId);
+        if (!sale) return;
 
-    const handlePaymentSubmit = (e) => {
-        e.preventDefault();
-        if (!selectedSale || !paymentAmount) return;
-
-        const amount = Number(parseCurrency(paymentAmount));
-        if (amount <= 0 || amount > selectedSale.amountDue) {
-            alert("Invalid amount. Cannot pay more than due.");
-            return;
-        }
-
-        const newAmountPaid = (selectedSale.amountPaid || 0) + amount;
-        const newAmountDue = selectedSale.totalAmount - newAmountPaid;
+        const newAmountPaid = (sale.amountPaid || 0) + amount;
+        const newAmountDue = sale.totalAmount - newAmountPaid;
         const newStatus = newAmountDue <= 0 ? 'Paid' : 'Partial';
 
-        updateSale(selectedSale.id, {
+        updateSale(saleId, {
             amountPaid: newAmountPaid,
             amountDue: newAmountDue,
             paymentStatus: newStatus
         });
-
-        setPaymentModalOpen(false);
     };
 
     const formatDate = (dateString) => {
@@ -72,6 +56,13 @@ const CustomerDetail = () => {
                 </button>
                 <h1>{customer.name}</h1>
                 <div style={{ width: 24 }}></div>
+            </div>
+
+            <div className="audit-stamps" style={{ marginBottom: 20 }}>
+                <span>Customer since: {new Date(customer.createdAt).toLocaleString()}</span>
+                {customer.updatedAt && (
+                    <span>Last updated: {new Date(customer.updatedAt).toLocaleString()}</span>
+                )}
             </div>
 
             <div className="customer-stats">
@@ -93,7 +84,7 @@ const CustomerDetail = () => {
                     <div
                         key={sale.id}
                         className="history-card"
-                        onClick={() => openPaymentModal(sale)}
+                        onClick={() => sale.amountDue > 0 && setPaymentModalOpen(true)}
                     >
                         <div className="history-main">
                             <span className="product-name">{sale.productName}</span>
@@ -114,33 +105,13 @@ const CustomerDetail = () => {
                 ))}
             </div>
 
-            {/* Simple Payment Modal */}
-            {paymentModalOpen && (
-                <div className="modal-overlay" onClick={() => setPaymentModalOpen(false)}>
-                    <div className="modal-content" onClick={e => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h2>Record Payment</h2>
-                        </div>
-                        <form onSubmit={handlePaymentSubmit}>
-                            <p className="payment-context">
-                                paying for <strong>{selectedSale?.productName}</strong><br />
-                                Due: {formatCurrency(selectedSale?.amountDue)}
-                            </p>
-                            <div className="form-group">
-                                <label>Amount Receiving</label>
-                                <input
-                                    type="text"
-                                    value={paymentAmount}
-                                    onChange={e => setPaymentAmount(e.target.value)}
-                                    placeholder="UGX 0"
-                                    autoFocus
-                                />
-                            </div>
-                            <button className="save-btn">Confirm Payment</button>
-                        </form>
-                    </div>
-                </div>
-            )}
+            <QuickPaymentModal
+                isOpen={paymentModalOpen}
+                onClose={() => setPaymentModalOpen(false)}
+                onSubmit={handlePaymentSubmit}
+                customerSales={customerSales}
+                customerName={customer.name}
+            />
         </div>
     );
 };

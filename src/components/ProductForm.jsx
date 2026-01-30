@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { formatCurrency, parseCurrency } from '../utils';
+import { useSettings } from '../context/SettingsContext';
 import './ProductForm.css';
 
 const ProductForm = ({ isOpen, onClose, onSubmit, initialData }) => {
+    const { notify } = useSettings();
+    const [isLoading, setIsLoading] = useState(false);
+
     const [formData, setFormData] = useState({
         productName: '',
         costPrice: '',
@@ -66,12 +70,15 @@ const ProductForm = ({ isOpen, onClose, onSubmit, initialData }) => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         // Basic Validation
-        if (!formData.productName || !formData.costPrice || !formData.sellingPrice || !formData.stockQuantity || !formData.minimumStockLevel) {
+        if (!formData.productName || !formData.costPrice || !formData.sellingPrice || !formData.stockQuantity || !formData.minimumStockLevel || isLoading) {
             return;
         }
+
+        setIsLoading(true);
+        await new Promise(resolve => setTimeout(resolve, 600));
 
         onSubmit({
             ...formData,
@@ -80,6 +87,9 @@ const ProductForm = ({ isOpen, onClose, onSubmit, initialData }) => {
             stockQuantity: Number(formData.stockQuantity),
             minimumStockLevel: Number(formData.minimumStockLevel)
         });
+
+        notify(`Product "${formData.productName}" saved`);
+        setIsLoading(false);
         onClose();
     };
 
@@ -95,18 +105,19 @@ const ProductForm = ({ isOpen, onClose, onSubmit, initialData }) => {
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label>Product Name*</label>
-                        <input name="productName" value={formData.productName} onChange={handleChange} placeholder="e.g. Widget A" />
+                        <input name="productName" value={formData.productName} onChange={handleChange} placeholder="e.g. Widget A" disabled={isLoading} />
                     </div>
                     <div className="form-row">
                         <div className="form-group">
                             <label>Cost Price*</label>
                             <input
-                                type="text" // Text to allow formatting
+                                type="text"
                                 name="costPrice"
                                 value={displayValues.costPrice}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 placeholder="UGX 0"
+                                disabled={isLoading}
                             />
                         </div>
                         <div className="form-group">
@@ -118,25 +129,36 @@ const ProductForm = ({ isOpen, onClose, onSubmit, initialData }) => {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 placeholder="UGX 0"
+                                disabled={isLoading}
                             />
                         </div>
                     </div>
                     <div className="form-row">
                         <div className="form-group">
                             <label>Stock Qty*</label>
-                            <input type="number" name="stockQuantity" value={formData.stockQuantity} onChange={handleChange} placeholder="0" />
+                            <input type="number" name="stockQuantity" value={formData.stockQuantity} onChange={handleChange} placeholder="0" disabled={isLoading} />
                         </div>
                         <div className="form-group">
                             <label>Min Stock*</label>
-                            <input type="number" name="minimumStockLevel" value={formData.minimumStockLevel} onChange={handleChange} placeholder="5" />
+                            <input type="number" name="minimumStockLevel" value={formData.minimumStockLevel} onChange={handleChange} placeholder="5" disabled={isLoading} />
                         </div>
                     </div>
                     <div className="form-group">
                         <label>Supplier (Optional)</label>
-                        <input name="supplierName" value={formData.supplierName} onChange={handleChange} placeholder="Supplier Name" />
+                        <input name="supplierName" value={formData.supplierName} onChange={handleChange} placeholder="Supplier Name" disabled={isLoading} />
                     </div>
-                    <button type="submit" className="save-btn" disabled={!isValid}>
-                        Save Product
+
+                    {initialData && (
+                        <div className="audit-stamps">
+                            <span>Created: {new Date(initialData.createdAt).toLocaleString()}</span>
+                            {initialData.updatedAt && (
+                                <span>Updated: {new Date(initialData.updatedAt).toLocaleString()}</span>
+                            )}
+                        </div>
+                    )}
+
+                    <button type="submit" className="save-btn" disabled={!isValid || isLoading}>
+                        {isLoading ? 'Saving...' : 'Save Product'}
                     </button>
                 </form>
             </div>

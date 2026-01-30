@@ -15,14 +15,24 @@ const BottomSheet = ({ isOpen, onClose, actions }) => {
                 </div>
                 <div className="bottom-sheet-content">
                     {actions.map((action, index) => (
-                        <button
-                            key={index}
-                            className="action-item"
-                            disabled={action.disabled}
-                            onClick={action.onClick}
-                        >
-                            {action.label}
-                        </button>
+                        action.type === 'separator' ? (
+                            <div key={index} className="action-separator"></div>
+                        ) : (
+                            <button
+                                key={index}
+                                className={`action-item ${action.primary ? 'primary' : ''}`}
+                                disabled={action.disabled}
+                                onClick={action.onClick}
+                            >
+                                <span className="action-icon">{action.icon}</span>
+                                <div className="action-text">
+                                    <span className="action-label">{action.label}</span>
+                                    {action.subtitle && (
+                                        <span className="action-subtitle">{action.subtitle}</span>
+                                    )}
+                                </div>
+                            </button>
+                        )
                     ))}
                 </div>
             </div>

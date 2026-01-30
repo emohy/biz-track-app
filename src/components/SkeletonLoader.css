@@ -1,0 +1,42 @@
+.skeleton-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.skeleton.item {
+    width: 100%;
+}
+
+.skeleton.item.card {
+    height: 100px;
+    border-radius: 12px;
+}
+
+.skeleton.item.list {
+    height: 60px;
+    border-radius: 8px;
+}
+
+.skeleton.item.stat {
+    height: 120px;
+    border-radius: 20px;
+}
+
+.skeleton.item.pill {
+    width: 80px;
+    height: 24px;
+    border-radius: 12px;
+}
+
+/* Specific Grid Skeletons */
+.stat-skeleton {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.stat-skeleton .stat:first-child {
+    grid-column: span 2;
+    height: 140px;
+}

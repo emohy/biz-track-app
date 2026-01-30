@@ -1,29 +1,47 @@
 :root {
-  /* Brand Colors */
-  --primary-color: #2563eb;
-  /* Royal Blue */
-  --primary-dark: #1e40af;
-  --accent-color: #f59e0b;
-  /* Amber */
+  /* Universal Colors */
+  --primary-color: #2F6FED;
+  --success-color: #16A34A;
+  --warning-color: #F59E0B;
+  --danger-color: #DC2626;
 
-  /* Neutral Colors */
-  --bg-color: #f8fafc;
-  /* Slate 50 */
-  --surface-color: #ffffff;
-  --text-primary: #1e293b;
-  /* Slate 800 */
-  --text-secondary: #64748b;
-  /* Slate 500 */
-  --border-color: #e2e8f0;
-  /* Slate 200 */
+  /* Light Theme (Default) */
+  --bg-color: #F8FAFC;
+  --surface-color: #FFFFFF;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --border-color: #E2E8F0;
 
-  /* Spacing */
+  /* Spacing & Misc */
   --spacing-sm: 8px;
   --spacing-md: 16px;
   --spacing-lg: 24px;
-
-  /* Font */
   --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Dark Theme Overrides */
+@media (prefers-color-scheme: dark) {
+  :root:not(.theme-light) {
+    --bg-color: #0B1220;
+    --surface-color: #111827;
+    --text-primary: #E5E7EB;
+    --text-secondary: #9CA3AF;
+    --border-color: #1F2937;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.theme-dark {
+  --bg-color: #0B1220;
+  --surface-color: #111827;
+  --text-primary: #E5E7EB;
+  --text-secondary: #9CA3AF;
+  --border-color: #1F2937;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 * {
@@ -38,6 +56,43 @@ body {
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Skeleton Loading */
+.skeleton {
+  background: var(--border-color);
+  background: linear-gradient(90deg,
+      var(--border-color) 25%,
+      var(--bg-color) 50%,
+      var(--border-color) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite ease-in-out;
+  border-radius: 4px;
+  opacity: 0.7;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Global Transitions */
+.card,
+.modal-content,
+.nav-item,
+button {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+/* Page Fade-in */
+.fade-in {
+  animation: fadeIn 0.2s ease-out forwards;
 }
 
 /* Typography */

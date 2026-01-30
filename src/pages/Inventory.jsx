@@ -1,12 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useProduct } from '../context/ProductContext';
 import ProductCard from '../components/ProductCard';
 import ProductForm from '../components/ProductForm';
+import UndoToast from '../components/UndoToast';
+import SkeletonLoader from '../components/SkeletonLoader';
 import './Inventory.css';
 
 const Inventory = () => {
-    const { products, updateProduct, deleteProduct } = useProduct();
+    const { products, updateProduct, deleteProduct, undoDelete } = useProduct();
     const [editingProduct, setEditingProduct] = useState(null);
+    const [lastDeletedId, setLastDeletedId] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoading(false), 400);
+        return () => clearTimeout(timer);
+    }, []);
 
     const handleEditClick = (product) => {
         setEditingProduct(product);
@@ -20,8 +29,14 @@ const Inventory = () => {
     };
 
     const handleDelete = (id) => {
-        if (window.confirm('Are you sure you want to delete this product?')) {
-            deleteProduct(id);
+        deleteProduct(id);
+        setLastDeletedId(id);
+    };
+
+    const handleUndo = () => {
+        if (lastDeletedId) {
+            undoDelete(lastDeletedId);
+            setLastDeletedId(null);
         }
     };
 
@@ -29,21 +44,21 @@ const Inventory = () => {
         <div className="page container">
             <h1>Inventory</h1>
 
-            {products.length === 0 ? (
+            {isLoading ? (
+                <SkeletonLoader type="card" count={3} />
+            ) : products.length === 0 ? (
                 <div className="empty-state">
-                    <p>No products yet. Tap + to add one.</p>
+                    <p>Ready to organize your shop?</p>
+                    <small>Tap + to add your first product and track stock levels in real-time.</small>
                 </div>
             ) : (
-                <div className="product-list">
+                <div className="product-list fade-in">
                     {products.map(product => (
                         <ProductCard
                             key={product.id}
                             product={product}
                             onEdit={handleEditClick}
                             onDelete={handleDelete}
-                        // Assuming ProductCard will use formatCurrency internally for price display
-                        // If Inventory itself needed to display a formatted price, it would be done here:
-                        // <p>Price: {formatCurrency(product.price)}</p>
                         />
                     ))}
                 </div>
@@ -55,6 +70,14 @@ const Inventory = () => {
                 onSubmit={handleUpdate}
                 initialData={editingProduct}
             />
+
+            {lastDeletedId && (
+                <UndoToast
+                    message="Product deleted"
+                    onUndo={handleUndo}
+                    onDismiss={() => setLastDeletedId(null)}
+                />
+            )}
         </div>
     );
 };

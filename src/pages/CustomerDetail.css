@@ -41,11 +41,11 @@
 }
 
 .stat-card .value.danger {
-    color: #ef4444;
+    color: var(--danger-color);
 }
 
 .stat-card .value.success {
-    color: #22c55e;
+    color: var(--success-color);
 }
 
 .history-card {
@@ -89,7 +89,7 @@
 
 .due-amount {
     font-size: 0.875rem;
-    color: #ef4444;
+    color: var(--danger-color);
     font-weight: 600;
 }
 
@@ -101,18 +101,18 @@
 }
 
 .status-pill.paid {
-    background-color: #dcfce7;
-    color: #15803d;
+    background-color: rgba(22, 163, 74, 0.1);
+    color: var(--success-color);
 }
 
 .status-pill.partial {
-    background-color: #fef9c3;
-    color: #854d0e;
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--warning-color);
 }
 
 .status-pill.unpaid {
-    background-color: #fee2e2;
-    color: #991b1b;
+    background-color: rgba(220, 38, 38, 0.1);
+    color: var(--danger-color);
 }
 
 .payment-context {

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { formatCurrency, parseCurrency } from '../utils'; // Utilities
 import { useProduct } from '../context/ProductContext'; // Import ProductContext
+import { useSettings } from '../context/SettingsContext';
 import './ExpenseForm.css';
 
 const CATEGORIES = [
@@ -10,6 +11,9 @@ const CATEGORIES = [
 ];
 
 const ExpenseForm = ({ isOpen, onClose, onSubmit, initialData }) => {
+    const { notify } = useSettings();
+    const [isLoading, setIsLoading] = useState(false);
+
     const { products } = useProduct() || {}; // Access products, guard against context failure
     const safeProducts = Array.isArray(products) ? products : [];
 
@@ -52,14 +56,20 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, initialData }) => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!formData.category || !formData.amount || Number(formData.amount) < 0) return;
+        if (!formData.category || !formData.amount || Number(formData.amount) < 0 || isLoading) return;
+
+        setIsLoading(true);
+        await new Promise(resolve => setTimeout(resolve, 600));
 
         onSubmit({
             ...formData,
             amount: Number(formData.amount)
         });
+
+        notify(`Expense "${formData.category}" recorded`);
+        setIsLoading(false);
         onClose();
     };
 
@@ -75,7 +85,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, initialData }) => {
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label>Category*</label>
-                        <select name="category" value={formData.category} onChange={handleChange} required>
+                        <select name="category" value={formData.category} onChange={handleChange} required disabled={isLoading}>
                             <option value="">-- Select Category --</option>
                             {CATEGORIES.map(cat => (
                                 <option key={cat} value={cat}>{cat}</option>
@@ -93,13 +103,14 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, initialData }) => {
                             onBlur={handleBlur}
                             placeholder="UGX 0"
                             required
+                            disabled={isLoading}
                         />
                     </div>
 
                     {/* Optional Linked Product */}
                     <div className="form-group">
                         <label>Linked Product (Optional)</label>
-                        <select name="linkedProductId" value={formData.linkedProductId} onChange={handleChange}>
+                        <select name="linkedProductId" value={formData.linkedProductId} onChange={handleChange} disabled={isLoading}>
                             <option value="">-- None --</option>
                             {safeProducts.map(p => (
                                 <option key={p.id} value={p.id}>{p.productName}</option>
@@ -109,7 +120,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, initialData }) => {
 
                     <div className="form-group">
                         <label>Payment Mode (Optional)</label>
-                        <select name="paymentMode" value={formData.paymentMode} onChange={handleChange}>
+                        <select name="paymentMode" value={formData.paymentMode} onChange={handleChange} disabled={isLoading}>
                             <option value="">-- None --</option>
                             <option value="Cash">Cash</option>
                             <option value="Mobile Money">Mobile Money</option>
@@ -125,11 +136,21 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, initialData }) => {
                             onChange={handleChange}
                             placeholder="Description..."
                             rows="3"
+                            disabled={isLoading}
                         />
                     </div>
 
-                    <button type="submit" className="save-btn" disabled={!isValid}>
-                        Save Expense
+                    {initialData && (
+                        <div className="audit-stamps">
+                            <span>Created: {new Date(initialData.createdAt).toLocaleString()}</span>
+                            {initialData.updatedAt && (
+                                <span>Updated: {new Date(initialData.updatedAt).toLocaleString()}</span>
+                            )}
+                        </div>
+                    )}
+
+                    <button type="submit" className="save-btn" disabled={!isValid || isLoading}>
+                        {isLoading ? 'Recording...' : 'Save Expense'}
                     </button>
                 </form>
             </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, AlertCircle } from 'lucide-react';
 import { useProduct } from '../context/ProductContext';
 import { useCustomer } from '../context/CustomerContext';
+import { useSettings } from '../context/SettingsContext';
 import { formatCurrency, parseCurrency } from '../utils';
 import './SalesForm.css';
 
@@ -11,6 +12,8 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
 
     const { customers, addCustomer } = useCustomer() || {};
     const safeCustomers = Array.isArray(customers) ? customers : [];
+
+    const { notify } = useSettings();
 
     const [formData, setFormData] = useState({
         productId: '',
@@ -27,6 +30,7 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
     const [error, setError] = useState('');
     const [displayPaid, setDisplayPaid] = useState('');
     const [isNewCustomer, setIsNewCustomer] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     // Autocomplete States
     const [customerSearch, setCustomerSearch] = useState('');
@@ -116,10 +120,10 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
         setDisplayPaid(formatCurrency(formData.amountPaid));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!selectedProduct) return;
+        if (!selectedProduct || isLoading) return;
 
         const qty = Number(formData.quantitySold);
         if (qty <= 0) {
@@ -133,23 +137,22 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
 
         const totalAmount = selectedProduct.sellingPrice * qty;
 
+        // Start Loading
+        setIsLoading(true);
+
+        // --- Simulated processing delay for quality feedback ---
+        await new Promise(resolve => setTimeout(resolve, 600));
+
         // --- Customer Auto-Create / De-Dup Logic ---
         let finalCustomerId = formData.customerId;
         let finalCustomerName = formData.customerName;
 
-        // Only run intelligent matching if a specific existing customer wasn't manually selected
         if (!finalCustomerId && (formData.customerName || formData.customerPhone)) {
             const inputPhone = formData.customerPhone ? formData.customerPhone.trim() : '';
             const inputName = formData.customerName ? formData.customerName.trim() : '';
 
             let existingMatch = null;
-
-            // 1. Try matching by Phone first
-            if (inputPhone) {
-                existingMatch = safeCustomers.find(c => c.phone === inputPhone);
-            }
-
-            // 2. If no phone match, try matching by Name
+            if (inputPhone) existingMatch = safeCustomers.find(c => c.phone === inputPhone);
             if (!existingMatch && inputName) {
                 existingMatch = safeCustomers.find(c => c.name.toLowerCase() === inputName.toLowerCase());
             }
@@ -157,17 +160,11 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
             if (existingMatch) {
                 finalCustomerId = existingMatch.id;
                 finalCustomerName = existingMatch.name;
-            } else {
-                if (inputName) {
-                    const newCust = addCustomer({
-                        name: inputName,
-                        phone: inputPhone
-                    });
-                    finalCustomerId = newCust.id;
-                }
+            } else if (inputName) {
+                const newCust = addCustomer({ name: inputName, phone: inputPhone });
+                finalCustomerId = newCust.id;
             }
         }
-        // -------------------------------------------
 
         let amountPaid = 0;
         let amountDue = 0;
@@ -182,10 +179,12 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
             amountPaid = Number(formData.amountPaid);
             if (amountPaid >= totalAmount) {
                 setError('Partial payment cannot be equal or greater than total.');
+                setIsLoading(false);
                 return;
             }
             if (amountPaid <= 0) {
                 setError('Partial payment must be greater than 0');
+                setIsLoading(false);
                 return;
             }
             amountDue = totalAmount - amountPaid;
@@ -204,6 +203,9 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
             amountPaid,
             amountDue
         });
+
+        notify(`Sold ${qty}x ${selectedProduct.productName}`);
+        setIsLoading(false);
         onClose();
     };
 
@@ -375,8 +377,8 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
                         </div>
                     )}
 
-                    <button type="submit" className="save-btn" disabled={!selectedProduct || !formData.quantitySold || !!error}>
-                        Complete Sale
+                    <button type="submit" className="save-btn" disabled={!selectedProduct || !formData.quantitySold || !!error || isLoading}>
+                        {isLoading ? 'Processing...' : 'Complete Sale'}
                     </button>
                 </form>
             </div>

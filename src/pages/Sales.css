@@ -3,17 +3,30 @@
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 16px;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
+    transition: transform 0.1s;
 }
 
-.sale-header {
+.sale-main-row {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    /* Align to top in case of multi-line name */
+}
+
+.sale-primary-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sale-amount {
+    font-weight: 800;
+    color: var(--text-primary);
+    font-size: 1.35rem;
+    line-height: 1;
 }
 
 .product-info-col {
@@ -22,21 +35,15 @@
 }
 
 .sale-product {
-    font-weight: 600;
-    font-size: 1rem;
-    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
 }
 
 .sale-customer {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
-    font-weight: 500;
-}
-
-.sale-amount {
-    font-weight: 700;
-    color: var(--primary-color);
-    font-size: 1.125rem;
+    opacity: 0.7;
 }
 
 .sale-header-right {
@@ -61,25 +68,26 @@
     color: #ef4444;
 }
 
-.sale-details-row {
+.sale-footer {
     display: flex;
     justify-content: space-between;
-    font-size: 0.875rem;
-    color: var(--text-secondary);
+    align-items: flex-end;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
 }
 
 .sale-badges {
     display: flex;
-    gap: 8px;
-    margin-top: 4px;
+    gap: 6px;
 }
 
 .badge {
-    font-size: 0.75rem;
-    padding: 2px 8px;
+    font-size: 0.65rem;
+    padding: 3px 8px;
     border-radius: 4px;
-    font-weight: 500;
+    font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 .badge.status.paid {
@@ -97,8 +105,22 @@
     color: #991b1b;
 }
 
-.badge.mode {
-    background-color: var(--bg-color);
+.badge.mode-chip {
+    background-color: transparent;
     color: var(--text-secondary);
     border: 1px solid var(--border-color);
+    opacity: 0.7;
+}
+
+.sale-meta-info {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    opacity: 0.6;
+}
+
+.sale-meta-dot {
+    font-weight: bold;
 }
