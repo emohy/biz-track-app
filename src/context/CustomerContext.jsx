@@ -1,37 +1,73 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import {
+    collection,
+    onSnapshot,
+    addDoc,
+    updateDoc,
+    doc,
+    serverTimestamp,
+    query,
+    orderBy
+} from 'firebase/firestore';
+import { db } from '../firebase';
+import { useAuth } from './AuthContext';
 
 const CustomerContext = createContext();
 
 export const useCustomer = () => useContext(CustomerContext);
 
 export const CustomerProvider = ({ children }) => {
-    const [customers, setCustomers] = useState(() => {
-        const saved = localStorage.getItem('customers');
-        return saved ? JSON.parse(saved) : [];
-    });
+    const { user } = useAuth();
+    const [customers, setCustomers] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        localStorage.setItem('customers', JSON.stringify(customers));
-    }, [customers]);
+        if (!user) {
+            setCustomers([]);
+            setLoading(false);
+            return;
+        }
 
-    const addCustomer = (customerData) => {
-        const newCustomer = {
+        const q = query(
+            collection(db, 'users', user.uid, 'customers'),
+            orderBy('createdAt', 'desc')
+        );
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const customerList = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                createdAt: doc.data().createdAt?.toDate()?.toISOString(),
+                updatedAt: doc.data().updatedAt?.toDate()?.toISOString(),
+            }));
+            setCustomers(customerList);
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, [user]);
+
+    const addCustomer = async (customerData) => {
+        if (!user) return;
+        const docRef = await addDoc(collection(db, 'users', user.uid, 'customers'), {
             ...customerData,
-            id: crypto.randomUUID(),
-            createdAt: new Date().toISOString()
-        };
-        setCustomers(prev => [newCustomer, ...prev]);
-        return newCustomer;
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+        });
+        return { id: docRef.id, ...customerData };
     };
 
-    const updateCustomer = (id, updatedData) => {
-        setCustomers(prev => prev.map(c =>
-            c.id === id ? { ...c, ...updatedData } : c
-        ));
+    const updateCustomer = async (id, updatedData) => {
+        if (!user) return;
+        const ref = doc(db, 'users', user.uid, 'customers', id);
+        await updateDoc(ref, {
+            ...updatedData,
+            updatedAt: serverTimestamp()
+        });
     };
 
     return (
-        <CustomerContext.Provider value={{ customers, addCustomer, updateCustomer }}>
+        <CustomerContext.Provider value={{ customers, addCustomer, updateCustomer, loading }}>
             {children}
         </CustomerContext.Provider>
     );

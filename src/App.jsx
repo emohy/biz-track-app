@@ -6,11 +6,14 @@ import Sales from './pages/Sales';
 import Expenses from './pages/Expenses';
 import Customers from './pages/Customers';
 import CustomerDetail from './pages/CustomerDetail';
+import SignIn from './pages/SignIn';
+import MigrationModal from './components/MigrationModal';
 import { ProductProvider } from './context/ProductContext';
 import { SalesProvider } from './context/SalesContext';
 import { ExpenseProvider } from './context/ExpenseContext';
 import { CustomerProvider } from './context/CustomerContext';
 import { SettingsProvider, useSettings } from './context/SettingsContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Settings from './pages/Settings';
 
 const TestModeBanner = () => {
@@ -23,13 +26,20 @@ const TestModeBanner = () => {
   );
 };
 
-function App() {
+const AppContent = () => {
+  const { user } = useAuth();
+
+  if (!user) {
+    return <SignIn />;
+  }
+
   return (
     <SettingsProvider>
       <ProductProvider>
         <SalesProvider>
           <ExpenseProvider>
             <CustomerProvider>
+              <MigrationModal user={user} />
               <Router>
                 <TestModeBanner />
                 <Routes>
@@ -49,6 +59,14 @@ function App() {
         </SalesProvider>
       </ProductProvider>
     </SettingsProvider>
+  );
+};
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

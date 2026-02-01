@@ -5,14 +5,16 @@ import { useSales } from '../context/SalesContext';
 import { useExpense } from '../context/ExpenseContext';
 import { useProduct } from '../context/ProductContext';
 import { useCustomer } from '../context/CustomerContext';
+import { useAuth } from '../context/AuthContext';
 import {
     Download, Shield, Trash2, RotateCcw, AlertTriangle,
-    Sun, Moon, Monitor, Palette, ArrowLeft
+    Sun, Moon, Monitor, Palette, ArrowLeft, LogOut, User
 } from 'lucide-react';
 import './Settings.css';
 
 const Settings = () => {
     const navigate = useNavigate();
+    const { user, logout } = useAuth();
     const {
         testMode, setTestMode,
         alertsEnabled, setAlertsEnabled,
@@ -29,6 +31,12 @@ const Settings = () => {
     const { expenses } = useExpense();
     const { products } = useProduct();
     const { customers } = useCustomer();
+
+    const handleLogout = async () => {
+        if (window.confirm('Are you sure you want to sign out?')) {
+            await logout();
+        }
+    };
 
     const handleReset = () => {
         if (window.confirm('CRITICAL: This will permanently delete ALL your real data. This cannot be undone. Are you absolutely sure?')) {
@@ -79,9 +87,36 @@ const Settings = () => {
 
             <section className="settings-section">
                 <div className="section-header">
+                    <User size={20} />
+                    <h2>Account</h2>
+                </div>
+                <div className="account-info-card">
+                    <div className="user-details">
+                        <div className="user-avatar">
+                            {user?.photoURL ? (
+                                <img src={user.photoURL} alt={user.displayName} />
+                            ) : (
+                                <User size={24} />
+                            )}
+                        </div>
+                        <div className="user-meta">
+                            <span className="user-name">{user?.displayName || 'Business Owner'}</span>
+                            <span className="user-email">{user?.email}</span>
+                        </div>
+                    </div>
+                    <button className="logout-btn" onClick={handleLogout}>
+                        <LogOut size={18} />
+                        Sign Out
+                    </button>
+                </div>
+            </section>
+
+            <section className="settings-section">
+                <div className="section-header">
                     <Palette size={20} />
                     <h2>Appearance</h2>
                 </div>
+                {/* ... theme buttons ... */}
                 <div className="theme-selector-grid">
                     <button
                         className={`theme-btn ${appTheme === 'system' ? 'active' : ''}`}
@@ -110,11 +145,11 @@ const Settings = () => {
             <section className="settings-section">
                 <div className="section-header">
                     <Shield size={20} />
-                    <h2>Privacy & Data Management</h2>
+                    <h2>Privacy & Cloud Sync</h2>
                 </div>
 
                 <div className="privacy-info-box">
-                    <p><strong>Your data is yours.</strong> BizTrack is offline-first. All your sales, expenses, and customer data are stored locally on this device. We never sell, share, or even see your business information.</p>
+                    <p><strong>Your data is secured in the cloud.</strong> BizTrack uses Firebase to securely sync your sales, expenses, and customer data across all your devices. Only you can access your data.</p>
                 </div>
 
                 <div className="setting-item">
@@ -131,7 +166,7 @@ const Settings = () => {
                         <span className="slider round"></span>
                     </label>
                 </div>
-
+                {/* ... other settings ... */}
                 <div className="setting-item">
                     <div className="setting-info">
                         <span className="setting-label">Smart Alerts</span>
@@ -158,6 +193,7 @@ const Settings = () => {
                 </div>
             </section>
 
+            {/* ... Backup & Restore section ... */}
             <section className="settings-section">
                 <div className="section-header">
                     <Download size={20} />

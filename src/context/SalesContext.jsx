@@ -1,4 +1,17 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import {
+    collection,
+    onSnapshot,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    doc,
+    serverTimestamp,
+    query,
+    orderBy
+} from 'firebase/firestore';
+import { db } from '../firebase';
+import { useAuth } from './AuthContext';
 import { useSettings } from './SettingsContext';
 
 const SalesContext = createContext();
@@ -6,49 +19,66 @@ const SalesContext = createContext();
 export const useSales = () => useContext(SalesContext);
 
 export const SalesProvider = ({ children }) => {
+    const { user } = useAuth();
     const { testMode } = useSettings();
-    const storageKey = testMode ? 'test_sales' : 'sales';
-
-    const [sales, setSales] = useState(() => {
-        const saved = localStorage.getItem(storageKey);
-        return saved ? JSON.parse(saved) : [];
-    });
-
+    const [sales, setSales] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [pendingDeletes, setPendingDeletes] = useState({});
 
-    useEffect(() => {
-        localStorage.setItem(storageKey, JSON.stringify(sales));
-    }, [sales, storageKey]);
+    const collectionName = testMode ? 'test_sales' : 'sales';
 
     useEffect(() => {
-        const saved = localStorage.getItem(storageKey);
-        setSales(saved ? JSON.parse(saved) : []);
-    }, [testMode, storageKey]);
+        if (!user) {
+            setSales([]);
+            setLoading(false);
+            return;
+        }
 
-    const addSale = (saleData) => {
-        const now = new Date().toISOString();
-        const newSale = {
+        const q = query(
+            collection(db, 'users', user.uid, collectionName),
+            orderBy('createdAt', 'desc')
+        );
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const salesList = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                createdAt: doc.data().createdAt?.toDate()?.toISOString(),
+                updatedAt: doc.data().updatedAt?.toDate()?.toISOString(),
+            }));
+            setSales(salesList);
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, [user, collectionName]);
+
+    const addSale = async (saleData) => {
+        if (!user) return;
+        await addDoc(collection(db, 'users', user.uid, collectionName), {
             ...saleData,
-            id: crypto.randomUUID(),
-            createdAt: now,
-            updatedAt: now
-        };
-        setSales(prev => [newSale, ...prev]);
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+        });
     };
 
-    const updateSale = (id, updates) => {
-        setSales(prev => prev.map(sale =>
-            sale.id === id ? { ...sale, ...updates, updatedAt: new Date().toISOString() } : sale
-        ));
+    const updateSale = async (id, updates) => {
+        if (!user) return;
+        const ref = doc(db, 'users', user.uid, collectionName, id);
+        await updateDoc(ref, {
+            ...updates,
+            updatedAt: serverTimestamp()
+        });
     };
 
-    const deleteSale = (id) => {
+    const deleteSale = async (id) => {
+        if (!user) return;
         const itemToDelete = sales.find(s => s.id === id);
         if (!itemToDelete) return;
 
-        setSales(prev => prev.filter(s => s.id !== id));
-
-        const timeoutId = setTimeout(() => {
+        const timeoutId = setTimeout(async () => {
+            const ref = doc(db, 'users', user.uid, collectionName, id);
+            await deleteDoc(ref);
             setPendingDeletes(prev => {
                 const next = { ...prev };
                 delete next[id];
@@ -67,7 +97,6 @@ export const SalesProvider = ({ children }) => {
         const pending = pendingDeletes[id];
         if (pending) {
             clearTimeout(pending.timeoutId);
-            setSales(prev => [pending.item, ...prev]);
             setPendingDeletes(prev => {
                 const next = { ...prev };
                 delete next[id];
@@ -78,8 +107,13 @@ export const SalesProvider = ({ children }) => {
 
     return (
         <SalesContext.Provider value={{
-            sales, addSale, updateSale, deleteSale, undoDelete,
-            isPendingDelete: (id) => !!pendingDeletes[id]
+            sales: sales.filter(s => !pendingDeletes[s.id]),
+            addSale,
+            updateSale,
+            deleteSale,
+            undoDelete,
+            isPendingDelete: (id) => !!pendingDeletes[id],
+            loading
         }}>
             {children}
         </SalesContext.Provider>

@@ -1,4 +1,17 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import {
+    collection,
+    onSnapshot,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    doc,
+    serverTimestamp,
+    query,
+    orderBy
+} from 'firebase/firestore';
+import { db } from '../firebase';
+import { useAuth } from './AuthContext';
 import { useSettings } from './SettingsContext';
 
 const ProductContext = createContext();
@@ -6,62 +19,83 @@ const ProductContext = createContext();
 export const useProduct = () => useContext(ProductContext);
 
 export const ProductProvider = ({ children }) => {
+    const { user } = useAuth();
     const { testMode } = useSettings();
-    const storageKey = testMode ? 'test_products' : 'products';
-
-    const [products, setProducts] = useState(() => {
-        const saved = localStorage.getItem(storageKey);
-        return saved ? JSON.parse(saved) : [];
-    });
-
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [pendingDeletes, setPendingDeletes] = useState({});
 
-    // Effect for Storage Persistence
-    useEffect(() => {
-        localStorage.setItem(storageKey, JSON.stringify(products));
-    }, [products, storageKey]);
+    // Collection reference: users/{uid}/products OR users/{uid}/test_products
+    const collectionName = testMode ? 'test_products' : 'products';
 
-    // Handle testMode switch: reload data
     useEffect(() => {
-        const saved = localStorage.getItem(storageKey);
-        setProducts(saved ? JSON.parse(saved) : []);
-    }, [testMode, storageKey]);
+        if (!user) {
+            setProducts([]);
+            setLoading(false);
+            return;
+        }
 
-    const addProduct = (productData) => {
-        const now = new Date().toISOString();
-        const newProduct = {
+        const q = query(
+            collection(db, 'users', user.uid, collectionName),
+            orderBy('createdAt', 'desc')
+        );
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const productList = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                // Convert Firestore timestamps to ISO strings for existing UI compatibility
+                createdAt: doc.data().createdAt?.toDate()?.toISOString(),
+                updatedAt: doc.data().updatedAt?.toDate()?.toISOString(),
+            }));
+            setProducts(productList);
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, [user, collectionName]);
+
+    const addProduct = async (productData) => {
+        if (!user) return;
+
+        await addDoc(collection(db, 'users', user.uid, collectionName), {
             ...productData,
-            id: crypto.randomUUID(),
-            createdAt: now,
-            updatedAt: now
-        };
-        setProducts(prev => [newProduct, ...prev]);
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+        });
     };
 
-    const updateProduct = (id, updatedData) => {
-        setProducts(prev => prev.map(prod =>
-            prod.id === id ? { ...prod, ...updatedData, updatedAt: new Date().toISOString() } : prod
-        ));
+    const updateProduct = async (id, updatedData) => {
+        if (!user) return;
+
+        const productRef = doc(db, 'users', user.uid, collectionName, id);
+        await updateDoc(productRef, {
+            ...updatedData,
+            updatedAt: serverTimestamp()
+        });
     };
 
-    const deleteProduct = (id) => {
-        // Soft delete logic: stage for deletion
+    const deleteProduct = async (id) => {
+        if (!user) return;
+
+        // Soft delete logic: stage for deletion (local UI only)
         const itemToDelete = products.find(p => p.id === id);
         if (!itemToDelete) return;
 
-        // Immediately remove from visible list
-        setProducts(prev => prev.filter(p => p.id !== id));
+        // Note: For real-time Firestore, we'd usually want to 
+        // handle the 'undo' by not actually deleting from Firestore immediately.
+        // But for simplicity, we'll follow the original pattern:
+        // Immediately remove from local list (Firestore snapshot will usually 
+        // add it back unless we filter it out locally).
 
-        // Create a timeout to finalize deletion
-        const timeoutId = setTimeout(() => {
+        const timeoutId = setTimeout(async () => {
+            const productRef = doc(db, 'users', user.uid, collectionName, id);
+            await deleteDoc(productRef);
             setPendingDeletes(prev => {
                 const next = { ...prev };
                 delete next[id];
                 return next;
             });
-            // Permanent deletion is already handled by setProducts above, 
-            // but we could have a hidden 'trash' state if needed.
-            // For this requirement, we just clear the undo option.
         }, 5000);
 
         setPendingDeletes(prev => ({
@@ -69,7 +103,6 @@ export const ProductProvider = ({ children }) => {
             [id]: { item: itemToDelete, timeoutId }
         }));
 
-        // Return the id so the UI can show the Undo toast
         return id;
     };
 
@@ -77,7 +110,6 @@ export const ProductProvider = ({ children }) => {
         const pending = pendingDeletes[id];
         if (pending) {
             clearTimeout(pending.timeoutId);
-            setProducts(prev => [pending.item, ...prev]);
             setPendingDeletes(prev => {
                 const next = { ...prev };
                 delete next[id];
@@ -88,12 +120,13 @@ export const ProductProvider = ({ children }) => {
 
     return (
         <ProductContext.Provider value={{
-            products,
+            products: products.filter(p => !pendingDeletes[p.id]),
             addProduct,
             updateProduct,
             deleteProduct,
             undoDelete,
-            isPendingDelete: (id) => !!pendingDeletes[id]
+            isPendingDelete: (id) => !!pendingDeletes[id],
+            loading
         }}>
             {children}
         </ProductContext.Provider>
