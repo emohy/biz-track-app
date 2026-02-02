@@ -29,6 +29,14 @@ const TestModeBanner = () => {
 const AppContent = () => {
   const { user } = useAuth();
 
+  useEffect(() => {
+    console.log("Environment check:", {
+      hasApiKey: !!import.meta.env.VITE_FIREBASE_API_KEY,
+      hasProjectId: !!import.meta.env.VITE_FIREBASE_PROJECT_ID,
+      env: import.meta.env.MODE
+    });
+  }, []);
+
   if (!user) {
     return <SignIn />;
   }
