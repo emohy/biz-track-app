@@ -9,7 +9,7 @@ import {
     Share2,
     Zap,
     Coffee,
-    Tool,
+    Wrench,
     FileText,
     CreditCard
 } from 'lucide-react';
@@ -27,7 +27,7 @@ const CATEGORIES = [
     { name: 'Utilities', icon: <Zap size={18} /> },
     { name: 'Food', icon: <Coffee size={18} /> },
     { name: 'Beer', icon: <Coffee size={18} /> },
-    { name: 'Maintenance', icon: <Tool size={18} /> }
+    { name: 'Maintenance', icon: <Wrench size={18} /> }
 ];
 
 const ExpenseForm = ({ isOpen, onClose, onSubmit, initialData }) => {

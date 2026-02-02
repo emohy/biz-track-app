@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Package, Tag, Wallet, Database, AlertTriangle, Truck } from 'lucide-react';
+import { X, Package, Tag, Wallet, Database, TriangleAlert, Truck } from 'lucide-react';
 import { formatCurrency, parseCurrency } from '../utils';
 import { useSettings } from '../context/SettingsContext';
 import './ProductForm.css';
@@ -201,7 +201,7 @@ const ProductForm = ({ isOpen, onClose, onSubmit, initialData }) => {
                             </div>
                         </div>
                         <small className="form-hint">
-                            <AlertTriangle size={12} />
+                            <TriangleAlert size={12} />
                             Get notified when stock drops below {formData.minimumStockLevel || '5'}
                         </small>
                     </section>

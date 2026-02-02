@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, ShoppingBag, User, CreditCard, PieChart, AlertCircle, Search, PlusCircle } from 'lucide-react';
+import { X, ShoppingBag, User, CreditCard, PieChart, CircleAlert, Search, CirclePlus } from 'lucide-react';
 import { useProduct } from '../context/ProductContext';
 import { useCustomer } from '../context/CustomerContext';
 import { useSettings } from '../context/SettingsContext';
@@ -161,7 +161,7 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
                 finalCustomerId = existingMatch.id;
                 finalCustomerName = existingMatch.name;
             } else if (inputName) {
-                const newCust = addCustomer({ name: inputName, phone: inputPhone });
+                const newCust = await addCustomer({ name: inputName, phone: inputPhone });
                 finalCustomerId = newCust.id;
             }
         }
@@ -261,7 +261,7 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
 
                         {selectedProduct && (
                             <div className="stock-info-badge">
-                                <AlertCircle size={14} />
+                                <CircleAlert size={14} />
                                 <span>{selectedProduct.stockQuantity} items in stock</span>
                             </div>
                         )}
@@ -341,7 +341,7 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
                                         </div>
                                     ))}
                                     <div className="suggestion-row create-action" onClick={selectCreateNew}>
-                                        <PlusCircle size={14} />
+                                        <CirclePlus size={14} />
                                         <span>New Customer: "{customerSearch}"</span>
                                     </div>
                                 </div>
@@ -404,7 +404,7 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
 
                     {error && (
                         <div className="premium-error slide-down">
-                            <AlertCircle size={16} />
+                            <CircleAlert size={16} />
                             <span>{error}</span>
                         </div>
                     )}
