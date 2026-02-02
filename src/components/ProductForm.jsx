@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Package, Tag, Wallet, Database, TriangleAlert, Truck } from 'lucide-react';
+import { X } from 'lucide-react';
 import { formatCurrency, parseCurrency } from '../utils';
 import { useSettings } from '../context/SettingsContext';
 import './ProductForm.css';
@@ -17,6 +17,7 @@ const ProductForm = ({ isOpen, onClose, onSubmit, initialData }) => {
         supplierName: ''
     });
 
+    // Helper to separate raw numbers from display formatting
     const [displayValues, setDisplayValues] = useState({
         costPrice: '',
         sellingPrice: ''
@@ -48,7 +49,12 @@ const ProductForm = ({ isOpen, onClose, onSubmit, initialData }) => {
         const { name, value } = e.target;
 
         if (name === 'costPrice' || name === 'sellingPrice') {
+            // Allow typing: keep the raw input in display for smooth typing
+            // But store the parsed number in formData
             setDisplayValues(prev => ({ ...prev, [name]: value }));
+
+            // Should verify valid number characters before parsing
+            // For simplicity, we assume users type numbers/commas
             const parsed = parseCurrency(value);
             setFormData(prev => ({ ...prev, [name]: parsed }));
         } else {
@@ -66,6 +72,7 @@ const ProductForm = ({ isOpen, onClose, onSubmit, initialData }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        // Basic Validation
         if (!formData.productName || !formData.costPrice || !formData.sellingPrice || !formData.stockQuantity || !formData.minimumStockLevel || isLoading) {
             return;
         }
@@ -90,137 +97,68 @@ const ProductForm = ({ isOpen, onClose, onSubmit, initialData }) => {
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content premium-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-content" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
-                    <div className="title-with-icon">
-                        <Package size={24} className="header-icon" />
-                        <h2>{initialData ? 'Edit Product' : 'Add Product'}</h2>
-                    </div>
+                    <h2>{initialData ? 'Edit Product' : 'Add Product'}</h2>
                     <button className="close-btn" onClick={onClose}><X size={20} /></button>
                 </div>
-
-                <form onSubmit={handleSubmit} className="premium-form">
-                    <section className="form-section">
-                        <div className="section-header">
-                            <Database size={16} />
-                            <span>Basic Information</span>
-                        </div>
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label>Product Name*</label>
+                        <input name="productName" value={formData.productName} onChange={handleChange} placeholder="e.g. Widget A" disabled={isLoading} />
+                    </div>
+                    <div className="form-row">
                         <div className="form-group">
-                            <label>Product Name*</label>
+                            <label>Cost Price*</label>
                             <input
-                                name="productName"
-                                value={formData.productName}
+                                type="text"
+                                name="costPrice"
+                                value={displayValues.costPrice}
                                 onChange={handleChange}
-                                placeholder="e.g. Premium Blend Coffee"
+                                onBlur={handleBlur}
+                                placeholder="UGX 0"
                                 disabled={isLoading}
                             />
                         </div>
                         <div className="form-group">
-                            <label>Supplier (Optional)</label>
-                            <div className="input-with-icon">
-                                <Truck size={18} className="input-icon" />
-                                <input
-                                    name="supplierName"
-                                    value={formData.supplierName}
-                                    onChange={handleChange}
-                                    placeholder="Enter supplier name"
-                                    disabled={isLoading}
-                                />
-                            </div>
+                            <label>Selling Price*</label>
+                            <input
+                                type="text"
+                                name="sellingPrice"
+                                value={displayValues.sellingPrice}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                placeholder="UGX 0"
+                                disabled={isLoading}
+                            />
                         </div>
-                    </section>
-
-                    <section className="form-section highlight">
-                        <div className="section-header">
-                            <Tag size={16} />
-                            <span>Pricing Strategy</span>
+                    </div>
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label>Stock Qty*</label>
+                            <input type="number" name="stockQuantity" value={formData.stockQuantity} onChange={handleChange} placeholder="0" disabled={isLoading} />
                         </div>
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label>Cost Price</label>
-                                <input
-                                    type="text"
-                                    name="costPrice"
-                                    value={displayValues.costPrice}
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    placeholder="UGX 0"
-                                    disabled={isLoading}
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Selling Price</label>
-                                <input
-                                    type="text"
-                                    name="sellingPrice"
-                                    value={displayValues.sellingPrice}
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    placeholder="UGX 0"
-                                    disabled={isLoading}
-                                />
-                            </div>
+                        <div className="form-group">
+                            <label>Min Stock*</label>
+                            <input type="number" name="minimumStockLevel" value={formData.minimumStockLevel} onChange={handleChange} placeholder="5" disabled={isLoading} />
                         </div>
-                        {formData.costPrice && formData.sellingPrice && (
-                            <div className="margin-indicator transition-all">
-                                <span>Projected Profit: </span>
-                                <strong className={formData.sellingPrice >= formData.costPrice ? 'text-success' : 'text-danger'}>
-                                    {formatCurrency(formData.sellingPrice - formData.costPrice)}
-                                </strong>
-                            </div>
-                        )}
-                    </section>
-
-                    <section className="form-section">
-                        <div className="section-header">
-                            <Wallet size={16} />
-                            <span>Inventory Control</span>
-                        </div>
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label>Initial Stock</label>
-                                <input
-                                    type="number"
-                                    name="stockQuantity"
-                                    value={formData.stockQuantity}
-                                    onChange={handleChange}
-                                    placeholder="0"
-                                    disabled={isLoading}
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Alert Level</label>
-                                <input
-                                    type="number"
-                                    name="minimumStockLevel"
-                                    value={formData.minimumStockLevel}
-                                    onChange={handleChange}
-                                    placeholder="5"
-                                    disabled={isLoading}
-                                />
-                            </div>
-                        </div>
-                        <small className="form-hint">
-                            <TriangleAlert size={12} />
-                            Get notified when stock drops below {formData.minimumStockLevel || '5'}
-                        </small>
-                    </section>
+                    </div>
+                    <div className="form-group">
+                        <label>Supplier (Optional)</label>
+                        <input name="supplierName" value={formData.supplierName} onChange={handleChange} placeholder="Supplier Name" disabled={isLoading} />
+                    </div>
 
                     {initialData && (
-                        <div className="audit-stamps premium-audit">
-                            <span>Created: {new Date(initialData.createdAt).toLocaleDateString()}</span>
+                        <div className="audit-stamps">
+                            <span>Created: {new Date(initialData.createdAt).toLocaleString()}</span>
                             {initialData.updatedAt && (
-                                <span>Modified: {new Date(initialData.updatedAt).toLocaleDateString()}</span>
+                                <span>Updated: {new Date(initialData.updatedAt).toLocaleString()}</span>
                             )}
                         </div>
                     )}
 
-                    <button type="submit" className="save-btn premium-btn" disabled={!isValid || isLoading}>
-                        {isLoading ? (
-                            <span className="btn-loader">Saving Changes...</span>
-                        ) : (
-                            <span>{initialData ? 'Update Product' : 'Register Product'}</span>
-                        )}
+                    <button type="submit" className="save-btn" disabled={!isValid || isLoading}>
+                        {isLoading ? 'Saving...' : 'Save Product'}
                     </button>
                 </form>
             </div>
