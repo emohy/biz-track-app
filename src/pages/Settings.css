@@ -396,6 +396,77 @@
     color: #ef4444;
 }
 
+/* Holiday List Editor */
+.holiday-list-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+.holiday-list-editor .list-header .label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.holiday-row-item {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.holiday-row-item .date-input {
+    width: 80px;
+    text-align: center;
+}
+
+.holiday-row-item .name-input {
+    flex: 1;
+}
+
+.remove-h-btn {
+    background: none;
+    color: var(--text-secondary);
+    padding: 8px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.remove-h-btn:hover {
+    background-color: #fee2e2;
+    color: #ef4444;
+}
+
+.add-h-btn {
+    align-self: flex-start;
+    background: none;
+    border: 1.5px dashed var(--border-color);
+    color: var(--text-secondary);
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    transition: all 0.2s;
+}
+
+.add-h-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background-color: rgba(47, 111, 237, 0.05);
+}
+
 /* Responsive */
 @media (max-width: 480px) {
     .export-grid {
@@ -410,5 +481,18 @@
     .danger-btn {
         width: 100%;
         justify-content: center;
+    }
+
+    .holiday-row-item {
+        flex-wrap: wrap;
+    }
+
+    .holiday-row-item .name-input {
+        flex: 1;
+        min-width: 150px;
+    }
+
+    .holiday-row-item .remove-h-btn {
+        margin-left: auto;
     }
 }

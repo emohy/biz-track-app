@@ -8,7 +8,8 @@ import { useCustomer } from '../context/CustomerContext';
 import { useAuth } from '../context/AuthContext';
 import {
     Download, Shield, Trash2, RotateCcw, AlertTriangle,
-    Sun, Moon, Monitor, Palette, ArrowLeft, LogOut, User
+    Sun, Moon, Monitor, Palette, ArrowLeft, LogOut, User,
+    Briefcase, Calendar, Check, Plus, X
 } from 'lucide-react';
 import './Settings.css';
 
@@ -20,7 +21,9 @@ const Settings = () => {
         alertsEnabled, setAlertsEnabled,
         appTheme, setAppTheme,
         exportBackup, restoreBackup, resetAllData, clearTestData,
-        setShowOnboarding
+        setShowOnboarding,
+        businessProfile, updateBusinessProfile,
+        holidaySettings, updateHolidaySettings
     } = useSettings();
 
     const [restorePreview, setRestorePreview] = useState(null);
@@ -113,6 +116,35 @@ const Settings = () => {
 
             <section className="settings-section">
                 <div className="section-header">
+                    <Briefcase size={20} />
+                    <h2>Business Profile</h2>
+                </div>
+                <div className="setting-item">
+                    <div className="setting-info">
+                        <label className="setting-label">Business Name*</label>
+                        <input
+                            type="text"
+                            value={businessProfile.name}
+                            onChange={(e) => updateBusinessProfile({ name: e.target.value })}
+                            placeholder="e.g. Ken's Electronics"
+                        />
+                    </div>
+                </div>
+                <div className="setting-item">
+                    <div className="setting-info">
+                        <label className="setting-label">Owner Name (Optional)</label>
+                        <input
+                            type="text"
+                            value={businessProfile.owner}
+                            onChange={(e) => updateBusinessProfile({ owner: e.target.value })}
+                            placeholder="e.g. Ken"
+                        />
+                    </div>
+                </div>
+            </section>
+
+            <section className="settings-section">
+                <div className="section-header">
                     <Palette size={20} />
                     <h2>Appearance</h2>
                 </div>
@@ -138,6 +170,77 @@ const Settings = () => {
                     >
                         <Moon size={18} />
                         <span>Dark</span>
+                    </button>
+                </div>
+            </section>
+
+            <section className="settings-section">
+                <div className="section-header">
+                    <Calendar size={20} />
+                    <h2>Holiday Messages</h2>
+                </div>
+                <div className="setting-item">
+                    <div className="setting-info">
+                        <span className="setting-label">Show holiday greetings</span>
+                        <p className="setting-desc">Display special banners on national holidays.</p>
+                    </div>
+                    <label className="toggle-switch">
+                        <input
+                            type="checkbox"
+                            checked={holidaySettings.enabled}
+                            onChange={(e) => updateHolidaySettings({ enabled: e.target.checked })}
+                        />
+                        <span className="slider round"></span>
+                    </label>
+                </div>
+
+                <div className="holiday-list-editor">
+                    <div className="list-header">
+                        <span className="label">Observed Holidays</span>
+                    </div>
+                    {holidaySettings.holidays.map((h, idx) => (
+                        <div key={idx} className="holiday-row-item">
+                            <input
+                                type="text"
+                                className="date-input"
+                                value={h.date}
+                                placeholder="MM-DD"
+                                onChange={(e) => {
+                                    const newHolidays = [...holidaySettings.holidays];
+                                    newHolidays[idx].date = e.target.value;
+                                    updateHolidaySettings({ holidays: newHolidays });
+                                }}
+                            />
+                            <input
+                                type="text"
+                                className="name-input"
+                                value={h.name}
+                                placeholder="Holiday Name"
+                                onChange={(e) => {
+                                    const newHolidays = [...holidaySettings.holidays];
+                                    newHolidays[idx].name = e.target.value;
+                                    updateHolidaySettings({ holidays: newHolidays });
+                                }}
+                            />
+                            <button
+                                className="remove-h-btn"
+                                onClick={() => {
+                                    const newHolidays = holidaySettings.holidays.filter((_, i) => i !== idx);
+                                    updateHolidaySettings({ holidays: newHolidays });
+                                }}
+                            >
+                                <X size={14} />
+                            </button>
+                        </div>
+                    ))}
+                    <button
+                        className="add-h-btn"
+                        onClick={() => {
+                            const newHolidays = [...holidaySettings.holidays, { date: '', name: '', message: '' }];
+                            updateHolidaySettings({ holidays: newHolidays });
+                        }}
+                    >
+                        <Plus size={14} /> Add Holiday
                     </button>
                 </div>
             </section>

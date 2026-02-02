@@ -25,6 +25,25 @@ export const SettingsProvider = ({ children }) => {
         return saved !== null ? JSON.parse(saved) : true;
     });
 
+    const [businessProfile, setBusinessProfile] = useState(() => {
+        const saved = localStorage.getItem('businessProfile');
+        return saved ? JSON.parse(saved) : { name: '', owner: '' };
+    });
+
+    const [holidaySettings, setHolidaySettings] = useState(() => {
+        const saved = localStorage.getItem('holidaySettings');
+        const defaultHolidays = [
+            { date: '01-26', name: 'NRM Liberation Day', message: '' },
+            { date: '02-16', name: 'Archbishop Janani Luwum Day', message: '' },
+            { date: '03-08', name: "International Women's Day", message: '' },
+            { date: '05-01', name: 'Labour Day', message: '' },
+            { date: '06-03', name: 'Martyrs Day', message: '' },
+            { date: '06-09', name: 'Heroes Day', message: '' },
+            { date: '10-09', name: 'Independence Day', message: '' }
+        ];
+        return saved ? JSON.parse(saved) : { enabled: true, holidays: defaultHolidays };
+    });
+
     const [notification, setNotification] = useState(null);
 
     const notify = (message, type = 'success') => {
@@ -53,6 +72,22 @@ export const SettingsProvider = ({ children }) => {
         if (appTheme === 'light') root.classList.add('theme-light');
         if (appTheme === 'dark') root.classList.add('theme-dark');
     }, [appTheme]);
+
+    useEffect(() => {
+        localStorage.setItem('businessProfile', JSON.stringify(businessProfile));
+    }, [businessProfile]);
+
+    useEffect(() => {
+        localStorage.setItem('holidaySettings', JSON.stringify(holidaySettings));
+    }, [holidaySettings]);
+
+    const updateBusinessProfile = (profile) => {
+        setBusinessProfile(prev => ({ ...prev, ...profile }));
+    };
+
+    const updateHolidaySettings = (settings) => {
+        setHolidaySettings(prev => ({ ...prev, ...settings }));
+    };
 
     // Post-Restore Notification
     useEffect(() => {
@@ -178,6 +213,8 @@ export const SettingsProvider = ({ children }) => {
             alertsEnabled, setAlertsEnabled,
             appTheme, setAppTheme,
             showOnboarding, setShowOnboarding,
+            businessProfile, updateBusinessProfile,
+            holidaySettings, updateHolidaySettings,
             notification, notify,
             exportBackup, restoreBackup, resetAllData, clearTestData
         }}>

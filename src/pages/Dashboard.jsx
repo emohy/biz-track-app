@@ -436,13 +436,21 @@ const Dashboard = () => {
         <div className="page container dashboard">
             <header className="dashboard-header">
                 <div className="header-main">
-                    <h1>Dashboard</h1>
+                    <span className="greeting-text">{greeting},</span>
+                    <h1>{businessProfile.name || <span className="setup-prompt">Set your business name in Settings</span>}</h1>
                     <span className="current-date">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</span>
                 </div>
                 <button className="settings-trigger" onClick={() => navigate('/settings')}>
                     <SettingsIcon size={24} />
                 </button>
             </header>
+
+            {activeHoliday && (
+                <div className="holiday-banner fade-in">
+                    <Sparkles size={16} className="holiday-stars" />
+                    <span>Happy {activeHoliday.name} 🇺🇬 {activeHoliday.message}</span>
+                </div>
+            )}
 
             {/* Scope Control */}
             <div className="scope-selector">
