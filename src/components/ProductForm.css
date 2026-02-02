@@ -1,2 +1,120 @@
 /* Styles specific to ProductForm if any. 
    Most styles are now in src/index.css for shared modal consistency. */
+.premium-modal {
+   max-width: 480px;
+   padding: 0;
+   overflow: hidden;
+   background: var(--bg-color);
+}
+
+.premium-modal .modal-header {
+   padding: 24px;
+   margin-bottom: 0;
+   background: var(--surface-color);
+   border-bottom: 1px solid var(--border-color);
+}
+
+.title-with-icon {
+   display: flex;
+   align-items: center;
+   gap: 12px;
+}
+
+.header-icon {
+   color: var(--primary-color);
+   background: color-mix(in srgb, var(--primary-color), transparent 90%);
+   padding: 8px;
+   border-radius: 12px;
+}
+
+.premium-form {
+   padding: 24px;
+   display: flex;
+   flex-direction: column;
+   gap: 20px;
+}
+
+.form-section {
+   background: var(--surface-color);
+   padding: 16px;
+   border-radius: 16px;
+   border: 1px solid var(--border-color);
+}
+
+.form-section.highlight {
+   background: linear-gradient(145deg, var(--surface-color) 0%, color-mix(in srgb, var(--primary-color), transparent 97%) 100%);
+   border-color: color-mix(in srgb, var(--primary-color), transparent 80%);
+}
+
+.section-header {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   font-size: 0.75rem;
+   font-weight: 700;
+   color: var(--text-secondary);
+   text-transform: uppercase;
+   letter-spacing: 0.05em;
+   margin-bottom: 16px;
+}
+
+.input-with-icon {
+   position: relative;
+   display: flex;
+   align-items: center;
+}
+
+.input-icon {
+   position: absolute;
+   left: 12px;
+   color: var(--text-secondary);
+   opacity: 0.6;
+}
+
+.input-with-icon input {
+   padding-left: 40px;
+}
+
+.margin-indicator {
+   margin-top: 12px;
+   padding-top: 12px;
+   border-top: 1px dashed var(--border-color);
+   font-size: 0.875rem;
+   color: var(--text-secondary);
+}
+
+.text-success {
+   color: var(--success-color);
+}
+
+.text-danger {
+   color: var(--danger-color);
+}
+
+.form-hint {
+   display: flex;
+   align-items: center;
+   gap: 6px;
+   margin-top: 8px;
+   color: var(--text-secondary);
+   font-size: 0.75rem;
+}
+
+.premium-btn {
+   margin-top: 10px;
+   height: 52px;
+   font-size: 1rem;
+   letter-spacing: 0.01em;
+   box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-color), transparent 80%);
+}
+
+.premium-btn:not(:disabled):hover {
+   transform: translateY(-2px);
+   box-shadow: 0 6px 16px color-mix(in srgb, var(--primary-color), transparent 70%);
+}
+
+.premium-audit {
+   padding: 0 8px;
+   font-size: 0.7rem;
+   opacity: 0.6;
+}

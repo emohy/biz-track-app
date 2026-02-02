@@ -1,20 +1,40 @@
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
-import { formatCurrency, parseCurrency } from '../utils'; // Utilities
-import { useProduct } from '../context/ProductContext'; // Import ProductContext
+import {
+    X,
+    Receipt,
+    Truck,
+    Home,
+    UserCircle,
+    Globe,
+    Share2,
+    Zap,
+    Coffee,
+    Tool,
+    FileText,
+    CreditCard
+} from 'lucide-react';
+import { formatCurrency, parseCurrency } from '../utils';
+import { useProduct } from '../context/ProductContext';
 import { useSettings } from '../context/SettingsContext';
 import './ExpenseForm.css';
 
 const CATEGORIES = [
-    'Transport', 'Rent', 'Salaries', 'Internet', 'Marketing',
-    'Utilities', 'Food', 'Beer', 'Maintenance'
+    { name: 'Transport', icon: <Truck size={18} /> },
+    { name: 'Rent', icon: <Home size={18} /> },
+    { name: 'Salaries', icon: <UserCircle size={18} /> },
+    { name: 'Internet', icon: <Globe size={18} /> },
+    { name: 'Marketing', icon: <Share2 size={18} /> },
+    { name: 'Utilities', icon: <Zap size={18} /> },
+    { name: 'Food', icon: <Coffee size={18} /> },
+    { name: 'Beer', icon: <Coffee size={18} /> },
+    { name: 'Maintenance', icon: <Tool size={18} /> }
 ];
 
 const ExpenseForm = ({ isOpen, onClose, onSubmit, initialData }) => {
     const { notify } = useSettings();
     const [isLoading, setIsLoading] = useState(false);
 
-    const { products } = useProduct() || {}; // Access products, guard against context failure
+    const { products } = useProduct() || {};
     const safeProducts = Array.isArray(products) ? products : [];
 
     const [formData, setFormData] = useState({
@@ -22,7 +42,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, initialData }) => {
         amount: '',
         paymentMode: '',
         notes: '',
-        linkedProductId: '' // Optional Field
+        linkedProductId: ''
     });
 
     const [displayAmount, setDisplayAmount] = useState('');
@@ -77,80 +97,91 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, initialData }) => {
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-content premium-modal" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
-                    <h2>{initialData ? 'Edit Expense' : 'Add Expense'}</h2>
+                    <div className="title-with-icon">
+                        <Receipt size={24} className="header-icon" />
+                        <h2>{initialData ? 'Edit Expense' : 'Add Expense'}</h2>
+                    </div>
                     <button className="close-btn" onClick={onClose}><X size={20} /></button>
                 </div>
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label>Category*</label>
-                        <select name="category" value={formData.category} onChange={handleChange} required disabled={isLoading}>
-                            <option value="">-- Select Category --</option>
+
+                <form onSubmit={handleSubmit} className="premium-form">
+                    <section className="form-section category-grid-section">
+                        <div className="section-header">Select Category</div>
+                        <div className="category-chips">
                             {CATEGORIES.map(cat => (
-                                <option key={cat} value={cat}>{cat}</option>
+                                <button
+                                    key={cat.name}
+                                    type="button"
+                                    className={`category-chip ${formData.category === cat.name ? 'active' : ''}`}
+                                    onClick={() => setFormData(prev => ({ ...prev, category: cat.name }))}
+                                >
+                                    {cat.icon}
+                                    <span>{cat.name}</span>
+                                </button>
                             ))}
-                        </select>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Amount*</label>
-                        <input
-                            type="text"
-                            name="amount"
-                            value={displayAmount}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            placeholder="UGX 0"
-                            required
-                            disabled={isLoading}
-                        />
-                    </div>
-
-                    {/* Optional Linked Product */}
-                    <div className="form-group">
-                        <label>Linked Product (Optional)</label>
-                        <select name="linkedProductId" value={formData.linkedProductId} onChange={handleChange} disabled={isLoading}>
-                            <option value="">-- None --</option>
-                            {safeProducts.map(p => (
-                                <option key={p.id} value={p.id}>{p.productName}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Payment Mode (Optional)</label>
-                        <select name="paymentMode" value={formData.paymentMode} onChange={handleChange} disabled={isLoading}>
-                            <option value="">-- None --</option>
-                            <option value="Cash">Cash</option>
-                            <option value="Mobile Money">Mobile Money</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Notes (Optional)</label>
-                        <textarea
-                            name="notes"
-                            value={formData.notes}
-                            onChange={handleChange}
-                            placeholder="Description..."
-                            rows="3"
-                            disabled={isLoading}
-                        />
-                    </div>
-
-                    {initialData && (
-                        <div className="audit-stamps">
-                            <span>Created: {new Date(initialData.createdAt).toLocaleString()}</span>
-                            {initialData.updatedAt && (
-                                <span>Updated: {new Date(initialData.updatedAt).toLocaleString()}</span>
-                            )}
                         </div>
-                    )}
+                    </section>
 
-                    <button type="submit" className="save-btn" disabled={!isValid || isLoading}>
-                        {isLoading ? 'Recording...' : 'Save Expense'}
+                    <section className="form-section amount-section">
+                        <label className="section-label">Amount Spent*</label>
+                        <div className="amount-input-wrapper">
+                            <span className="currency-symbol">UGX</span>
+                            <input
+                                type="text"
+                                name="amount"
+                                value={displayAmount}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                placeholder="0"
+                                required
+                                disabled={isLoading}
+                                className="big-amount-input"
+                            />
+                        </div>
+                    </section>
+
+                    <section className="form-section">
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Linked Product</label>
+                                <select name="linkedProductId" value={formData.linkedProductId} onChange={handleChange} disabled={isLoading}>
+                                    <option value="">-- None --</option>
+                                    {safeProducts.map(p => (
+                                        <option key={p.id} value={p.id}>{p.productName}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label>Payment Mode</label>
+                                <select name="paymentMode" value={formData.paymentMode} onChange={handleChange} disabled={isLoading}>
+                                    <option value="">-- None --</option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Mobile Money">Mobile Money</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="form-section">
+                        <div className="form-group">
+                            <label className="label-with-icon"><FileText size={14} /> Notes</label>
+                            <textarea
+                                name="notes"
+                                value={formData.notes}
+                                onChange={handleChange}
+                                placeholder="What was this for? (e.g. Fuel for delivery truck)"
+                                rows="3"
+                                disabled={isLoading}
+                                className="premium-textarea"
+                            />
+                        </div>
+                    </section>
+
+                    <button type="submit" className="save-btn premium-btn" disabled={!isValid || isLoading}>
+                        {isLoading ? 'Recording...' : 'Record Expense'}
                     </button>
                 </form>
             </div>

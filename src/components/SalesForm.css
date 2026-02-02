@@ -1,54 +1,207 @@
-.sale-details {
-    background-color: var(--bg-color);
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: var(--spacing-md);
-    display: flex;
-    justify-content: space-between;
+.sales-modal {
+    max-width: 520px;
 }
 
-.detail-item {
+.stock-info-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: color-mix(in srgb, var(--warning-color), transparent 90%);
+    color: #92400e;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.total-display-group {
+    justify-content: flex-end;
+}
+
+.net-total-display {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    text-align: right;
+    padding: 4px 0;
+}
+
+/* Insight Panel */
+.insight-panel {
+    margin-top: 16px;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.insight-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: color-mix(in srgb, var(--text-secondary), transparent 95%);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.insight-body {
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.insight-main {
     display: flex;
     flex-direction: column;
-    font-size: 0.875rem;
+}
+
+.insight-label {
+    font-size: 0.75rem;
     color: var(--text-secondary);
 }
 
-.detail-item strong {
-    color: var(--text-primary);
-    font-size: 1rem;
+.insight-value {
+    font-size: 1.125rem;
+    font-weight: 700;
 }
 
-.read-only-field {
-    padding: 10px;
-    background-color: var(--bg-color);
-    border-radius: 6px;
-    font-weight: 600;
-    color: var(--text-primary);
-    text-align: right;
+.insight-value.pos {
+    color: var(--success-color);
 }
 
-.error-message {
+.insight-value.neg {
+    color: var(--danger-color);
+}
+
+.margin-badge {
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.margin-badge.v-high {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.margin-badge.v-low {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Search & Suggestions */
+.search-container {
+    position: relative;
+}
+
+.premium-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    margin-top: 4px;
+    overflow: hidden;
+}
+
+.suggestion-row {
     display: flex;
     align-items: center;
-    gap: 6px;
-    color: #ef4444;
+    gap: 12px;
+    padding: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.suggestion-row:hover {
+    background: var(--bg-color);
+}
+
+.suggestion-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.s-name {
+    font-weight: 600;
     font-size: 0.875rem;
-    margin-bottom: var(--spacing-md);
-    background-color: #fee2e2;
-    padding: 8px;
-    border-radius: 6px;
 }
 
-/* New animations for dynamic fields */
-.fade-in {
-    animation: fadeIn 0.3s ease-out;
+.s-phone {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
 }
 
-@keyframes fadeIn {
+.create-action {
+    background: color-mix(in srgb, var(--primary-color), transparent 95%);
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+/* Payment Highlight */
+.highlight-blue {
+    background: color-mix(in srgb, var(--primary-color), transparent 97%);
+    border-color: color-mix(in srgb, var(--primary-color), transparent 85%);
+}
+
+.deposit-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0 12px;
+}
+
+.deposit-input-wrapper input {
+    border: none !important;
+    padding: 10px 0 !important;
+}
+
+.due-amount {
+    margin-top: 6px;
+    color: var(--danger-color);
+    font-weight: 600;
+}
+
+.premium-error {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: #fef2f2;
+    border: 1px solid #fee2e2;
+    color: #991b1b;
+    border-radius: 12px;
+    font-size: 0.875rem;
+}
+
+/* Animations */
+.slide-down {
+    animation: slideDown 0.3s ease-out;
+}
+
+.zoom-in {
+    animation: zoomIn 0.2s ease-out;
+}
+
+@keyframes slideDown {
     from {
         opacity: 0;
-        transform: translateY(-5px);
+        transform: translateY(-10px);
     }
 
     to {
@@ -57,68 +210,14 @@
     }
 }
 
-/* Profit Preview in Form */
-.profit-preview {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-    border-radius: 8px;
-    margin-bottom: var(--spacing-md);
-    border: 1px solid #86efac;
-}
-
-.profit-label {
-    font-size: 0.875rem;
-    color: #166534;
-    font-weight: 500;
-}
-
-.profit-amount {
-    font-size: 1.125rem;
-    font-weight: 600;
-}
-
-.profit-amount.positive {
-    color: #059669;
-}
-
-.profit-amount.negative {
-    color: #dc2626;
-}
-
-.profit-margin-badge {
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    margin-left: auto;
-}
-
-.profit-margin-badge.high {
-    background: #dcfce7;
-    color: #166534;
-}
-
-.profit-margin-badge.medium {
-    background: #fef3c7;
-    color: #92400e;
-}
-
-.profit-margin-badge.low {
-    background: #fee2e2;
-    color: #991b1b;
-}
-
-@media (max-width: 480px) {
-    .profit-preview {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
     }
 
-    .profit-margin-badge {
-        margin-left: 0;
+    to {
+        opacity: 1;
+        transform: scale(1);
     }
 }

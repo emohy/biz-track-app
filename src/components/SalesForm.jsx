@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, AlertCircle } from 'lucide-react';
+import { X, ShoppingBag, User, CreditCard, PieChart, AlertCircle, Search, PlusCircle } from 'lucide-react';
 import { useProduct } from '../context/ProductContext';
 import { useCustomer } from '../context/CustomerContext';
 import { useSettings } from '../context/SettingsContext';
@@ -228,192 +228,189 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-content premium-modal sales-modal" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
-                    <h2>New Sale</h2>
+                    <div className="title-with-icon">
+                        <ShoppingBag size={24} className="header-icon" />
+                        <h2>Complete Sale</h2>
+                    </div>
                     <button className="close-btn" onClick={onClose}><X size={20} /></button>
                 </div>
 
-                <form onSubmit={handleSubmit}>
-                    {/* 1. Product Selection */}
-                    <div className="form-group">
-                        <label>Select Product*</label>
-                        <select
-                            name="productId"
-                            value={formData.productId}
-                            onChange={handleProductChange}
-                            required
-                        >
-                            <option value="">-- Choose Product --</option>
-                            {safeProducts.map(p => (
-                                <option key={p.id} value={p.id}>
-                                    {p.productName} (Stock: {p.stockQuantity})
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {selectedProduct && (
-                        <div className="sale-details">
-                            <div className="detail-item">
-                                <span>Unit Price:</span>
-                                <strong>{formatCurrency(selectedProduct.sellingPrice)}</strong>
-                            </div>
-                            <div className="detail-item">
-                                <span>Available:</span>
-                                <strong>{selectedProduct.stockQuantity}</strong>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* 2. Quantity & Total */}
-                    <div className="form-row">
+                <form onSubmit={handleSubmit} className="premium-form">
+                    {/* Section 1: Product & Quantity */}
+                    <section className="form-section">
+                        <div className="section-header">Product Selection</div>
                         <div className="form-group">
-                            <label>Quantity*</label>
-                            <input
-                                type="number"
-                                name="quantitySold"
-                                value={formData.quantitySold}
-                                onChange={handleChange}
-                                placeholder="0"
+                            <label>Product*</label>
+                            <select
+                                name="productId"
+                                value={formData.productId}
+                                onChange={handleProductChange}
                                 required
-                            />
+                                className="premium-select"
+                            >
+                                <option value="">-- Choose Product --</option>
+                                {safeProducts.map(p => (
+                                    <option key={p.id} value={p.id}>
+                                        {p.productName} ({formatCurrency(p.sellingPrice)})
+                                    </option>
+                                ))}
+                            </select>
                         </div>
-                        <div className="form-group">
-                            <label>Total</label>
-                            <div className="read-only-field">{formatCurrency(totalAmount)}</div>
+
+                        {selectedProduct && (
+                            <div className="stock-info-badge">
+                                <AlertCircle size={14} />
+                                <span>{selectedProduct.stockQuantity} items in stock</span>
+                            </div>
+                        )}
+
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Quantity</label>
+                                <input
+                                    type="number"
+                                    name="quantitySold"
+                                    value={formData.quantitySold}
+                                    onChange={handleChange}
+                                    placeholder="0"
+                                    required
+                                />
+                            </div>
+                            <div className="form-group total-display-group">
+                                <label>Net Total</label>
+                                <div className="net-total-display">{formatCurrency(totalAmount)}</div>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Profit Preview */}
-                    {selectedProduct && formData.quantitySold && (
-                        <div className="profit-preview fade-in">
-                            {(() => {
-                                const costPrice = selectedProduct.costPrice || 0;
-                                const profitPerUnit = selectedProduct.sellingPrice - costPrice;
-                                const totalProfit = profitPerUnit * Number(formData.quantitySold);
-                                const profitMargin = totalAmount > 0 ? (totalProfit / totalAmount) * 100 : 0;
+                        {/* Insight Panel */}
+                        {selectedProduct && formData.quantitySold && (
+                            <div className="insight-panel zoom-in">
+                                <div className="insight-header">
+                                    <PieChart size={16} />
+                                    <span>Profit Insight</span>
+                                </div>
+                                <div className="insight-body">
+                                    {(() => {
+                                        const costPrice = selectedProduct.costPrice || 0;
+                                        const profit = (selectedProduct.sellingPrice - costPrice) * Number(formData.quantitySold);
+                                        const margin = totalAmount > 0 ? (profit / totalAmount) * 100 : 0;
+                                        return (
+                                            <>
+                                                <div className="insight-main">
+                                                    <span className="insight-label">Est. Profit</span>
+                                                    <span className={`insight-value ${profit >= 0 ? 'pos' : 'neg'}`}>
+                                                        {formatCurrency(profit)}
+                                                    </span>
+                                                </div>
+                                                <div className={`margin-badge ${margin >= 20 ? 'v-high' : 'v-low'}`}>
+                                                    {margin.toFixed(0)}% Margin
+                                                </div>
+                                            </>
+                                        );
+                                    })()}
+                                </div>
+                            </div>
+                        )}
+                    </section>
 
-                                return (
-                                    <>
-                                        <span className="profit-label">Profit:</span>
-                                        <span className={`profit-amount ${totalProfit >= 0 ? 'positive' : 'negative'}`}>
-                                            {formatCurrency(totalProfit)}
-                                        </span>
-                                        <span className={`profit-margin-badge ${profitMargin >= 30 ? 'high' : profitMargin >= 15 ? 'medium' : 'low'}`}>
-                                            {profitMargin.toFixed(1)}%
-                                        </span>
-                                    </>
-                                );
-                            })()}
-                        </div>
-                    )}
-
-                    {/* 3. Customer Selection (Search-as-you-type) */}
-                    <div className="form-group" style={{ position: 'relative' }}>
-                        <label>Customer (Optional)</label>
-                        <div className="autocomplete-wrapper">
-                            <input
-                                type="text"
-                                value={customerSearch}
-                                onChange={handleSearchChange}
-                                onFocus={() => setShowSuggestions(true)}
-                                placeholder="Search Name or Phone..."
-                            />
+                    {/* Section 2: Customer */}
+                    <section className="form-section">
+                        <div className="section-header">Customer Details</div>
+                        <div className="form-group search-container">
+                            <div className="input-with-icon">
+                                <Search size={18} className="input-icon" />
+                                <input
+                                    type="text"
+                                    value={customerSearch}
+                                    onChange={handleSearchChange}
+                                    onFocus={() => setShowSuggestions(true)}
+                                    placeholder="Search by name or phone..."
+                                />
+                            </div>
                             {showSuggestions && customerSearch && (
-                                <div className="suggestions-list">
+                                <div className="premium-suggestions">
                                     {filteredCustomers.map(c => (
-                                        <div
-                                            key={c.id}
-                                            className="suggestion-item"
-                                            onClick={() => selectCustomer(c)}
-                                        >
-                                            <span>{c.name}</span>
-                                            <small style={{ color: 'var(--text-secondary)' }}>{c.phone}</small>
+                                        <div key={c.id} className="suggestion-row" onClick={() => selectCustomer(c)}>
+                                            <User size={14} />
+                                            <div className="suggestion-info">
+                                                <span className="s-name">{c.name}</span>
+                                                <span className="s-phone">{c.phone}</span>
+                                            </div>
                                         </div>
                                     ))}
-                                    <div
-                                        className="suggestion-item create-new"
-                                        onClick={selectCreateNew}
-                                    >
-                                        + Create new "{customerSearch}"
+                                    <div className="suggestion-row create-action" onClick={selectCreateNew}>
+                                        <PlusCircle size={14} />
+                                        <span>New Customer: "{customerSearch}"</span>
                                     </div>
                                 </div>
                             )}
                         </div>
-                    </div>
 
-                    {/* Show Phone input if creating new OR if searched but no ID linked (implied new/guest) */}
-                    {(isNewCustomer || (!formData.customerId && customerSearch)) && (
-                        <div className="form-row fade-in">
+                        {(isNewCustomer || (formData.customerName && !formData.customerId)) && (
+                            <div className="form-row slide-down">
+                                <div className="form-group">
+                                    <input name="customerName" value={formData.customerName} onChange={handleChange} placeholder="Name" required />
+                                </div>
+                                <div className="form-group">
+                                    <input name="customerPhone" value={formData.customerPhone} onChange={handleChange} placeholder="Phone" />
+                                </div>
+                            </div>
+                        )}
+                    </section>
+
+                    {/* Section 3: Payment */}
+                    <section className="form-section highlight-blue">
+                        <div className="section-header">Payment & Finalization</div>
+                        <div className="form-row">
                             <div className="form-group">
-                                <label>Name*</label>
-                                <input
-                                    name="customerName"
-                                    value={formData.customerName}
-                                    onChange={(e) => {
-                                        handleChange(e);
-                                        setCustomerSearch(e.target.value);
-                                    }}
-                                    placeholder="e.g. John Doe"
-                                    required={isNewCustomer}
-                                />
+                                <label>Status</label>
+                                <select name="paymentStatus" value={formData.paymentStatus} onChange={handleChange}>
+                                    <option value="Paid">Fully Paid</option>
+                                    <option value="Partial">Partial</option>
+                                    <option value="Unpaid">Unpaid / Credit</option>
+                                </select>
                             </div>
                             <div className="form-group">
-                                <label>Phone</label>
-                                <input name="customerPhone" value={formData.customerPhone} onChange={handleChange} placeholder="07..." />
+                                <label>Method</label>
+                                <select name="paymentMode" value={formData.paymentMode} onChange={handleChange}>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Mobile Money">M-Pesa</option>
+                                    <option value="Credit">Card/Other</option>
+                                </select>
                             </div>
                         </div>
-                    )}
 
-                    {/* 4. Payment Logic */}
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label>Status</label>
-                            <select name="paymentStatus" value={formData.paymentStatus} onChange={handleChange}>
-                                <option value="Paid">Fully Paid</option>
-                                <option value="Partial">Partial</option>
-                                <option value="Unpaid">Unpaid / Credit</option>
-                            </select>
-                        </div>
-                        <div className="form-group">
-                            <label>Mode</label>
-                            <select name="paymentMode" value={formData.paymentMode} onChange={handleChange}>
-                                <option value="Cash">Cash</option>
-                                <option value="Mobile Money">Mobile Money</option>
-                                <option value="Credit">Credit/Card</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Partial Payment Input */}
-                    {formData.paymentStatus === 'Partial' && (
-                        <div className="form-group fade-in">
-                            <label>Amount Paid Now*</label>
-                            <input
-                                type="text"
-                                name="amountPaid"
-                                value={displayPaid}
-                                onChange={handleChange}
-                                onBlur={handleBlurPaid}
-                                placeholder="UGX 0"
-                                required
-                            />
-                            <small style={{ color: 'var(--text-secondary)' }}>
-                                Remaining Due: {formatCurrency(totalAmount - (Number(formData.amountPaid) || 0))}
-                            </small>
-                        </div>
-                    )}
+                        {formData.paymentStatus === 'Partial' && (
+                            <div className="form-group partial-input-group slide-down">
+                                <label>Deposit Amount</label>
+                                <div className="deposit-input-wrapper">
+                                    <CreditCard size={18} />
+                                    <input
+                                        type="text"
+                                        name="amountPaid"
+                                        value={displayPaid}
+                                        onChange={handleChange}
+                                        onBlur={handleBlurPaid}
+                                        placeholder="UGX 0"
+                                        required
+                                    />
+                                </div>
+                                <small className="due-amount">Remaining: {formatCurrency(totalAmount - (Number(formData.amountPaid) || 0))}</small>
+                            </div>
+                        )}
+                    </section>
 
                     {error && (
-                        <div className="error-message">
+                        <div className="premium-error slide-down">
                             <AlertCircle size={16} />
                             <span>{error}</span>
                         </div>
                     )}
 
-                    <button type="submit" className="save-btn" disabled={!selectedProduct || !formData.quantitySold || !!error || isLoading}>
-                        {isLoading ? 'Processing...' : 'Complete Sale'}
+                    <button type="submit" className="save-btn premium-btn" disabled={!selectedProduct || !formData.quantitySold || !!error || isLoading}>
+                        {isLoading ? 'Processing...' : 'Record Transaction'}
                     </button>
                 </form>
             </div>
