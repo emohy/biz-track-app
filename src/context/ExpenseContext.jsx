@@ -10,7 +10,7 @@ import {
     query,
     orderBy
 } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, getMetadata } from '../firebase';
 import { useAuth } from './AuthContext';
 import { useSettings } from './SettingsContext';
 
@@ -55,19 +55,18 @@ export const ExpenseProvider = ({ children }) => {
 
     const addExpense = async (data) => {
         if (!user) return;
-        await addDoc(collection(db, 'users', user.uid, collectionName), {
+        addDoc(collection(db, 'users', user.uid, collectionName), {
             ...data,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
+            ...getMetadata(user.uid)
         });
     };
 
     const updateExpense = async (id, updatedData) => {
         if (!user) return;
         const ref = doc(db, 'users', user.uid, collectionName, id);
-        await updateDoc(ref, {
+        updateDoc(ref, {
             ...updatedData,
-            updatedAt: serverTimestamp()
+            ...getMetadata(user.uid, true)
         });
     };
 
@@ -76,9 +75,9 @@ export const ExpenseProvider = ({ children }) => {
         const itemToDelete = expenses.find(e => e.id === id);
         if (!itemToDelete) return;
 
-        const timeoutId = setTimeout(async () => {
+        const timeoutId = setTimeout(() => {
             const ref = doc(db, 'users', user.uid, collectionName, id);
-            await deleteDoc(ref);
+            deleteDoc(ref);
             setPendingDeletes(prev => {
                 const next = { ...prev };
                 delete next[id];

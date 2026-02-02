@@ -10,7 +10,7 @@ import {
     query,
     orderBy
 } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, getMetadata } from '../firebase';
 import { useAuth } from './AuthContext';
 import { useSettings } from './SettingsContext';
 
@@ -58,10 +58,9 @@ export const ProductProvider = ({ children }) => {
     const addProduct = async (productData) => {
         if (!user) return;
 
-        await addDoc(collection(db, 'users', user.uid, collectionName), {
+        addDoc(collection(db, 'users', user.uid, collectionName), {
             ...productData,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
+            ...getMetadata(user.uid)
         });
     };
 
@@ -69,9 +68,9 @@ export const ProductProvider = ({ children }) => {
         if (!user) return;
 
         const productRef = doc(db, 'users', user.uid, collectionName, id);
-        await updateDoc(productRef, {
+        updateDoc(productRef, {
             ...updatedData,
-            updatedAt: serverTimestamp()
+            ...getMetadata(user.uid, true)
         });
     };
 
@@ -88,9 +87,9 @@ export const ProductProvider = ({ children }) => {
         // Immediately remove from local list (Firestore snapshot will usually 
         // add it back unless we filter it out locally).
 
-        const timeoutId = setTimeout(async () => {
+        const timeoutId = setTimeout(() => {
             const productRef = doc(db, 'users', user.uid, collectionName, id);
-            await deleteDoc(productRef);
+            deleteDoc(productRef);
             setPendingDeletes(prev => {
                 const next = { ...prev };
                 delete next[id];

@@ -9,7 +9,7 @@ import {
     query,
     orderBy
 } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, getMetadata } from '../firebase';
 import { useAuth } from './AuthContext';
 
 const CustomerContext = createContext();
@@ -47,22 +47,22 @@ export const CustomerProvider = ({ children }) => {
         return () => unsubscribe();
     }, [user]);
 
-    const addCustomer = async (customerData) => {
+    const addCustomer = (customerData) => {
         if (!user) return;
-        const docRef = await addDoc(collection(db, 'users', user.uid, 'customers'), {
+        const tempId = Date.now().toString(); // Temporary ID for UI
+        addDoc(collection(db, 'users', user.uid, 'customers'), {
             ...customerData,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
+            ...getMetadata(user.uid)
         });
-        return { id: docRef.id, ...customerData };
+        return { id: tempId, ...customerData };
     };
 
     const updateCustomer = async (id, updatedData) => {
         if (!user) return;
         const ref = doc(db, 'users', user.uid, 'customers', id);
-        await updateDoc(ref, {
+        updateDoc(ref, {
             ...updatedData,
-            updatedAt: serverTimestamp()
+            ...getMetadata(user.uid, true)
         });
     };
 
