@@ -41,7 +41,18 @@ export const SettingsProvider = ({ children }) => {
             { date: '06-09', name: 'Heroes Day', message: '' },
             { date: '10-09', name: 'Independence Day', message: '' }
         ];
-        return saved ? JSON.parse(saved) : { enabled: true, holidays: defaultHolidays };
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                return {
+                    enabled: parsed.enabled ?? true,
+                    holidays: parsed.holidays || defaultHolidays
+                };
+            } catch (e) {
+                return { enabled: true, holidays: defaultHolidays };
+            }
+        }
+        return { enabled: true, holidays: defaultHolidays };
     });
 
     const [notification, setNotification] = useState(null);

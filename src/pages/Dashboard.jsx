@@ -19,7 +19,23 @@ const Dashboard = () => {
     const { products } = useProduct();
     const { customers } = useCustomer();
     const navigate = useNavigate();
-    const { testMode, alertsEnabled, setAlertsEnabled } = useSettings();
+    const { testMode, alertsEnabled, setAlertsEnabled, businessProfile, holidaySettings } = useSettings();
+
+    const greeting = useMemo(() => {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 12) return 'Good morning';
+        if (hour >= 12 && hour < 17) return 'Good afternoon';
+        return 'Good evening';
+    }, []);
+
+    const activeHoliday = useMemo(() => {
+        if (!holidaySettings?.enabled) return null;
+        const now = new Date();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const todayStr = `${month}-${day}`;
+        return holidaySettings.holidays.find(h => h.date === todayStr);
+    }, [holidaySettings]);
 
     const [timeScope, setTimeScope] = useState('today'); // 'today', 'week', 'month'
     const [isLoading, setIsLoading] = useState(true);
