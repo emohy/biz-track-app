@@ -36,11 +36,17 @@ export const CustomerProvider = ({ children }) => {
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const customerList = snapshot.docs.map(doc => {
                 const data = doc.data({ serverTimestamps: 'estimate' });
+                const toISO = (val) => {
+                    if (!val) return new Date().toISOString();
+                    if (typeof val.toDate === 'function') return val.toDate().toISOString();
+                    const d = new Date(val);
+                    return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+                };
                 return {
                     id: doc.id,
                     ...data,
-                    createdAt: data.createdAt?.toDate()?.toISOString() || new Date().toISOString(),
-                    updatedAt: data.updatedAt?.toDate()?.toISOString() || new Date().toISOString(),
+                    createdAt: toISO(data.createdAt),
+                    updatedAt: toISO(data.updatedAt),
                 };
             });
             setCustomers(customerList);
