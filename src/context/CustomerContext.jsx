@@ -34,12 +34,15 @@ export const CustomerProvider = ({ children }) => {
         );
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
-            const customerList = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-                createdAt: doc.data().createdAt?.toDate()?.toISOString(),
-                updatedAt: doc.data().updatedAt?.toDate()?.toISOString(),
-            }));
+            const customerList = snapshot.docs.map(doc => {
+                const data = doc.data({ serverTimestamps: 'estimate' });
+                return {
+                    id: doc.id,
+                    ...data,
+                    createdAt: data.createdAt?.toDate()?.toISOString() || new Date().toISOString(),
+                    updatedAt: data.updatedAt?.toDate()?.toISOString() || new Date().toISOString(),
+                };
+            });
             setCustomers(customerList);
             setLoading(false);
         });

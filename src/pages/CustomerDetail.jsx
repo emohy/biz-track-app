@@ -45,7 +45,9 @@ const CustomerDetail = () => {
     };
 
     const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString();
+        if (!dateString) return 'Just now';
+        const date = new Date(dateString);
+        return isNaN(date.getTime()) ? 'Just now' : date.toLocaleDateString();
     };
 
     return (
@@ -59,7 +61,7 @@ const CustomerDetail = () => {
             </div>
 
             <div className="audit-stamps" style={{ marginBottom: 20 }}>
-                <span>Customer since: {new Date(customer.createdAt).toLocaleString()}</span>
+                <span>Customer since: {customer.createdAt ? new Date(customer.createdAt).toLocaleString() : 'Just now'}</span>
                 {customer.updatedAt && (
                     <span>Last updated: {new Date(customer.updatedAt).toLocaleString()}</span>
                 )}

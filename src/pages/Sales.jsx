@@ -19,7 +19,11 @@ const Sales = () => {
     }, []);
 
     const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleString('en-US', {
+        if (!dateString) return 'Just now';
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return 'Just now';
+
+        return date.toLocaleString('en-US', {
             month: 'short',
             day: 'numeric',
             hour: 'numeric',

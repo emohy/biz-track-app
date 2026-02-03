@@ -56,10 +56,14 @@ const Expenses = () => {
     };
 
     const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
+        if (!dateString) return 'Just now';
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return 'Just now';
+
+        return date.toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric'
-        }) + ' • ' + new Date(dateString).toLocaleTimeString('en-US', {
+        }) + ' • ' + date.toLocaleTimeString('en-US', {
             hour: 'numeric',
             minute: '2-digit'
         });

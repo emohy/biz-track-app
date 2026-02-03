@@ -120,7 +120,10 @@ const Dashboard = () => {
 
         const filterByRange = (items, start, end) => {
             return items.filter(item => {
-                const date = new Date(item.createdAt);
+                const dateStr = item.createdAt;
+                if (!dateStr) return false;
+                const date = new Date(dateStr);
+                if (isNaN(date.getTime())) return false;
                 return date >= start && (!end || date <= end);
             });
         };
@@ -133,7 +136,11 @@ const Dashboard = () => {
         // 1. Aging Debt Alert
         const agingDebtors = customers.filter(c => {
             const debtorSales = sales.filter(s => s.customerId === c.id);
-            return debtorSales.some(s => s.amountDue > 0 && new Date(s.createdAt) < sevenDaysAgo);
+            return debtorSales.some(s => {
+                if (!s.createdAt) return false;
+                const d = new Date(s.createdAt);
+                return s.amountDue > 0 && !isNaN(d.getTime()) && d < sevenDaysAgo;
+            });
         });
         if (agingDebtors.length > 0) {
             activeAlertsList.push({
@@ -165,8 +172,8 @@ const Dashboard = () => {
 
         const expenseMap = {};
         expenses.forEach(e => {
-            const date = e.createdAt.split('T')[0];
-            if (dStr.includes(date)) {
+            const date = e.createdAt?.split('T')[0];
+            if (date && dStr.includes(date)) {
                 if (!expenseMap[e.category]) expenseMap[e.category] = { [d2Str]: 0, [d1Str]: 0, [dStr[2]]: 0 };
                 expenseMap[e.category][date] += e.amount;
             }
@@ -191,8 +198,8 @@ const Dashboard = () => {
         // -----------------------------------
 
         // Sales Trends Data
-        const todaySalesList = sales.filter(s => s.createdAt.startsWith(todayStr));
-        const yesterdaySales = sales.filter(s => s.createdAt.startsWith(yesterdayStr));
+        const todaySalesList = sales.filter(s => s.createdAt?.startsWith(todayStr));
+        const yesterdaySales = sales.filter(s => s.createdAt?.startsWith(yesterdayStr));
         const thisWeekSales = filterByRange(sales, startOfThisWeek);
         const lastWeekSales = filterByRange(sales, startOfLastWeek, new Date(startOfThisWeek.getTime() - 1));
         const thisMonthSales = filterByRange(sales, startOfThisMonth);
@@ -219,8 +226,8 @@ const Dashboard = () => {
         if (timeScope === 'today') {
             currentSalesItems = todaySalesList;
             previousSalesItems = yesterdaySales;
-            currentExpensesItems = expenses.filter(e => e.createdAt.startsWith(todayStr));
-            previousExpensesItems = expenses.filter(e => e.createdAt.startsWith(yesterdayStr));
+            currentExpensesItems = expenses.filter(e => e.createdAt?.startsWith(todayStr));
+            previousExpensesItems = expenses.filter(e => e.createdAt?.startsWith(yesterdayStr));
         } else if (timeScope === 'week') {
             currentSalesItems = thisWeekSales;
             previousSalesItems = lastWeekSales;

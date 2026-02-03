@@ -41,13 +41,16 @@ export const ProductProvider = ({ children }) => {
         );
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
-            const productList = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-                // Convert Firestore timestamps to ISO strings for existing UI compatibility
-                createdAt: doc.data().createdAt?.toDate()?.toISOString(),
-                updatedAt: doc.data().updatedAt?.toDate()?.toISOString(),
-            }));
+            const productList = snapshot.docs.map(doc => {
+                const data = doc.data({ serverTimestamps: 'estimate' });
+                return {
+                    id: doc.id,
+                    ...data,
+                    // Convert Firestore timestamps to ISO strings for existing UI compatibility
+                    createdAt: data.createdAt?.toDate()?.toISOString() || new Date().toISOString(),
+                    updatedAt: data.updatedAt?.toDate()?.toISOString() || new Date().toISOString(),
+                };
+            });
             setProducts(productList);
             setLoading(false);
         });
