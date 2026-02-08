@@ -141,6 +141,18 @@ const Settings = () => {
                         />
                     </div>
                 </div>
+                <div className="setting-item">
+                    <div className="setting-info">
+                        <label className="setting-label">Default Country Code</label>
+                        <input
+                            type="text"
+                            value={businessProfile.defaultCountryCode || '+256'}
+                            onChange={(e) => updateBusinessProfile({ defaultCountryCode: e.target.value })}
+                            placeholder="e.g. +256"
+                        />
+                        <p className="setting-desc">Used to format local phone numbers for dialing.</p>
+                    </div>
+                </div>
             </section>
 
             <section className="settings-section">

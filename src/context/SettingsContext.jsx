@@ -27,7 +27,7 @@ export const SettingsProvider = ({ children }) => {
 
     const [businessProfile, setBusinessProfile] = useState(() => {
         const saved = localStorage.getItem('businessProfile');
-        return saved ? JSON.parse(saved) : { name: '', owner: '' };
+        return saved ? JSON.parse(saved) : { name: '', owner: '', defaultCountryCode: '+256' };
     });
 
     const [holidaySettings, setHolidaySettings] = useState(() => {

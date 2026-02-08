@@ -146,6 +146,10 @@ h1 {
     font-weight: 500;
 }
 
+.customer-card .call-icon-btn {
+    margin-left: auto;
+}
+
 .customer-balance-block {
     text-align: right;
     display: flex;

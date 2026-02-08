@@ -16,3 +16,11 @@ export const parseCurrency = (displayValue) => {
     const number = Number(cleanValue);
     return isNaN(number) ? '' : number;
 };
+export const normalizePhone = (raw, defaultCountryCode = "+256") => {
+    if (!raw) return "";
+    let s = raw.trim().replace(/[()\-\s]/g, "");
+    if (s.startsWith("00")) s = "+" + s.slice(2);
+    if (s.startsWith("0") && !s.startsWith("+")) s = defaultCountryCode + s.slice(1);
+    if (!s.startsWith("+") && /^\d+$/.test(s)) s = defaultCountryCode + s;
+    return s;
+};

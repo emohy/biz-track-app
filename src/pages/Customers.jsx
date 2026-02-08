@@ -3,7 +3,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Search, X, DollarSign, CheckCircle } from 'lucide-react';
 import { useCustomer } from '../context/CustomerContext';
 import { useSales } from '../context/SalesContext';
+import { useSettings } from '../context/SettingsContext';
 import { formatCurrency } from '../utils';
+import CallIconButton from '../components/CallIconButton';
 import QuickPaymentModal from '../components/QuickPaymentModal';
 import SkeletonLoader from '../components/SkeletonLoader';
 import './Customers.css';
@@ -11,6 +13,7 @@ import './Customers.css';
 const Customers = () => {
     const { customers } = useCustomer();
     const { sales, updateSale } = useSales();
+    const { businessProfile, notify } = useSettings();
     const navigate = useNavigate();
     const location = useLocation();
     const searchRef = useRef(null);
@@ -196,6 +199,12 @@ const Customers = () => {
                                     <h3 className="customer-name">{customer.name}</h3>
                                     <span className="customer-phone">{customer.phone || 'No phone number'}</span>
                                 </div>
+
+                                <CallIconButton
+                                    phone={customer.phone}
+                                    defaultCountryCode={businessProfile.defaultCountryCode}
+                                    notify={notify}
+                                />
 
                                 <div className="customer-balance-block">
                                     <span className="balance-amount">
