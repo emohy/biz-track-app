@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
-import { X, AlertCircle } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { X, AlertCircle, BookUser, Phone } from 'lucide-react';
 import { useProduct } from '../context/ProductContext';
 import { useCustomer } from '../context/CustomerContext';
 import { useSettings } from '../context/SettingsContext';
-import { formatCurrency, parseCurrency } from '../utils';
+import { formatCurrency, parseCurrency, normalizePhone } from '../utils';
+import BottomSheet from './BottomSheet';
 import './SalesForm.css';
 
 const SalesForm = ({ isOpen, onClose, onSubmit }) => {
@@ -13,7 +14,8 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
     const { customers, addCustomer } = useCustomer() || {};
     const safeCustomers = Array.isArray(customers) ? customers : [];
 
-    const { notify } = useSettings();
+    const { businessProfile, notify } = useSettings();
+    const defaultCountryCode = businessProfile?.defaultCountryCode || '+256';
 
     const [formData, setFormData] = useState({
         productId: '',
@@ -36,6 +38,11 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
     const [customerSearch, setCustomerSearch] = useState('');
     const [showSuggestions, setShowSuggestions] = useState(false);
 
+    // Contact Picker State
+    const [phoneOptions, setPhoneOptions] = useState(null); // { name, numbers: [] }
+    const [showPhonePicker, setShowPhonePicker] = useState(false);
+    const isContactPickerSupported = !!(navigator.contacts && window.isSecureContext);
+
     useEffect(() => {
         if (!isOpen) {
             setFormData({
@@ -54,6 +61,8 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
             setIsNewCustomer(false);
             setCustomerSearch('');
             setShowSuggestions(false);
+            setPhoneOptions(null);
+            setShowPhonePicker(false);
         }
     }, [isOpen]);
 
@@ -103,6 +112,65 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
         setFormData(prev => ({ ...prev, customerId: '', customerName: customerSearch }));
         setIsNewCustomer(true);
         setShowSuggestions(false);
+    };
+
+    const handlePickContact = async () => {
+        if (!isContactPickerSupported) return;
+
+        try {
+            const props = ['name', 'tel'];
+            const opts = { multiple: false };
+            const contacts = await navigator.contacts.select(props, opts);
+
+            if (!contacts || contacts.length === 0) return;
+
+            const contact = contacts[0];
+            const name = contact.name?.[0] || 'Unknown';
+            const numbers = contact.tel || [];
+
+            if (numbers.length === 0) {
+                notify("This contact has no phone numbers.", "error");
+                return;
+            }
+
+            if (numbers.length === 1) {
+                applyPickedContact(name, numbers[0]);
+            } else {
+                setPhoneOptions({ name, numbers });
+                setShowPhonePicker(true);
+            }
+        } catch (err) {
+            console.error("Contact picker error:", err);
+            if (err.name !== 'AbortError') {
+                notify("Failed to open contact picker.", "error");
+            }
+        }
+    };
+
+    const applyPickedContact = async (name, rawPhone) => {
+        const normalized = normalizePhone(rawPhone, defaultCountryCode);
+
+        // Find existing or match
+        let existing = safeCustomers.find(c => {
+            const cNormalized = normalizePhone(c.phone, defaultCountryCode);
+            return cNormalized === normalized && normalized !== "";
+        });
+
+        if (!existing) {
+            existing = safeCustomers.find(c => c.name.toLowerCase() === name.toLowerCase());
+        }
+
+        if (existing) {
+            selectCustomer(existing);
+            notify(`Selected existing customer: ${existing.name}`);
+        } else {
+            // Create new customer record
+            const newCust = await addCustomer({ name, phone: rawPhone });
+            selectCustomer({ id: newCust.id, name, phone: rawPhone });
+            notify(`Created new customer: ${name}`);
+        }
+
+        setShowPhonePicker(false);
     };
 
     const handleChange = (e) => {
@@ -312,35 +380,49 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
                     {/* 3. Customer Selection (Search-as-you-type) */}
                     <div className="form-group" style={{ position: 'relative' }}>
                         <label>Customer (Optional)</label>
-                        <div className="autocomplete-wrapper">
-                            <input
-                                type="text"
-                                value={customerSearch}
-                                onChange={handleSearchChange}
-                                onFocus={() => setShowSuggestions(true)}
-                                placeholder="Search Name or Phone..."
-                            />
-                            {showSuggestions && customerSearch && (
-                                <div className="suggestions-list">
-                                    {filteredCustomers.map(c => (
+                        <div className="autocomplete-row">
+                            <div className="autocomplete-wrapper">
+                                <input
+                                    type="text"
+                                    value={customerSearch}
+                                    onChange={handleSearchChange}
+                                    onFocus={() => setShowSuggestions(true)}
+                                    placeholder="Search Name or Phone..."
+                                />
+                                {showSuggestions && customerSearch && (
+                                    <div className="suggestions-list">
+                                        {filteredCustomers.map(c => (
+                                            <div
+                                                key={c.id}
+                                                className="suggestion-item"
+                                                onClick={() => selectCustomer(c)}
+                                            >
+                                                <span>{c.name}</span>
+                                                <small style={{ color: 'var(--text-secondary)' }}>{c.phone}</small>
+                                            </div>
+                                        ))}
                                         <div
-                                            key={c.id}
-                                            className="suggestion-item"
-                                            onClick={() => selectCustomer(c)}
+                                            className="suggestion-item create-new"
+                                            onClick={selectCreateNew}
                                         >
-                                            <span>{c.name}</span>
-                                            <small style={{ color: 'var(--text-secondary)' }}>{c.phone}</small>
+                                            + Create new "{customerSearch}"
                                         </div>
-                                    ))}
-                                    <div
-                                        className="suggestion-item create-new"
-                                        onClick={selectCreateNew}
-                                    >
-                                        + Create new "{customerSearch}"
                                     </div>
-                                </div>
-                            )}
+                                )}
+                            </div>
+                            <button
+                                type="button"
+                                className="contact-picker-btn"
+                                onClick={handlePickContact}
+                                disabled={!isContactPickerSupported}
+                                title={isContactPickerSupported ? "Pick from device contacts" : "Contact picker not supported"}
+                            >
+                                <BookUser size={20} />
+                            </button>
                         </div>
+                        {!isContactPickerSupported && (
+                            <small className="contact-picker-unsupported">Contact picker not available on this browser.</small>
+                        )}
                     </div>
 
                     {/* Show Phone input if creating new OR if searched but no ID linked (implied new/guest) */}
@@ -417,6 +499,22 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
                     </button>
                 </form>
             </div>
+
+            {/* Phone Number Selection for Multi-number Contacts */}
+            {phoneOptions && (
+                <BottomSheet
+                    isOpen={showPhonePicker}
+                    onClose={() => setShowPhonePicker(false)}
+                    actions={[
+                        { type: 'header', label: `Select number for ${phoneOptions.name}` },
+                        ...phoneOptions.numbers.map(num => ({
+                            label: num,
+                            icon: <Phone size={18} />,
+                            onClick: () => applyPickedContact(phoneOptions.name, num)
+                        }))
+                    ]}
+                />
+            )}
         </div>
     );
 };
