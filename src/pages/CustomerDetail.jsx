@@ -29,7 +29,7 @@ const CustomerDetail = () => {
         return <div className="page container">Customer not found</div>;
     }
 
-    const handlePaymentSubmit = (saleId, amount) => {
+    const handlePaymentSubmit = async (saleId, amount) => {
         const sale = sales.find(s => s.id === saleId);
         if (!sale) return;
 
@@ -37,7 +37,7 @@ const CustomerDetail = () => {
         const newAmountDue = sale.totalAmount - newAmountPaid;
         const newStatus = newAmountDue <= 0 ? 'Paid' : 'Partial';
 
-        updateSale(saleId, {
+        await updateSale(saleId, {
             amountPaid: newAmountPaid,
             amountDue: newAmountDue,
             paymentStatus: newStatus

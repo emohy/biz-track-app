@@ -31,33 +31,33 @@ const Sales = () => {
         });
     };
 
-    const handleDelete = (sale) => {
+    const handleDelete = async (sale) => {
         const product = products.find(p => p.id === sale.productId);
 
         if (product) {
             // Restore Stock immediately
-            updateProduct(product.id, {
+            await updateProduct(product.id, {
                 stockQuantity: product.stockQuantity + sale.quantitySold
             });
         }
 
         // Soft Delete Sale
-        deleteSale(sale.id);
+        await deleteSale(sale.id);
         setLastDeletedSale(sale);
     };
 
-    const handleUndo = () => {
+    const handleUndo = async () => {
         if (!lastDeletedSale) return;
 
         const product = products.find(p => p.id === lastDeletedSale.productId);
         if (product) {
             // Re-take Stock
-            updateProduct(product.id, {
+            await updateProduct(product.id, {
                 stockQuantity: product.stockQuantity - lastDeletedSale.quantitySold
             });
         }
 
-        undoDelete(lastDeletedSale.id);
+        await undoDelete(lastDeletedSale.id);
         setLastDeletedSale(null);
     };
 

@@ -64,7 +64,7 @@ export const SalesProvider = ({ children }) => {
 
     const addSale = async (saleData) => {
         if (!user) return;
-        addDoc(collection(db, 'users', user.uid, collectionName), {
+        await addDoc(collection(db, 'users', user.uid, collectionName), {
             ...saleData,
             ...getMetadata(user.uid)
         });
@@ -73,7 +73,7 @@ export const SalesProvider = ({ children }) => {
     const updateSale = async (id, updates) => {
         if (!user) return;
         const ref = doc(db, 'users', user.uid, collectionName, id);
-        updateDoc(ref, {
+        await updateDoc(ref, {
             ...updates,
             ...getMetadata(user.uid, true)
         });
@@ -84,9 +84,9 @@ export const SalesProvider = ({ children }) => {
         const itemToDelete = sales.find(s => s.id === id);
         if (!itemToDelete) return;
 
-        const timeoutId = setTimeout(() => {
+        const timeoutId = setTimeout(async () => {
             const ref = doc(db, 'users', user.uid, collectionName, id);
-            deleteDoc(ref);
+            await deleteDoc(ref);
             setPendingDeletes(prev => {
                 const next = { ...prev };
                 delete next[id];

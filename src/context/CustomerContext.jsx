@@ -56,20 +56,19 @@ export const CustomerProvider = ({ children }) => {
         return () => unsubscribe();
     }, [user]);
 
-    const addCustomer = (customerData) => {
+    const addCustomer = async (customerData) => {
         if (!user) return;
-        const tempId = Date.now().toString(); // Temporary ID for UI
-        addDoc(collection(db, 'users', user.uid, 'customers'), {
+        const docRef = await addDoc(collection(db, 'users', user.uid, 'customers'), {
             ...customerData,
             ...getMetadata(user.uid)
         });
-        return { id: tempId, ...customerData };
+        return { id: docRef.id, ...customerData };
     };
 
     const updateCustomer = async (id, updatedData) => {
         if (!user) return;
         const ref = doc(db, 'users', user.uid, 'customers', id);
-        updateDoc(ref, {
+        await updateDoc(ref, {
             ...updatedData,
             ...getMetadata(user.uid, true)
         });

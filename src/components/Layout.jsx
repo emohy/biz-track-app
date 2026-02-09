@@ -63,15 +63,15 @@ const Layout = () => {
         setIsAddProductOpen(false);
     };
 
-    const submitSale = (saleData) => {
+    const submitSale = async (saleData) => {
         // 1. Create Sale Record
-        addSale(saleData);
+        await addSale(saleData);
 
         // 2. Deduct Stock Logic
         const product = products.find(p => p.id === saleData.productId);
         if (product) {
             const newStock = product.stockQuantity - saleData.quantitySold;
-            updateProduct(saleData.productId, { stockQuantity: newStock });
+            await updateProduct(saleData.productId, { stockQuantity: newStock });
         }
 
         setIsAddSaleOpen(false);
