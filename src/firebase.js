@@ -21,6 +21,19 @@ export const db = initializeFirestore(app, {
     })
 });
 
+// NOTE: To activate App Check (recommended for Security Audit Phase 4):
+// 1. Install dependency: npm install firebase/app-check
+// 2. Uncomment the following and wrap in a check for dev/prod:
+/*
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
+if (import.meta.env.PROD) {
+    initializeAppCheck(app, {
+        provider: new ReCaptchaEnterpriseProvider(import.meta.env.VITE_RECAPTCHA_SITE_KEY),
+        isTokenAutoRefreshEnabled: true
+    });
+}
+*/
+
 /**
  * Helper to add standard metadata to Firestore documents
  */

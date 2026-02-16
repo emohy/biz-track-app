@@ -8,7 +8,8 @@ import {
     doc,
     serverTimestamp,
     query,
-    orderBy
+    orderBy,
+    limit
 } from 'firebase/firestore';
 import { db, getMetadata } from '../firebase';
 import { useAuth } from './AuthContext';
@@ -36,7 +37,8 @@ export const ExpenseProvider = ({ children }) => {
 
         const q = query(
             collection(db, 'users', user.uid, collectionName),
-            orderBy('createdAt', 'desc')
+            orderBy('createdAt', 'desc'),
+            limit(500)
         );
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -55,7 +57,8 @@ export const ExpenseProvider = ({ children }) => {
                     updatedAt: toISO(data.updatedAt),
                 };
             });
-            setExpenses(expenseList);
+            // Filter out items that are marked as deleted in the cloud
+            setExpenses(expenseList.filter(e => !e.isDeleted));
             setLoading(false);
         });
 
@@ -84,9 +87,16 @@ export const ExpenseProvider = ({ children }) => {
         const itemToDelete = expenses.find(e => e.id === id);
         if (!itemToDelete) return;
 
+        // 1. Mark as deleted in Firestore
+        const ref = doc(db, 'users', user.uid, collectionName, id);
+        await updateDoc(ref, {
+            isDeleted: true,
+            deletedAt: serverTimestamp(),
+            ...getMetadata(user.uid, true)
+        });
+
+        // 2. Clear UI undo toast
         const timeoutId = setTimeout(() => {
-            const ref = doc(db, 'users', user.uid, collectionName, id);
-            deleteDoc(ref);
             setPendingDeletes(prev => {
                 const next = { ...prev };
                 delete next[id];
@@ -101,10 +111,19 @@ export const ExpenseProvider = ({ children }) => {
         return id;
     };
 
-    const undoDelete = (id) => {
+    const undoDelete = async (id) => {
         const pending = pendingDeletes[id];
         if (pending) {
             clearTimeout(pending.timeoutId);
+
+            // Revert soft delete
+            const ref = doc(db, 'users', user.uid, collectionName, id);
+            await updateDoc(ref, {
+                isDeleted: false,
+                deletedAt: null,
+                ...getMetadata(user.uid, true)
+            });
+
             setPendingDeletes(prev => {
                 const next = { ...prev };
                 delete next[id];

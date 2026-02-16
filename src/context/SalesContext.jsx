@@ -8,7 +8,8 @@ import {
     doc,
     serverTimestamp,
     query,
-    orderBy
+    orderBy,
+    limit
 } from 'firebase/firestore';
 import { db, getMetadata } from '../firebase';
 import { useAuth } from './AuthContext';
@@ -36,7 +37,8 @@ export const SalesProvider = ({ children }) => {
 
         const q = query(
             collection(db, 'users', user.uid, collectionName),
-            orderBy('createdAt', 'desc')
+            orderBy('createdAt', 'desc'),
+            limit(1000) // Mitigation for Denial-of-Wallet (Read-bombing)
         );
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -55,7 +57,8 @@ export const SalesProvider = ({ children }) => {
                     updatedAt: toISO(data.updatedAt),
                 };
             });
-            setSales(salesList);
+            // Filter out items that are marked as deleted in the cloud
+            setSales(salesList.filter(s => !s.isDeleted));
             setLoading(false);
         });
 
@@ -84,9 +87,20 @@ export const SalesProvider = ({ children }) => {
         const itemToDelete = sales.find(s => s.id === id);
         if (!itemToDelete) return;
 
+        // 1. Mark as deleted in Firestore immediately (Soft Delete)
+        // This ensures the "deleting" state persists even on refresh
+        const ref = doc(db, 'users', user.uid, collectionName, id);
+        await updateDoc(ref, {
+            isDeleted: true,
+            deletedAt: serverTimestamp(),
+            ...getMetadata(user.uid, true)
+        });
+
+        // 2. Set the local timer for "Hard Delete" (if desired) or just to clear the "Undo" UI
         const timeoutId = setTimeout(async () => {
-            const ref = doc(db, 'users', user.uid, collectionName, id);
-            await deleteDoc(ref);
+            // Optional: You could physically delete document here after 5s
+            // await deleteDoc(ref); 
+
             setPendingDeletes(prev => {
                 const next = { ...prev };
                 delete next[id];
@@ -101,10 +115,19 @@ export const SalesProvider = ({ children }) => {
         return id;
     };
 
-    const undoDelete = (id) => {
+    const undoDelete = async (id) => {
         const pending = pendingDeletes[id];
         if (pending) {
             clearTimeout(pending.timeoutId);
+
+            // Revert the soft delete in Firestore
+            const ref = doc(db, 'users', user.uid, collectionName, id);
+            await updateDoc(ref, {
+                isDeleted: false,
+                deletedAt: null,
+                ...getMetadata(user.uid, true)
+            });
+
             setPendingDeletes(prev => {
                 const next = { ...prev };
                 delete next[id];

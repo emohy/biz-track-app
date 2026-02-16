@@ -7,7 +7,8 @@ import {
     doc,
     serverTimestamp,
     query,
-    orderBy
+    orderBy,
+    limit
 } from 'firebase/firestore';
 import { db, getMetadata } from '../firebase';
 import { useAuth } from './AuthContext';
@@ -30,7 +31,8 @@ export const CustomerProvider = ({ children }) => {
 
         const q = query(
             collection(db, 'users', user.uid, 'customers'),
-            orderBy('createdAt', 'desc')
+            orderBy('createdAt', 'desc'),
+            limit(500)
         );
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
