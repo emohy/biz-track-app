@@ -44,7 +44,35 @@ service cloud.firestore {
     }
 
     function validateData(col, data) {
-      return true;
+      // Basic Soft Delete fields
+      let basicVal = (
+        (data.isDeleted == null || data.isDeleted is bool)
+        && (data.deletedAt == null || data.deletedAt is timestamp)
+      );
+
+      return basicVal && (
+        col in ['products', 'test_products'] ? (
+          data.productName is string && data.productName.size() > 0
+          && isNum(data.sellingPrice) && data.sellingPrice >= 0
+          && isNum(data.costPrice) && data.costPrice >= 0
+          && isNum(data.stockQuantity)
+        ) :
+        col in ['sales', 'test_sales'] ? (
+          data.productId is string
+          && isNum(data.quantitySold) && data.quantitySold > 0
+          && isNum(data.totalAmount) && data.totalAmount >= 0
+          && data.paymentStatus in ['Paid', 'Partial', 'Unpaid']
+          && isNum(data.amountPaid) && data.amountPaid >= 0
+        ) :
+        col in ['customers'] ? (
+          data.name is string && data.name.size() > 0
+          && (data.phone == null || data.phone is string)
+        ) :
+        col in ['expenses', 'test_expenses'] ? (
+          data.description is string
+          && isNum(data.amount) && data.amount >= 0
+        ) : true
+      );
     }
   }
 }
