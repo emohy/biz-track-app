@@ -67,19 +67,29 @@ export const ExpenseProvider = ({ children }) => {
 
     const addExpense = async (data) => {
         if (!user) return;
-        addDoc(collection(db, 'users', user.uid, collectionName), {
-            ...data,
-            ...getMetadata(user.uid)
-        });
+        try {
+            return await addDoc(collection(db, 'users', user.uid, collectionName), {
+                ...data,
+                ...getMetadata(user.uid)
+            });
+        } catch (error) {
+            console.error("Error adding expense:", error);
+            throw error;
+        }
     };
 
     const updateExpense = async (id, updatedData) => {
         if (!user) return;
-        const ref = doc(db, 'users', user.uid, collectionName, id);
-        updateDoc(ref, {
-            ...updatedData,
-            ...getMetadata(user.uid, true)
-        });
+        try {
+            const ref = doc(db, 'users', user.uid, collectionName, id);
+            return await updateDoc(ref, {
+                ...updatedData,
+                ...getMetadata(user.uid, true)
+            });
+        } catch (error) {
+            console.error("Error updating expense:", error);
+            throw error;
+        }
     };
 
     const deleteExpense = async (id) => {

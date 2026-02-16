@@ -64,17 +64,24 @@ const Layout = () => {
     };
 
     const submitSale = async (saleData) => {
-        // 1. Create Sale Record
-        await addSale(saleData);
+        try {
+            // 1. Create Sale Record
+            await addSale(saleData);
 
-        // 2. Deduct Stock Logic
-        const product = products.find(p => p.id === saleData.productId);
-        if (product) {
-            const newStock = product.stockQuantity - saleData.quantitySold;
-            await updateProduct(saleData.productId, { stockQuantity: newStock });
+            // 2. Deduct Stock Logic
+            const product = products.find(p => p.id === saleData.productId);
+            if (product) {
+                const newStock = product.stockQuantity - saleData.quantitySold;
+                await updateProduct(saleData.productId, { stockQuantity: newStock });
+            } else {
+                console.warn("Product not found for inventory update:", saleData.productId);
+            }
+
+            setIsAddSaleOpen(false);
+        } catch (error) {
+            console.error("Failed to complete sale:", error);
+            notify("Failed to record sale or update inventory. Check your network or permissions.", "error");
         }
-
-        setIsAddSaleOpen(false);
     };
 
     const submitExpense = (data) => {

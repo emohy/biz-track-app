@@ -60,20 +60,30 @@ export const CustomerProvider = ({ children }) => {
 
     const addCustomer = async (customerData) => {
         if (!user) return;
-        const docRef = await addDoc(collection(db, 'users', user.uid, 'customers'), {
-            ...customerData,
-            ...getMetadata(user.uid)
-        });
-        return { id: docRef.id, ...customerData };
+        try {
+            const docRef = await addDoc(collection(db, 'users', user.uid, 'customers'), {
+                ...customerData,
+                ...getMetadata(user.uid)
+            });
+            return { id: docRef.id, ...customerData };
+        } catch (error) {
+            console.error("Error adding customer:", error);
+            throw error;
+        }
     };
 
     const updateCustomer = async (id, updatedData) => {
         if (!user) return;
-        const ref = doc(db, 'users', user.uid, 'customers', id);
-        await updateDoc(ref, {
-            ...updatedData,
-            ...getMetadata(user.uid, true)
-        });
+        try {
+            const ref = doc(db, 'users', user.uid, 'customers', id);
+            return await updateDoc(ref, {
+                ...updatedData,
+                ...getMetadata(user.uid, true)
+            });
+        } catch (error) {
+            console.error("Error updating customer:", error);
+            throw error;
+        }
     };
 
     return (

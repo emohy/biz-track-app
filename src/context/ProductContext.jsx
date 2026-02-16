@@ -68,21 +68,29 @@ export const ProductProvider = ({ children }) => {
 
     const addProduct = async (productData) => {
         if (!user) return;
-
-        addDoc(collection(db, 'users', user.uid, collectionName), {
-            ...productData,
-            ...getMetadata(user.uid)
-        });
+        try {
+            return await addDoc(collection(db, 'users', user.uid, collectionName), {
+                ...productData,
+                ...getMetadata(user.uid)
+            });
+        } catch (error) {
+            console.error("Error adding product:", error);
+            throw error;
+        }
     };
 
     const updateProduct = async (id, updatedData) => {
         if (!user) return;
-
-        const productRef = doc(db, 'users', user.uid, collectionName, id);
-        updateDoc(productRef, {
-            ...updatedData,
-            ...getMetadata(user.uid, true)
-        });
+        try {
+            const productRef = doc(db, 'users', user.uid, collectionName, id);
+            return await updateDoc(productRef, {
+                ...updatedData,
+                ...getMetadata(user.uid, true)
+            });
+        } catch (error) {
+            console.error("Error updating product:", error);
+            throw error;
+        }
     };
 
     const deleteProduct = async (id) => {

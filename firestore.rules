@@ -39,6 +39,10 @@ service cloud.firestore {
       }
     }
 
+    function isNum(val) {
+      return val is number || val is int;
+    }
+
     function validateData(col, data) {
       // Basic Soft Delete fields
       let basicVal = (
@@ -49,16 +53,16 @@ service cloud.firestore {
       return basicVal && (
         col in ['products', 'test_products'] ? (
           data.productName is string && data.productName.size() > 0
-          && (data.sellingPrice is number || data.sellingPrice is int) && data.sellingPrice >= 0
-          && (data.costPrice is number || data.costPrice is int) && data.costPrice >= 0
-          && (data.stockQuantity is number || data.stockQuantity is int)
+          && isNum(data.sellingPrice) && data.sellingPrice >= 0
+          && isNum(data.costPrice) && data.costPrice >= 0
+          && isNum(data.stockQuantity)
         ) :
         col in ['sales', 'test_sales'] ? (
           data.productId is string
-          && (data.quantitySold is number || data.quantitySold is int) && data.quantitySold > 0
-          && (data.totalAmount is number || data.totalAmount is int) && data.totalAmount >= 0
+          && isNum(data.quantitySold) && data.quantitySold > 0
+          && isNum(data.totalAmount) && data.totalAmount >= 0
           && data.paymentStatus in ['Paid', 'Partial', 'Unpaid']
-          && (data.amountPaid is number || data.amountPaid is int) && data.amountPaid >= 0
+          && isNum(data.amountPaid) && data.amountPaid >= 0
         ) :
         col in ['customers'] ? (
           data.name is string && data.name.size() > 0
@@ -66,7 +70,7 @@ service cloud.firestore {
         ) :
         col in ['expenses', 'test_expenses'] ? (
           data.description is string
-          && (data.amount is number || data.amount is int) && data.amount >= 0
+          && isNum(data.amount) && data.amount >= 0
         ) : true
       );
     }

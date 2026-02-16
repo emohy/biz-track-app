@@ -67,19 +67,29 @@ export const SalesProvider = ({ children }) => {
 
     const addSale = async (saleData) => {
         if (!user) return;
-        await addDoc(collection(db, 'users', user.uid, collectionName), {
-            ...saleData,
-            ...getMetadata(user.uid)
-        });
+        try {
+            return await addDoc(collection(db, 'users', user.uid, collectionName), {
+                ...saleData,
+                ...getMetadata(user.uid)
+            });
+        } catch (error) {
+            console.error("Error adding sale:", error);
+            throw error;
+        }
     };
 
     const updateSale = async (id, updates) => {
         if (!user) return;
-        const ref = doc(db, 'users', user.uid, collectionName, id);
-        await updateDoc(ref, {
-            ...updates,
-            ...getMetadata(user.uid, true)
-        });
+        try {
+            const ref = doc(db, 'users', user.uid, collectionName, id);
+            return await updateDoc(ref, {
+                ...updates,
+                ...getMetadata(user.uid, true)
+            });
+        } catch (error) {
+            console.error("Error updating sale:", error);
+            throw error;
+        }
     };
 
     const deleteSale = async (id) => {
