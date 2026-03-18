@@ -4,6 +4,7 @@ import { useProduct } from '../context/ProductContext';
 import { useCustomer } from '../context/CustomerContext';
 import { useSettings } from '../context/SettingsContext';
 import { formatCurrency, parseCurrency, normalizePhone } from '../utils';
+import { pickSingleContact, isContactPickerSupported } from '../utils/contactPicker';
 import BottomSheet from './BottomSheet';
 import './SalesForm.css';
 
@@ -41,7 +42,7 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
     // Contact Picker State
     const [phoneOptions, setPhoneOptions] = useState(null); // { name, numbers: [] }
     const [showPhonePicker, setShowPhonePicker] = useState(false);
-    const isContactPickerSupported = !!(navigator.contacts && window.isSecureContext);
+    const isContactPickerReady = isContactPickerSupported();
 
     useEffect(() => {
         if (!isOpen) {
@@ -115,18 +116,14 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
     };
 
     const handlePickContact = async () => {
-        if (!isContactPickerSupported) return;
+        if (!isContactPickerReady) return;
 
         try {
-            const props = ['name', 'tel'];
-            const opts = { multiple: false };
-            const contacts = await navigator.contacts.select(props, opts);
+            const contactData = await pickSingleContact();
+            if (!contactData) return; // user cancelled/aborted
 
-            if (!contacts || contacts.length === 0) return;
-
-            const contact = contacts[0];
-            const name = contact.name?.[0] || 'Unknown';
-            const numbers = contact.tel || [];
+            const name = contactData.name || 'Unknown';
+            const numbers = contactData.numbers || [];
 
             if (numbers.length === 0) {
                 notify("This contact has no phone numbers.", "error");
@@ -141,9 +138,7 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
             }
         } catch (err) {
             console.error("Contact picker error:", err);
-            if (err.name !== 'AbortError') {
-                notify("Failed to open contact picker.", "error");
-            }
+            notify("Could not open contacts. Please enter customer manually.", "error");
         }
     };
 
@@ -414,14 +409,14 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
                                 type="button"
                                 className="contact-picker-btn"
                                 onClick={handlePickContact}
-                                disabled={!isContactPickerSupported}
-                                title={isContactPickerSupported ? "Pick from device contacts" : "Contact picker not supported"}
+                                disabled={!isContactPickerReady}
+                                title={isContactPickerReady ? "Pick from device contacts" : "Contact picker not supported"}
                             >
                                 <BookUser size={20} />
                             </button>
                         </div>
-                        {!isContactPickerSupported && (
-                            <small className="contact-picker-unsupported">Contact picker not available on this browser.</small>
+                        {!isContactPickerReady && (
+                            <small className="contact-picker-unsupported">Contact picker not available on this device.</small>
                         )}
                     </div>
 
