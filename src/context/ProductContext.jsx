@@ -82,9 +82,10 @@ export const ProductProvider = ({ children }) => {
     const updateProduct = async (id, updatedData) => {
         if (!user) return;
         try {
+            const { id: _, createdAt, updatedAt, ...cleanData } = updatedData;
             const productRef = doc(db, 'users', user.uid, collectionName, id);
             return await updateDoc(productRef, {
-                ...updatedData,
+                ...cleanData,
                 ...getMetadata(user.uid, true)
             });
         } catch (error) {

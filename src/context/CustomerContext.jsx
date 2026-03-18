@@ -75,9 +75,10 @@ export const CustomerProvider = ({ children }) => {
     const updateCustomer = async (id, updatedData) => {
         if (!user) return;
         try {
+            const { id: _, createdAt, updatedAt, ...cleanData } = updatedData;
             const ref = doc(db, 'users', user.uid, 'customers', id);
             return await updateDoc(ref, {
-                ...updatedData,
+                ...cleanData,
                 ...getMetadata(user.uid, true)
             });
         } catch (error) {

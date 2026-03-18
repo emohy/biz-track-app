@@ -81,9 +81,10 @@ export const ExpenseProvider = ({ children }) => {
     const updateExpense = async (id, updatedData) => {
         if (!user) return;
         try {
+            const { id: _, createdAt, updatedAt, ...cleanData } = updatedData;
             const ref = doc(db, 'users', user.uid, collectionName, id);
             return await updateDoc(ref, {
-                ...updatedData,
+                ...cleanData,
                 ...getMetadata(user.uid, true)
             });
         } catch (error) {
