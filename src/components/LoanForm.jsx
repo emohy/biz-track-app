@@ -4,8 +4,8 @@ import { useLoan } from '../context/LoanContext';
 import { useSettings } from '../context/SettingsContext';
 import { formatCurrency, parseCurrency } from '../utils';
 
-const LoanForm = ({ isOpen, onClose }) => {
-    const { addLoan } = useLoan();
+const LoanForm = ({ isOpen, onClose, initialData = null }) => {
+    const { addLoan, updateLoan } = useLoan();
     const { notify } = useSettings();
     
     const [formData, setFormData] = useState({
@@ -16,31 +16,46 @@ const LoanForm = ({ isOpen, onClose }) => {
         repaymentFrequency: 'monthly',
         startDate: new Date().toISOString().split('T')[0],
         firstDueDate: '',
-        endDate: ''
+        endDate: '',
+        installmentMode: 'derived', // derived OR manual
+        agreedPaymentPerPeriod: ''
     });
 
     const [displayPrincipal, setDisplayPrincipal] = useState('');
     const [displayInterest, setDisplayInterest] = useState('');
+    const [displayAgreedPayment, setDisplayAgreedPayment] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         if (!isOpen) {
             setFormData({
-                lenderName: '',
-                principal: '',
-                interestType: 'fixed_amount',
-                interestValue: '',
-                repaymentFrequency: 'monthly',
-                startDate: new Date().toISOString().split('T')[0],
-                firstDueDate: '',
-                endDate: ''
+                lenderName: '', principal: '', interestType: 'fixed_amount', interestValue: '',
+                repaymentFrequency: 'monthly', startDate: new Date().toISOString().split('T')[0],
+                firstDueDate: '', endDate: '', installmentMode: 'derived', agreedPaymentPerPeriod: ''
             });
             setDisplayPrincipal('');
             setDisplayInterest('');
+            setDisplayAgreedPayment('');
             setError('');
+        } else if (initialData) {
+            setFormData({
+                lenderName: initialData.lenderName || '',
+                principal: initialData.principal || '',
+                interestType: initialData.interestType || 'fixed_amount',
+                interestValue: initialData.interestValue || '',
+                repaymentFrequency: initialData.repaymentFrequency || 'monthly',
+                startDate: initialData.startDate ? initialData.startDate.split('T')[0] : new Date().toISOString().split('T')[0],
+                firstDueDate: initialData.firstDueDate ? initialData.firstDueDate.split('T')[0] : '',
+                endDate: initialData.endDate ? initialData.endDate.split('T')[0] : '',
+                installmentMode: initialData.installmentMode || 'derived',
+                agreedPaymentPerPeriod: initialData.agreedPaymentPerPeriod || ''
+            });
+            setDisplayPrincipal(initialData.principal ? formatCurrency(initialData.principal) : '');
+            setDisplayInterest(initialData.interestValue && initialData.interestType === 'fixed_amount' ? formatCurrency(initialData.interestValue) : (initialData.interestValue || ''));
+            setDisplayAgreedPayment(initialData.agreedPaymentPerPeriod ? formatCurrency(initialData.agreedPaymentPerPeriod) : '');
         }
-    }, [isOpen]);
+    }, [isOpen, initialData]);
 
     // ── Derived total repayment ──
     const derivedTotal = useMemo(() => {
@@ -61,13 +76,16 @@ const LoanForm = ({ isOpen, onClose }) => {
             setDisplayPrincipal(value);
             const num = parseCurrency(value);
             setFormData(prev => ({ ...prev, [name]: num }));
+        } else if (name === 'agreedPaymentPerPeriod') {
+            setDisplayAgreedPayment(value);
+            const num = parseCurrency(value);
+            setFormData(prev => ({ ...prev, [name]: num }));
         } else if (name === 'interestValue') {
             if (formData.interestType === 'fixed_amount') {
                 setDisplayInterest(value);
                 const num = parseCurrency(value);
                 setFormData(prev => ({ ...prev, [name]: num }));
             } else {
-                // percentage: allow raw number input
                 setDisplayInterest(value);
                 setFormData(prev => ({ ...prev, [name]: value }));
             }
@@ -80,6 +98,8 @@ const LoanForm = ({ isOpen, onClose }) => {
     const handleBlur = (field) => {
         if (field === 'principal') {
             setDisplayPrincipal(formatCurrency(formData.principal));
+        } else if (field === 'agreedPaymentPerPeriod') {
+            setDisplayAgreedPayment(formatCurrency(formData.agreedPaymentPerPeriod));
         } else if (field === 'interestValue' && formData.interestType === 'fixed_amount') {
             setDisplayInterest(formatCurrency(formData.interestValue));
         }
@@ -136,9 +156,14 @@ const LoanForm = ({ isOpen, onClose }) => {
             }
         }
 
+        if (formData.installmentMode === 'manual' && (!formData.agreedPaymentPerPeriod || Number(formData.agreedPaymentPerPeriod) <= 0)) {
+            setError('Please enter a valid agreed payment amount per period');
+            return;
+        }
+
         setIsLoading(true);
         try {
-            await addLoan({
+            const loanPayload = {
                 agreementMode: 'structured',
                 lenderName: formData.lenderName,
                 principal: Number(formData.principal),
@@ -149,13 +174,20 @@ const LoanForm = ({ isOpen, onClose }) => {
                 firstDueDate: formData.firstDueDate,
                 endDate: formData.endDate,
                 totalRepayment: derivedTotal,
-                amountPaid: 0,
-                status: 'active'
-            });
-            notify(`Loan from ${formData.lenderName} added successfully`);
+                installmentMode: formData.installmentMode,
+                agreedPaymentPerPeriod: formData.installmentMode === 'manual' ? Number(formData.agreedPaymentPerPeriod) : null
+            };
+
+            if (initialData) {
+                await updateLoan(initialData.id, loanPayload);
+                notify(`Loan from ${formData.lenderName} updated successfully`);
+            } else {
+                await addLoan({ ...loanPayload, amountPaid: 0, status: 'active' });
+                notify(`Loan from ${formData.lenderName} added successfully`);
+            }
             onClose();
         } catch (err) {
-            setError(err.message || 'Failed to add loan');
+            setError(err.message || 'Failed to preserve loan');
         } finally {
             setIsLoading(false);
         }
@@ -167,7 +199,7 @@ const LoanForm = ({ isOpen, onClose }) => {
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
-                    <h2>New Loan</h2>
+                    <h2>{initialData ? 'Edit Loan' : 'New Loan'}</h2>
                     <button className="close-btn" onClick={onClose}><X size={20} /></button>
                 </div>
 
@@ -251,6 +283,34 @@ const LoanForm = ({ isOpen, onClose }) => {
                         </select>
                     </div>
 
+                    {/* Installment Mode Toggle */}
+                    <div className="form-group">
+                        <label>Installment Mode</label>
+                        <select
+                            name="installmentMode"
+                            value={formData.installmentMode}
+                            onChange={handleChange}
+                        >
+                            <option value="derived">Calculated Automatically</option>
+                            <option value="manual">Agreed Manual Payment</option>
+                        </select>
+                    </div>
+
+                    {formData.installmentMode === 'manual' && (
+                        <div className="form-group">
+                            <label>Agreed Payment Per Period*</label>
+                            <input
+                                type="text"
+                                name="agreedPaymentPerPeriod"
+                                value={displayAgreedPayment}
+                                onChange={handleChange}
+                                onBlur={() => handleBlur('agreedPaymentPerPeriod')}
+                                placeholder="UGX 0"
+                                required={formData.installmentMode === 'manual'}
+                            />
+                        </div>
+                    )}
+
                     {/* Dates */}
                     <div className="form-group">
                         <label>Start Date</label>
@@ -293,7 +353,7 @@ const LoanForm = ({ isOpen, onClose }) => {
                     )}
 
                     <button type="submit" className="save-btn" disabled={isLoading}>
-                        {isLoading ? 'Processing...' : 'Add Loan'}
+                        {isLoading ? 'Processing...' : (initialData ? 'Save Changes' : 'Add Loan')}
                     </button>
                 </form>
             </div>

@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Inventory from './pages/Inventory';
 import Sales from './pages/Sales';
 import FinancePage from './pages/FinancePage';
+import LoanDetail from './pages/LoanDetail';
 import Customers from './pages/Customers';
 import CustomerDetail from './pages/CustomerDetail';
 import SignIn from './pages/SignIn';
@@ -63,6 +64,7 @@ const AppContent = () => {
                       <Route path="customers" element={<Customers />} />
                       <Route path="customers/:id" element={<CustomerDetail />} />
                       <Route path="loans" element={<FinancePage />} />
+                      <Route path="finance/loans/:loanId" element={<LoanDetail />} />
                       <Route path="settings" element={<Settings />} />
                     </Route>
                   </Routes>

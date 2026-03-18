@@ -283,6 +283,10 @@ export const LoanProvider = ({ children }) => {
         return updateLoan(loan.id, updates);
     };
 
+    const getLoanRepayments = async (loanId) => {
+        return await loanService.getRepayments(loanId);
+    };
+
     const value = {
         loans,
         activeLoan,
@@ -290,7 +294,8 @@ export const LoanProvider = ({ children }) => {
         addLoan,
         updateLoan,
         recordRepayment,
-        fetchLoans
+        fetchLoans,
+        getLoanRepayments
     };
 
     return (
