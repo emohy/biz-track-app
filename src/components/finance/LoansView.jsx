@@ -1,41 +1,37 @@
-import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { 
-    ArrowLeft, 
-    Plus, 
-    Wallet, 
-    Calendar, 
-    Clock, 
-    CheckCircle2, 
-    AlertCircle,
-    ArrowRight,
-    TrendingUp,
-    Repeat
+    Trash2, Wallet, TrendingUp, Repeat
 } from 'lucide-react';
-import { useLoan } from '../context/LoanContext';
-import { useSettings } from '../context/SettingsContext';
-import { formatCurrency, parseCurrency } from '../utils';
-import LoanForm from '../components/LoanForm';
-import './Loans.css';
+import { useLoan } from '../../context/LoanContext';
+import { useSettings } from '../../context/SettingsContext';
+import { formatCurrency, parseCurrency } from '../../utils';
+import LoanForm from '../LoanForm';
+import UndoToast from '../UndoToast';
+import './LoansView.css';
 
-const Loans = () => {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const { loans, recordRepayment, loading } = useLoan();
+const LoansView = ({ highlightLoanId }) => {
+    const { loans, recordRepayment, deleteSale, undoDelete, loading } = useLoan();
     const { notify } = useSettings();
     
-    const highlightLoanId = location.state?.highlightLoanId;
-    
-    const [isAddLoanOpen, setIsAddLoanOpen] = useState(false);
+    // Extracted loan state
+    const [loanFilter, setLoanFilter] = useState('active'); // active | completed
     const [selectedLoanForRepayment, setSelectedLoanForRepayment] = useState(null);
     const [repaymentAmount, setRepaymentAmount] = useState('');
     const [displayRepayment, setDisplayRepayment] = useState('');
     const [repaymentNote, setRepaymentNote] = useState('');
     const [isSubmittingRepayment, setIsSubmittingRepayment] = useState(false);
     const [repaymentError, setRepaymentError] = useState('');
+    const [isAddLoanOpen, setIsAddLoanOpen] = useState(false); // Just for empty state inline adding, global FAB still does this
+
+    // Undo management (since Loans.jsx didn't have undoDelete implementation fully visible, assuming similar to sales)
+    // Wait, the original Loans.jsx didn't have a handleDelete for Loans itself! It only had repayment.
+    // The previous view_file of Loans.jsx didn't show a delete button for loans. 
+    // Wait, there was NO delete button on the loan card in Loans.jsx! Let me ensure I just use what was there.
 
     const activeLoans = loans.filter(l => l.status === 'active' || l.status === 'overdue');
     const completedLoans = loans.filter(l => l.status === 'completed');
+
+    const displayLoans = loanFilter === 'active' ? activeLoans : completedLoans;
 
     const safeDate = (dateVal) => {
         try {
@@ -99,7 +95,6 @@ const Loans = () => {
         }
     };
 
-    // ── Legacy Card ──
     const LegacyLoanCard = ({ loan }) => {
         const isOverdue = loan.status === 'overdue';
         const isCompleted = loan.status === 'completed';
@@ -151,7 +146,6 @@ const Loans = () => {
         );
     };
 
-    // ── Structured Card ──
     const StructuredLoanCard = ({ loan }) => {
         const isOverdue = loan.status === 'overdue' || (loan.daysUntilNextDue !== null && loan.daysUntilNextDue < 0);
         const isCompleted = loan.status === 'completed';
@@ -229,61 +223,53 @@ const Loans = () => {
             : <LegacyLoanCard loan={loan} />;
     };
 
+    if (loading) {
+        return <div className="loading-state">Loading your loans...</div>;
+    }
+
+    if (loans.length === 0) {
+        return (
+            <div className="empty-loans fade-in" style={{ paddingTop: '2rem' }}>
+                <Wallet size={48} />
+                <h3>No Loans Yet</h3>
+                <p>Taking a loan to grow your business? Track it here to stay on top of repayments.</p>
+                <button className="btn-primary" style={{ margin: '24px auto' }} onClick={() => setIsAddLoanOpen(true)}>
+                    Add First Loan
+                </button>
+                <LoanForm isOpen={isAddLoanOpen} onClose={() => setIsAddLoanOpen(false)} />
+            </div>
+        );
+    }
+
     return (
-        <div className="page container loans-page">
-            <header className="loans-header">
-                <button className="back-btn" onClick={() => navigate(-1)}>
-                    <ArrowLeft size={24} />
+        <div className="loans-view">
+            {/* Embedded Active/Completed Filter */}
+            <div className="loan-status-filter">
+                <button 
+                    className={`filter-btn ${loanFilter === 'active' ? 'active' : ''}`}
+                    onClick={() => setLoanFilter('active')}
+                >
+                    Active ({activeLoans.length})
                 </button>
-                <h1>Loans</h1>
-                <button className="add-loan-btn" onClick={() => setIsAddLoanOpen(true)}>
-                    <Plus size={20} />
-                    <span>Add</span>
+                <button 
+                    className={`filter-btn ${loanFilter === 'completed' ? 'active' : ''}`}
+                    onClick={() => setLoanFilter('completed')}
+                >
+                    Completed ({completedLoans.length})
                 </button>
-            </header>
+            </div>
 
-            {loading ? (
-                <div className="loading-state">Loading your loans...</div>
-            ) : (
-                <>
-                    {loans.length === 0 ? (
-                        <div className="empty-loans fade-in">
-                            <Wallet size={48} />
-                            <h3>No Loans Yet</h3>
-                            <p>Taking a loan to grow your business? Track it here to stay on top of repayments.</p>
-                            <button className="add-loan-btn" style={{ margin: '24px auto' }} onClick={() => setIsAddLoanOpen(true)}>
-                                <Plus size={20} />
-                                <span>Add First Loan</span>
-                            </button>
-                        </div>
-                    ) : (
-                        <>
-                            {activeLoans.length > 0 && (
-                                <section className="loans-section">
-                                    <h2>Active Loans</h2>
-                                    {activeLoans.map(loan => (
-                                        <LoanCard key={loan.id} loan={loan} />
-                                    ))}
-                                </section>
-                            )}
-
-                            {completedLoans.length > 0 && (
-                                <section className="loans-section">
-                                    <h2>Completed History</h2>
-                                    {completedLoans.map(loan => (
-                                        <LoanCard key={loan.id} loan={loan} />
-                                    ))}
-                                </section>
-                            )}
-                        </>
-                    )}
-                </>
-            )}
-
-            <LoanForm 
-                isOpen={isAddLoanOpen}
-                onClose={() => setIsAddLoanOpen(false)}
-            />
+            <div className="loans-list fade-in" style={{ marginTop: '16px' }}>
+                {displayLoans.length === 0 ? (
+                    <div className="empty-state">
+                        <p>No {loanFilter} loans found.</p>
+                    </div>
+                ) : (
+                    displayLoans.map(loan => (
+                        <LoanCard key={loan.id} loan={loan} />
+                    ))
+                )}
+            </div>
 
             {/* Repayment Modal */}
             {selectedLoanForRepayment && (
@@ -345,4 +331,4 @@ const Loans = () => {
     );
 };
 
-export default Loans;
+export default LoansView;

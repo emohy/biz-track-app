@@ -1,0 +1,70 @@
+.finance-page {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.finance-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.finance-tabs {
+    display: flex;
+    background-color: var(--surface-color);
+    border-radius: 8px;
+    padding: 4px;
+    gap: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.finance-tab {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.finance-tab.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 2px 4px rgba(var(--primary-rgb), 0.2);
+}
+
+.loan-status-filter {
+    display: inline-flex;
+    background-color: var(--surface-color);
+    border-radius: 20px;
+    padding: 4px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 8px;
+}
+
+.loan-status-filter .filter-btn {
+    padding: 6px 16px;
+    border: none;
+    background: transparent;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.loan-status-filter .filter-btn.active {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.finance-content {
+    flex: 1;
+    animation: fadeIn 0.3s ease;
+}

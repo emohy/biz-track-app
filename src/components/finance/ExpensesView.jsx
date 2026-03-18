@@ -3,14 +3,14 @@ import {
     Edit2, Trash2, Home, User, ShoppingBag,
     Zap, Truck, FileText, MoreHorizontal
 } from 'lucide-react';
-import { useExpense } from '../context/ExpenseContext';
-import ExpenseForm from '../components/ExpenseForm';
-import { formatCurrency } from '../utils';
-import UndoToast from '../components/UndoToast';
-import SkeletonLoader from '../components/SkeletonLoader';
-import './Expenses.css';
+import { useExpense } from '../../context/ExpenseContext';
+import ExpenseForm from '../ExpenseForm';
+import { formatCurrency } from '../../utils';
+import UndoToast from '../UndoToast';
+import SkeletonLoader from '../SkeletonLoader';
+import './ExpensesView.css';
 
-const Expenses = () => {
+const ExpensesView = () => {
     const { expenses, updateExpense, deleteExpense, undoDelete } = useExpense();
     const [editingExpense, setEditingExpense] = useState(null);
     const [lastDeletedId, setLastDeletedId] = useState(null);
@@ -70,9 +70,7 @@ const Expenses = () => {
     };
 
     return (
-        <div className="page container">
-            <h1>Expenses</h1>
-
+        <div className="expenses-view">
             {isLoading ? (
                 <SkeletonLoader type="list" count={4} />
             ) : expenses.length === 0 ? (
@@ -139,4 +137,4 @@ const Expenses = () => {
     );
 };
 
-export default Expenses;
+export default ExpensesView;

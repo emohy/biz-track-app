@@ -17,9 +17,9 @@ const BottomNavigation = () => {
                 <TrendingUp size={24} />
                 <span>Sales</span>
             </NavLink>
-            <NavLink to="/expenses" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+            <NavLink to="/finance" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
                 <Wallet size={24} />
-                <span>Expenses</span>
+                <span>Finance</span>
             </NavLink>
             <NavLink to="/customers" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
                 <Users size={24} />

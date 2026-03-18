@@ -4,10 +4,9 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Inventory from './pages/Inventory';
 import Sales from './pages/Sales';
-import Expenses from './pages/Expenses';
+import FinancePage from './pages/FinancePage';
 import Customers from './pages/Customers';
 import CustomerDetail from './pages/CustomerDetail';
-import Loans from './pages/Loans';
 import SignIn from './pages/SignIn';
 import MigrationModal from './components/MigrationModal';
 import { ProductProvider } from './context/ProductContext';
@@ -59,10 +58,11 @@ const AppContent = () => {
                       <Route index element={<Dashboard />} />
                       <Route path="inventory" element={<Inventory />} />
                       <Route path="sales" element={<Sales />} />
-                      <Route path="expenses" element={<Expenses />} />
+                      <Route path="finance" element={<FinancePage />} />
+                      <Route path="expenses" element={<FinancePage />} />
                       <Route path="customers" element={<Customers />} />
                       <Route path="customers/:id" element={<CustomerDetail />} />
-                      <Route path="loans" element={<Loans />} />
+                      <Route path="loans" element={<FinancePage />} />
                       <Route path="settings" element={<Settings />} />
                     </Route>
                   </Routes>

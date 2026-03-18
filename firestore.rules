@@ -104,16 +104,14 @@ service cloud.firestore {
     }
 
     function validateProduct(data) {
-      return data.keys().hasOnly(['userId', 'createdAt', 'updatedAt', 'productName', 'sellingPrice', 'costPrice', 'stockQuantity', 'isDeleted', 'deletedAt'])
-        && data.productName is string && data.productName.size() > 0
+      return data.productName is string && data.productName.size() > 0
         && isNum(data.sellingPrice) && data.sellingPrice >= 0
         && isNum(data.costPrice) && data.costPrice >= 0
         && isNum(data.stockQuantity);
     }
 
     function validateSale(data) {
-      return data.keys().hasOnly(['userId', 'createdAt', 'updatedAt', 'productId', 'productName', 'quantitySold', 'sellingPriceAtTime', 'totalAmount', 'paymentStatus', 'paymentMode', 'customerId', 'customerName', 'amountPaid', 'amountDue', 'costPrice', 'profitPerUnit', 'totalProfit', 'profitMargin', 'isDeleted', 'deletedAt'])
-        && data.productId is string
+      return data.productId is string
         && isNum(data.quantitySold) && data.quantitySold > 0
         && isNum(data.totalAmount) && data.totalAmount >= 0
         && data.paymentStatus in ['Paid', 'Partial', 'Unpaid']
