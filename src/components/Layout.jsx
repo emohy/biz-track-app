@@ -12,7 +12,9 @@ import { useProduct } from '../context/ProductContext';
 import { useSales } from '../context/SalesContext';
 import { useExpense } from '../context/ExpenseContext';
 import { useCustomer } from '../context/CustomerContext';
-import { Plus, ShoppingCart, Package, Receipt, CreditCard } from 'lucide-react';
+import { useSettings } from '../context/SettingsContext';
+import { Plus, ShoppingCart, Package, Receipt, CreditCard, Wallet } from 'lucide-react';
+import LoanForm from './LoanForm';
 import './Layout.css';
 
 const Layout = () => {
@@ -22,10 +24,12 @@ const Layout = () => {
     const { addSale, sales } = useSales();
     const { addExpense } = useExpense();
     const { customers } = useCustomer();
+    const { notify } = useSettings();
     const [isSheetOpen, setIsSheetOpen] = useState(false);
     const [isAddProductOpen, setIsAddProductOpen] = useState(false);
     const [isAddSaleOpen, setIsAddSaleOpen] = useState(false);
     const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
+    const [isAddLoanOpen, setIsAddLoanOpen] = useState(false);
 
     const hasOwingCustomers = useMemo(() => {
         return customers.some(customer => {
@@ -56,6 +60,11 @@ const Layout = () => {
     const handleRecordPaymentClick = () => {
         closeSheet();
         navigate('/customers', { state: { activeTab: 'owing' } });
+    };
+
+    const handleAddLoanClick = () => {
+        closeSheet();
+        setIsAddLoanOpen(true);
     };
 
     const submitProduct = (data) => {
@@ -95,11 +104,12 @@ const Layout = () => {
         { label: 'Add Expense', onClick: handleAddExpenseClick, icon: <Receipt size={20} /> },
         { type: 'separator' },
         {
-            label: 'Record Payment',
+            label: 'Record Customer Payment',
             onClick: handleRecordPaymentClick,
             icon: <CreditCard size={20} />,
             subtitle: !hasOwingCustomers ? 'No outstanding payments to record' : null
         },
+        { label: 'Add Loan', onClick: handleAddLoanClick, icon: <Wallet size={20} /> },
     ];
 
     return (
@@ -134,6 +144,11 @@ const Layout = () => {
                 isOpen={isAddExpenseOpen}
                 onClose={() => setIsAddExpenseOpen(false)}
                 onSubmit={submitExpense}
+            />
+
+            <LoanForm
+                isOpen={isAddLoanOpen}
+                onClose={() => setIsAddLoanOpen(false)}
             />
         </div>
     );

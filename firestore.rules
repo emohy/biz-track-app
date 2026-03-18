@@ -20,22 +20,82 @@ service cloud.firestore {
     match /users/{userId} {
       allow read, write: if isOwner(userId);
 
-      // Sub-collections: products, sales, customers, expenses
-      match /{collection}/{docId} {
+      // Products collection
+      match /products/{docId} {
         allow read: if isOwner(userId);
-        
         allow create: if isOwner(userId) 
           && request.resource.data.userId == userId
           && request.resource.data.createdAt == request.time
-          && validateData(collection, request.resource.data);
-          
+          && validateProduct(request.resource.data);
         allow update: if isOwner(userId)
           && request.resource.data.userId == userId
-          // Allow server timestamp for updates, or preserve existing
+          && request.resource.data.createdAt == resource.data.createdAt
           && (request.resource.data.updatedAt == request.time || request.resource.data.updatedAt == resource.data.updatedAt)
-          && validateData(collection, request.resource.data);
-
+          && validateProduct(request.resource.data);
         allow delete: if isOwner(userId);
+      }
+
+      // Sales collection
+      match /sales/{docId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) 
+          && request.resource.data.userId == userId
+          && request.resource.data.createdAt == request.time
+          && validateSale(request.resource.data);
+        allow update: if isOwner(userId)
+          && request.resource.data.userId == userId
+          && request.resource.data.createdAt == resource.data.createdAt
+          // Sales items and total amount should be immutable once created for integrity
+          && request.resource.data.productId == resource.data.productId
+          && request.resource.data.totalAmount == resource.data.totalAmount
+          && (request.resource.data.updatedAt == request.time || request.resource.data.updatedAt == resource.data.updatedAt)
+          && validateSale(request.resource.data);
+        allow delete: if isOwner(userId);
+      }
+
+      // Customers collection
+      match /customers/{docId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) 
+          && request.resource.data.userId == userId
+          && request.resource.data.createdAt == request.time
+          && validateCustomer(request.resource.data);
+        allow update: if isOwner(userId)
+          && request.resource.data.userId == userId
+          && request.resource.data.createdAt == resource.data.createdAt
+          && (request.resource.data.updatedAt == request.time || request.resource.data.updatedAt == resource.data.updatedAt)
+          && validateCustomer(request.resource.data);
+        allow delete: if isOwner(userId);
+      }
+
+      // Expenses collection
+      match /expenses/{docId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) 
+          && request.resource.data.userId == userId
+          && request.resource.data.createdAt == request.time
+          && validateExpense(request.resource.data);
+        allow update: if isOwner(userId)
+          && request.resource.data.userId == userId
+          && request.resource.data.createdAt == resource.data.createdAt
+          && (request.resource.data.updatedAt == request.time || request.resource.data.updatedAt == resource.data.updatedAt)
+          && validateExpense(request.resource.data);
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    // Top-level loans collection
+    match /loans/{loanId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      // Repayment sub-collection
+      match /repayments/{repaymentId} {
+        allow read: if isSignedIn() && get(/databases/$(database)/documents/loans/$(loanId)).data.userId == request.auth.uid;
+        allow create: if isSignedIn() && get(/databases/$(database)/documents/loans/$(loanId)).data.userId == request.auth.uid;
+        allow delete: if isSignedIn() && get(/databases/$(database)/documents/loans/$(loanId)).data.userId == request.auth.uid;
       }
     }
 
@@ -43,36 +103,33 @@ service cloud.firestore {
       return val is number || val is int;
     }
 
-    function validateData(col, data) {
-      // Basic Soft Delete fields
-      let basicVal = (
-        (data.isDeleted == null || data.isDeleted is bool)
-        && (data.deletedAt == null || data.deletedAt is timestamp)
-      );
+    function validateProduct(data) {
+      return data.keys().hasOnly(['userId', 'createdAt', 'updatedAt', 'productName', 'sellingPrice', 'costPrice', 'stockQuantity', 'isDeleted', 'deletedAt'])
+        && data.productName is string && data.productName.size() > 0
+        && isNum(data.sellingPrice) && data.sellingPrice >= 0
+        && isNum(data.costPrice) && data.costPrice >= 0
+        && isNum(data.stockQuantity);
+    }
 
-      return basicVal && (
-        col in ['products', 'test_products'] ? (
-          data.productName is string && data.productName.size() > 0
-          && isNum(data.sellingPrice) && data.sellingPrice >= 0
-          && isNum(data.costPrice) && data.costPrice >= 0
-          && isNum(data.stockQuantity)
-        ) :
-        col in ['sales', 'test_sales'] ? (
-          data.productId is string
-          && isNum(data.quantitySold) && data.quantitySold > 0
-          && isNum(data.totalAmount) && data.totalAmount >= 0
-          && data.paymentStatus in ['Paid', 'Partial', 'Unpaid']
-          && isNum(data.amountPaid) && data.amountPaid >= 0
-        ) :
-        col in ['customers'] ? (
-          data.name is string && data.name.size() > 0
-          && (data.phone == null || data.phone is string)
-        ) :
-        col in ['expenses', 'test_expenses'] ? (
-          data.description is string
-          && isNum(data.amount) && data.amount >= 0
-        ) : true
-      );
+    function validateSale(data) {
+      return data.keys().hasOnly(['userId', 'createdAt', 'updatedAt', 'productId', 'productName', 'quantitySold', 'sellingPriceAtTime', 'totalAmount', 'paymentStatus', 'paymentMode', 'customerId', 'customerName', 'amountPaid', 'amountDue', 'costPrice', 'profitPerUnit', 'totalProfit', 'profitMargin', 'isDeleted', 'deletedAt'])
+        && data.productId is string
+        && isNum(data.quantitySold) && data.quantitySold > 0
+        && isNum(data.totalAmount) && data.totalAmount >= 0
+        && data.paymentStatus in ['Paid', 'Partial', 'Unpaid']
+        && isNum(data.amountPaid) && data.amountPaid >= 0;
+    }
+
+    function validateCustomer(data) {
+      return data.keys().hasOnly(['userId', 'createdAt', 'updatedAt', 'name', 'phone', 'isDeleted', 'deletedAt'])
+        && data.name is string && data.name.size() > 0
+        && (data.phone == null || data.phone is string);
+    }
+
+    function validateExpense(data) {
+      return data.keys().hasOnly(['userId', 'createdAt', 'updatedAt', 'description', 'amount', 'category', 'isDeleted', 'deletedAt'])
+        && data.description is string
+        && isNum(data.amount) && data.amount >= 0;
     }
   }
 }

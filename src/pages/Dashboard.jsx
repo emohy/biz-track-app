@@ -9,6 +9,7 @@ import { useExpense } from '../context/ExpenseContext';
 import { useProduct } from '../context/ProductContext';
 import { useCustomer } from '../context/CustomerContext';
 import { useSettings } from '../context/SettingsContext';
+import { useLoan } from '../context/LoanContext';
 import { formatCurrency } from '../utils';
 import SkeletonLoader from '../components/SkeletonLoader';
 import './Dashboard.css';
@@ -18,6 +19,7 @@ const Dashboard = () => {
     const { expenses } = useExpense();
     const { products } = useProduct();
     const { customers } = useCustomer();
+    const { activeLoan } = useLoan();
     const navigate = useNavigate();
     const { testMode, alertsEnabled, setAlertsEnabled, businessProfile, holidaySettings } = useSettings();
 
@@ -152,7 +154,38 @@ const Dashboard = () => {
             });
         }
 
-        // 2. Recurring Low Stock Alert
+        // 2. Urgent Loan Alert
+        if (activeLoan) {
+            const isOverdue = activeLoan.status === 'overdue' || (activeLoan.daysRemaining !== null && activeLoan.daysRemaining < 0);
+            const isDueSoon = activeLoan.status === 'active' && activeLoan.daysRemaining !== null && activeLoan.daysRemaining <= 3;
+            const isStructured = activeLoan.agreementMode === 'structured';
+
+            if (isOverdue) {
+                const overdueMsg = isStructured
+                    ? `Payment to ${activeLoan.lenderName || 'Lender'} is overdue. ${formatCurrency(activeLoan.expectedPaymentPerPeriod || activeLoan.remainingBalance)} was due.`
+                    : `Your loan with ${activeLoan.lenderName || 'Lender'} is overdue. Remaining balance: ${formatCurrency(activeLoan.remainingBalance)}.`;
+                activeAlertsList.push({
+                    id: 'loan-overdue',
+                    type: 'loan',
+                    title: 'Loan Overdue',
+                    message: overdueMsg,
+                    action: () => navigate('/loans', { state: { highlightLoanId: activeLoan.id } })
+                });
+            } else if (isDueSoon) {
+                const dueMsg = isStructured
+                    ? `${formatCurrency(activeLoan.expectedPaymentPerPeriod)} due to ${activeLoan.lenderName || 'Lender'} ${activeLoan.daysRemaining === 0 ? 'today' : 'in ' + activeLoan.daysRemaining + ' days'}.`
+                    : `Your loan from ${activeLoan.lenderName || 'Lender'} is due in ${activeLoan.daysRemaining === 0 ? 'today' : activeLoan.daysRemaining + ' days'}. Remaining balance: ${formatCurrency(activeLoan.remainingBalance)}.`;
+                activeAlertsList.push({
+                    id: 'loan-due-soon',
+                    type: 'loan',
+                    title: 'Loan Payment Due Soon',
+                    message: dueMsg,
+                    action: () => navigate('/loans', { state: { highlightLoanId: activeLoan.id } })
+                });
+            }
+        }
+
+        // 3. Recurring Low Stock Alert
         const recurringLowCount = products.filter(p => alertHistory.lowStock[p.id] >= 3).length;
         if (recurringLowCount > 0) {
             activeAlertsList.push({
@@ -164,7 +197,7 @@ const Dashboard = () => {
             });
         }
 
-        // 3. Expense Spike Alert (3-day trend)
+        // 4. Expense Spike Alert (3-day trend)
         const d2Str = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
         const d1Str = new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
         const d0Str = todayStr;
@@ -342,60 +375,96 @@ const Dashboard = () => {
             .sort((a, b) => b.totalProfit - a.totalProfit)
             .slice(0, 5);
 
-        // AI Advisory Insights
-        const aiInsightsList = [];
+        // Action-Oriented Today's Insights (Max 3 items)
+        const insightsList = [];
 
-        const currentTrend = trends[timeScope];
-        if (currentTrend.current > currentTrend.previous * 1.1) {
-            aiInsightsList.push({
-                type: 'sales',
-                text: `Sales are up significantly. This could indicate strong demand worth reviewing.`,
-                icon: 'TrendingUp'
-            });
-        } else if (currentTrend.current < currentTrend.previous * 0.9 && currentTrend.previous > 0) {
-            aiInsightsList.push({
-                type: 'sales',
-                text: `Sales are lower than in the previous period. You may want to check recent turnover.`,
-                icon: 'TrendingDown'
+        // Priority 1: Loan Reserve (if active loan is NOT due urgently and date is valid)
+        // Deduplication: Only show if NOT already in Smart Alerts (isDueSoon threshold is <= 3)
+        if (activeLoan && 
+            activeLoan.status === 'active' && 
+            activeLoan.daysRemaining !== null && 
+            activeLoan.daysRemaining > 3 && 
+            activeLoan.suggestedDailyReserve > 0) {
+
+            const isStructured = activeLoan.agreementMode === 'structured';
+            let loanInsightText;
+            if (isStructured) {
+                loanInsightText = `Set aside about ${formatCurrency(activeLoan.suggestedDailyReserve)} today to stay on track for ${activeLoan.lenderName || 'your'} loan.`;
+            } else {
+                loanInsightText = `Set aside ${formatCurrency(activeLoan.suggestedDailyReserve)} today for ${activeLoan.lenderName || 'your'} loan.`;
+            }
+
+            insightsList.push({
+                type: 'loan',
+                text: loanInsightText,
+                icon: 'Wallet',
+                route: '/loans',
+                navState: { highlightLoanId: activeLoan.id }
             });
         }
 
-        if (topExpenses.length > 0) {
+        // Priority 2: Follow up debtors
+        if (owingCustomersCount > 0) {
+            insightsList.push({
+                type: 'payment',
+                text: `Follow up ${owingCustomersCount} debtors owing ${formatCurrency(totalDebt)}.`,
+                icon: 'Users',
+                route: '/customers?tab=owing'
+            });
+        }
+
+        // Priority 3: critically low stock
+        if (outOfStock.length > 0 || lowStock.length > 0) {
+            const itemsCount = outOfStock.length + lowStock.length;
+            insightsList.push({
+                type: 'inventory',
+                text: `Restock Priority: ${itemsCount} items are critically low or out of stock.`,
+                icon: 'Package',
+                route: '/inventory'
+            });
+        }
+
+        // Priority 4 (Fallback): Unexplained Expense Spike
+        if (insightsList.length < 3 && topExpenses.length > 0) {
             const topExp = topExpenses[0];
             if (topExp.drift === 'up') {
-                aiInsightsList.push({
+                insightsList.push({
                     type: 'expense',
-                    text: `Spending on ${topExp.name} has increased. Worth checking if this rise aligns with your plans.`,
-                    icon: 'Wallet'
+                    text: `Review expense spike in ${topExp.name} to optimize spending.`,
+                    icon: 'TrendingDown',
+                    route: '/expenses'
                 });
             }
         }
 
-        if (outOfStock.length > 0) {
-            aiInsightsList.push({
-                type: 'inventory',
-                text: `${outOfStock.length} items are out of stock. Restocking soon could prevent missed sales.`,
-                icon: 'Package'
+        // Priority 5 (Fallback): Strong Sales demand
+        const currentTrend = trends[timeScope];
+        if (insightsList.length < 3 && currentTrend.current > currentTrend.previous * 1.1) {
+            insightsList.push({
+                type: 'sales',
+                text: `Capitalize on strong sales demand: volume is up from previous period.`,
+                icon: 'TrendingUp',
+                route: '/sales'
             });
         }
 
-        if (behaviorValues.unpaid > 20) {
-            aiInsightsList.push({
-                type: 'payment',
-                text: `${behaviorValues.unpaid}% of sales are unpaid. This could indicate growing credit levels for follow-up.`,
-                icon: 'Clock'
-            });
-        }
-
-        if (aiInsightsList.length < 1) {
-            aiInsightsList.push({
+        // Final fallback
+        if (insightsList.length === 0) {
+            insightsList.push({
                 type: 'info',
-                text: `Continue recording transactions to generate deeper business insights.`,
-                icon: 'Sparkles'
+                text: `Continue recording transactions to generate daily actionable insights.`,
+                icon: 'Sparkles',
+                route: null
             });
         }
 
         // Section Summaries for Accordion
+        const activeInsights = insightsList.slice(0, 3);
+        let insightsSummaryText = `${activeInsights.length} actions recommended today`;
+        if (activeInsights.length === 0 || activeInsights[0].type === 'info') {
+            insightsSummaryText = `No immediate actions required today.`;
+        }
+
         const summaries = {
             salesTrends: `${timeScope.charAt(0).toUpperCase() + timeScope.slice(1)}: ${formatCurrency(currentTrend.current)} (${currentTrend.drift === 'up' ? '▲' : currentTrend.drift === 'down' ? '▼' : '—'})`,
             expenses: `Total: ${formatCurrency(totalExpenses)} • Top: ${topExpenses[0]?.name || 'None'}`,
@@ -405,7 +474,8 @@ const Dashboard = () => {
 
         return {
             trends,
-            aiInsights: aiInsightsList.slice(0, 5),
+            aiInsights: activeInsights,
+            insightsSummaryText,
             activeAlerts: activeAlertsList,
             summaries,
             scope: {
@@ -437,7 +507,7 @@ const Dashboard = () => {
                 topProducts: topProfitableProducts
             }
         };
-    }, [sales, expenses, products, customers, timeScope, alertHistory]);
+    }, [sales, expenses, products, customers, timeScope, alertHistory, activeLoan]);
 
     const TrendIcon = ({ drift }) => {
         if (drift === 'up') return <TrendingUp size={14} className="trend-up" />;
@@ -448,9 +518,10 @@ const Dashboard = () => {
     const InsightIcon = ({ type }) => {
         switch (type) {
             case 'sales': return <TrendingUp size={18} />;
-            case 'expense': return <Wallet size={18} />;
+            case 'expense': return <TrendingDown size={18} />;
             case 'inventory': return <Package size={18} />;
-            case 'payment': return <Clock size={18} />;
+            case 'payment': return <Users size={18} />;
+            case 'loan': return <Wallet size={18} />;
             default: return <Sparkles size={18} />;
         }
     };
@@ -582,7 +653,7 @@ const Dashboard = () => {
                             <Sparkles size={18} className="ai-icon" />
                             <div className="trigger-text">
                                 <h3>Today's Insights</h3>
-                                {!expandedSections.aiInsights && <span className="preview-text">{stats.aiInsights.length} business insights available</span>}
+                                {!expandedSections.aiInsights && <span className="preview-text highlight">{stats.insightsSummaryText}</span>}
                             </div>
                         </div>
                         {expandedSections.aiInsights ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
@@ -592,11 +663,19 @@ const Dashboard = () => {
                         <div className="expanded-content">
                             <div className="ai-insights-scroll">
                                 {stats.aiInsights.map((insight, idx) => (
-                                    <div key={idx} className={`ai-insight-card ${insight.type}`}>
-                                        <div className="insight-icon-wrapper">
-                                            <InsightIcon type={insight.type} />
+                                    <div
+                                        key={idx}
+                                        className={`ai-insight-card actionable ${insight.type}`}
+                                        onClick={() => insight.route && navigate(insight.route, { state: insight.navState })}
+                                        style={{ cursor: insight.route ? 'pointer' : 'default' }}
+                                    >
+                                        <div className="insight-card-left">
+                                            <div className="insight-icon-wrapper">
+                                                <InsightIcon type={insight.type} />
+                                            </div>
+                                            <p className="insight-text">{insight.text}</p>
                                         </div>
-                                        <p>{insight.text}</p>
+                                        {insight.route && <ArrowRight size={14} className="action-chevron" />}
                                     </div>
                                 ))}
                             </div>
@@ -751,7 +830,7 @@ const Dashboard = () => {
                 <section className="quick-actions">
                     <button className="action-btn" onClick={() => navigate('/customers', { state: { focusSearch: true } })}>
                         <Plus size={20} />
-                        <span>Quick Transaction</span>
+                        <span>Record Customer Payment</span>
                     </button>
                     <div className="action-row">
                         <button className="small-action" onClick={() => navigate('/customers?tab=owing')}>View Debtors</button>

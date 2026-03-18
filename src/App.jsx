@@ -7,6 +7,7 @@ import Sales from './pages/Sales';
 import Expenses from './pages/Expenses';
 import Customers from './pages/Customers';
 import CustomerDetail from './pages/CustomerDetail';
+import Loans from './pages/Loans';
 import SignIn from './pages/SignIn';
 import MigrationModal from './components/MigrationModal';
 import { ProductProvider } from './context/ProductContext';
@@ -15,6 +16,7 @@ import { ExpenseProvider } from './context/ExpenseContext';
 import { CustomerProvider } from './context/CustomerContext';
 import { SettingsProvider, useSettings } from './context/SettingsContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { LoanProvider } from './context/LoanContext';
 import Settings from './pages/Settings';
 
 const TestModeBanner = () => {
@@ -48,21 +50,24 @@ const AppContent = () => {
         <SalesProvider>
           <ExpenseProvider>
             <CustomerProvider>
-              <MigrationModal user={user} />
-              <Router>
-                <TestModeBanner />
-                <Routes>
-                  <Route path="/" element={<Layout />}>
-                    <Route index element={<Dashboard />} />
-                    <Route path="inventory" element={<Inventory />} />
-                    <Route path="sales" element={<Sales />} />
-                    <Route path="expenses" element={<Expenses />} />
-                    <Route path="customers" element={<Customers />} />
-                    <Route path="customers/:id" element={<CustomerDetail />} />
-                    <Route path="settings" element={<Settings />} />
-                  </Route>
-                </Routes>
-              </Router>
+              <LoanProvider>
+                <MigrationModal user={user} />
+                <Router>
+                  <TestModeBanner />
+                  <Routes>
+                    <Route path="/" element={<Layout />}>
+                      <Route index element={<Dashboard />} />
+                      <Route path="inventory" element={<Inventory />} />
+                      <Route path="sales" element={<Sales />} />
+                      <Route path="expenses" element={<Expenses />} />
+                      <Route path="customers" element={<Customers />} />
+                      <Route path="customers/:id" element={<CustomerDetail />} />
+                      <Route path="loans" element={<Loans />} />
+                      <Route path="settings" element={<Settings />} />
+                    </Route>
+                  </Routes>
+                </Router>
+              </LoanProvider>
             </CustomerProvider>
           </ExpenseProvider>
         </SalesProvider>

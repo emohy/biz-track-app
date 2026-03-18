@@ -1,0 +1,313 @@
+.loans-page {
+    padding-bottom: 80px;
+}
+
+.loans-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.loans-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.add-loan-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: transform 0.2s;
+}
+
+.add-loan-btn:active {
+    transform: scale(0.95);
+}
+
+.loans-section {
+    margin-bottom: 32px;
+}
+
+.loans-section h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    padding-left: 4px;
+}
+
+.loan-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s;
+}
+
+.loan-card.overdue {
+    border-left: 4px solid var(--danger-color);
+}
+
+.loan-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.lender-info h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 2px;
+}
+
+.status-badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: #e5e7eb;
+    color: #4b5563;
+}
+
+.status-badge.active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-badge.overdue {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.status-badge.completed {
+    background: #e0f2fe;
+    color: #075985;
+}
+
+.loan-card.highlight {
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+    transform: scale(1.02);
+}
+
+.loan-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.metric .value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.loan-reserve-v2 {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #eff6ff;
+    color: #1e40af;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    margin-bottom: 16px;
+}
+
+.loan-reserve-v2 strong {
+    font-size: 13px;
+    color: var(--primary-color);
+}
+
+/* Structured loan badges */
+.loan-badges {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-top: 4px;
+    flex-wrap: wrap;
+}
+
+.frequency-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: #ede9fe;
+    color: #5b21b6;
+}
+
+/* Secondary metrics row */
+.loan-metrics.secondary {
+    border-top: 1px solid var(--border-color);
+    padding-top: 10px;
+    margin-top: 4px;
+}
+
+/* Derived total in form */
+.derived-total {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 10px 14px !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.derived-total label {
+    font-size: 13px;
+    color: #15803d;
+    font-weight: 600;
+    margin-bottom: 0 !important;
+}
+
+.derived-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #15803d;
+}
+
+
+.loan-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.loan-actions button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-repay {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-repay:disabled {
+    background-color: #93c5fd;
+    opacity: 0.7;
+}
+
+.empty-loans {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--text-secondary);
+}
+
+.empty-loans h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 16px;
+    color: var(--text-color);
+}
+
+.empty-loans p {
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+/* Modal Styling for Repayment */
+.repayment-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: flex-end;
+    z-index: 1000;
+}
+
+.repayment-modal {
+    background: var(--card-bg);
+    width: 100%;
+    padding: 24px;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.1);
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.repayment-modal h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.repayment-modal .subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+}
+
+.repayment-form .input-group {
+    margin-bottom: 24px;
+}
+
+.repayment-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.repayment-form input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-color);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.repayment-form .form-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.repayment-form .form-actions button {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.btn-cancel {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.btn-submit {
+    background: var(--primary-color);
+    color: white;
+}

@@ -1,0 +1,6 @@
+{
+    "appId": "com.biztrack.app",
+    "appName": "BizTrack",
+    "webDir": "dist",
+    "bundledWebRuntime": false
+}

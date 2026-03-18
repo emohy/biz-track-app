@@ -248,6 +248,12 @@
     font-weight: 600;
 }
 
+.preview-text.highlight {
+    background: rgba(139, 92, 246, 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
 .expanded-content {
     padding: 0 16px 16px 16px;
     animation: slideDown 0.3s ease-out;
@@ -281,6 +287,29 @@
     line-height: 1.4;
     font-weight: 500;
     margin: 0;
+}
+
+.ai-insight-card.actionable {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.15s ease;
+}
+
+.ai-insight-card.actionable:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.insight-card-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.action-chevron {
+    color: var(--text-secondary);
+    opacity: 0.6;
 }
 
 .insight-icon-wrapper {
