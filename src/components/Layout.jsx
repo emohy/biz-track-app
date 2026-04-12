@@ -112,6 +112,9 @@ const Layout = () => {
         { label: 'Add Loan', onClick: handleAddLoanClick, icon: <Wallet size={20} /> },
     ];
 
+    const hideFabRoutes = ['/finance/loans'];
+    const shouldHideFab = hideFabRoutes.some(route => location.pathname.includes(route));
+
     return (
         <div className="app-layout">
             <NotificationToast />
@@ -120,7 +123,7 @@ const Layout = () => {
                 <Outlet />
             </main>
             <BottomNavigation />
-            <GlobalFAB onClick={openSheet} />
+            {!shouldHideFab && <GlobalFAB onClick={openSheet} />}
 
             <BottomSheet
                 isOpen={isSheetOpen}

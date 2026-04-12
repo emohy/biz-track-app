@@ -62,7 +62,7 @@ const RepaymentModal = ({ isOpen, onClose, loan, onSaveSuccess }) => {
     };
 
     return (
-        <div className="modal-overlay repayment-overlay" onClick={onClose} style={{ zIndex: 1000, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, height: '100dvh', backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+        <div className="modal-overlay repayment-overlay" onClick={onClose} style={{ zIndex: 3000, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, height: '100dvh', backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
             <div className="modal-content" onClick={e => e.stopPropagation()} style={{ 
                 width: '100%', 
                 maxWidth: '500px', 
