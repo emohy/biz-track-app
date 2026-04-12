@@ -113,17 +113,12 @@ const LoanDetail = () => {
                     </div>
                 </div>
 
-                <div className="summary-grid">
-                    <div className="grid-item">
-                        <span className="label">Remaining Balance</span>
-                        <span className="value giant">{formatCurrency(loan.remainingBalance)}</span>
-                    </div>
-                    
-                    <div className="grid-item">
-                        <span className="label">Total Paid So Far</span>
-                        <span className="value highlight">{formatCurrency(loan.amountPaid || 0)}</span>
-                    </div>
-                    
+                <div className="summary-balance">
+                    <span className="label">Remaining Balance</span>
+                    <span className="value giant text-primary">{formatCurrency(loan.remainingBalance)}</span>
+                </div>
+                
+                <div className="summary-grid mt-4">
                     <div className="grid-item">
                         <span className="label">{isCompleted ? 'Completed On' : 'Next Due'}</span>
                         <span className="value">
@@ -135,34 +130,34 @@ const LoanDetail = () => {
                         <div className="grid-item manual-badge-container">
                             <span className="label">{paymentLabel}</span>
                             <span className="value">{formatCurrency(paymentValue)}</span>
-                            <small className="helper-text">{paymentHelper}</small>
                         </div>
                     )}
+                    
+                    <div className="grid-item">
+                        <span className="label">Total Paid</span>
+                        <span className="value secondary highlight-green">{formatCurrency(loan.amountPaid || 0)}</span>
+                    </div>
                 </div>
             </section>
 
-            {/* Guidance Strip */}
+            {/* Action Section */}
             {!isCompleted && (
-                <div className={`guidance-strip ${isOverdue ? 'overdue' : 'normal'}`}>
-                    {isOverdue ? (
-                        <><AlertCircle size={18} /><span>Loan is overdue — prioritize repayment.</span></>
-                    ) : loan.suggestedDailyReserve > 0 ? (
-                        <><TrendingUp size={18} /><span>Set aside about {formatCurrency(loan.suggestedDailyReserve)}/day to stay on track.</span></>
-                    ) : loan.daysUntilNextDue === 0 ? (
-                        <><Clock size={18} /><span>Payment is due today!</span></>
-                    ) : (
-                        <><Calendar size={18} /><span>Looking good. Keep up the scheduled payments.</span></>
-                    )}
-                </div>
-            )}
-
-            {/* Actions */}
-            {!isCompleted && (
-                <div className="detail-actions">
-                    <button className="btn-primary full-width" onClick={() => setIsRepayOpen(true)}>
+                <section className="action-section">
+                    <div className={`guidance-message ${isOverdue ? 'overdue' : 'normal'}`}>
+                        {isOverdue ? (
+                            <><AlertCircle size={18} /><span>Loan is overdue — prioritize repayment.</span></>
+                        ) : loan.suggestedDailyReserve > 0 ? (
+                            <><TrendingUp size={18} /><span>Set aside about {formatCurrency(loan.suggestedDailyReserve)}/day</span></>
+                        ) : loan.daysUntilNextDue === 0 ? (
+                            <><Clock size={18} /><span>Payment is due today!</span></>
+                        ) : (
+                            <><Calendar size={18} /><span>Looking good. Keep up the scheduled payments.</span></>
+                        )}
+                    </div>
+                    <button className="btn-navy full-width" onClick={() => setIsRepayOpen(true)}>
                         Record Repayment
                     </button>
-                </div>
+                </section>
             )}
 
             {/* Repayment Progress */}
@@ -170,8 +165,8 @@ const LoanDetail = () => {
                 <h3>Repayment Progress</h3>
                 <div className="progress-container">
                     <div className="progress-labels">
-                        <span>{completionPercent}% Paid</span>
-                        <span>{formatCurrency(loan.amountPaid || 0)} / {formatCurrency(loan.totalRepayment || (loan.principal || 0))}</span>
+                        <span>{completionPercent}% repaid</span>
+                        <span>{formatCurrency(loan.amountPaid || 0)} of {formatCurrency(loan.totalRepayment || (loan.principal || 0))}</span>
                     </div>
                     <div className="progress-bar-bg">
                         <div className="progress-bar-fill" style={{ width: `${completionPercent}%` }}></div>
@@ -182,21 +177,34 @@ const LoanDetail = () => {
             {/* Loan Agreement Section */}
             <section className="detail-section agreement-section">
                 <h3>Loan Agreement</h3>
-                <div className="agreement-list">
-                    <div className="agreement-row">
-                        <span>Principal</span>
-                        <strong>{formatCurrency(loan.principal || 0)}</strong>
+                
+                <div className="agreement-group">
+                    <h4 className="group-title">Loan Terms</h4>
+                    <div className="agreement-list">
+                        <div className="agreement-row">
+                            <span>Principal</span>
+                            <strong>{formatCurrency(loan.principal || 0)}</strong>
+                        </div>
+                        {isStructured && (
+                            <>
+                                <div className="agreement-row">
+                                    <span>Interest ({loan.interestType === 'fixed_rate' ? '%' : 'Amount'})</span>
+                                    <strong>{loan.interestType === 'fixed_rate' ? `${loan.interestValue}%` : formatCurrency(loan.interestValue || 0)}</strong>
+                                </div>
+                                <div className="agreement-row">
+                                    <span>Total Repayment</span>
+                                    <strong>{formatCurrency(loan.totalRepayment || 0)}</strong>
+                                </div>
+                            </>
+                        )}
                     </div>
-                    {isStructured && (
-                        <>
-                            <div className="agreement-row">
-                                <span>Interest ({loan.interestType === 'fixed_rate' ? '%' : 'Amount'})</span>
-                                <strong>{loan.interestType === 'fixed_rate' ? `${loan.interestValue}%` : formatCurrency(loan.interestValue || 0)}</strong>
-                            </div>
-                            <div className="agreement-row">
-                                <span>Total Repayment</span>
-                                <strong>{formatCurrency(loan.totalRepayment || 0)}</strong>
-                            </div>
+                </div>
+
+                {isStructured && (
+                    <>
+                    <div className="agreement-group pt-4">
+                        <h4 className="group-title">Schedule</h4>
+                        <div className="agreement-list">
                             <div className="agreement-row">
                                 <span>Start Date</span>
                                 <strong>{safeDate(loan.startDate)}</strong>
@@ -205,13 +213,24 @@ const LoanDetail = () => {
                                 <span>End Date</span>
                                 <strong>{safeDate(loan.endDate)}</strong>
                             </div>
+                        </div>
+                    </div>
+                    
+                    <div className="agreement-group pt-4">
+                        <h4 className="group-title">Payment Setup</h4>
+                        <div className="agreement-list">
                             <div className="agreement-row">
-                                <span>Installment Mode</span>
+                                <span>Frequency</span>
+                                <strong style={{ textTransform: 'capitalize' }}>{loan.repaymentFrequency || 'N/A'}</strong>
+                            </div>
+                            <div className="agreement-row">
+                                <span>Mode</span>
                                 <strong style={{ textTransform: 'capitalize' }}>{loan.installmentMode || 'derived'}</strong>
                             </div>
-                        </>
-                    )}
-                </div>
+                        </div>
+                    </div>
+                    </>
+                )}
             </section>
 
             {/* Repayment History Section */}
@@ -231,7 +250,10 @@ const LoanDetail = () => {
                                         {new Date(rep.createdAt || rep.datePaid).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
                                     </span>
                                 </div>
-                                {rep.note && <div className="history-note">"{rep.note}"</div>}
+                                <div className="history-meta">
+                                    {rep.note && <span className="history-note">"{rep.note}"</span>}
+                                    {rep.remainingBalance !== undefined && <span className="history-remaining">Remaining after payment: {formatCurrency(rep.remainingBalance)}</span>}
+                                </div>
                             </div>
                         ))}
                     </div>
