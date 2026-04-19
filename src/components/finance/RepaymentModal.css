@@ -1,0 +1,151 @@
+.repayment-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* Use 100dvh for reliable mobile scaling, fallback 100vh */
+    height: 100vh;
+    height: 100dvh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 3000;
+}
+
+.repayment-content {
+    width: 100%;
+    max-width: 500px;
+    background-color: var(--surface-color);
+    border-radius: 20px 20px 0 0;
+    /* Limits height so headers and footers fit. 90dvh normally prevents it from spanning to the very top */
+    max-height: 90vh;
+    max-height: 90dvh;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.repayment-header {
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0; /* Prevents header from shrinking */
+}
+
+.repayment-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+
+.repayment-header .close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: var(--text-secondary);
+}
+
+.repayment-body {
+    padding: 24px;
+    flex: 1; /* Takes remaining space */
+    overflow-y: auto; /* Independent scrolling body */
+    -webkit-overflow-scrolling: touch;
+}
+
+.repayment-subtitle {
+    margin: 0 0 24px 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.repayment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.repayment-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.repayment-form-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.repayment-form-group input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    font-size: 1.05rem;
+    background: var(--bg-color);
+    color: var(--text-primary);
+    transition: border-color 0.2s;
+}
+
+.repayment-footer {
+    padding: 16px 24px 24px;
+    /* Extra padding for safe area ensures buttons don't hit home swipe bar */
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--border-color);
+    background-color: var(--surface-color);
+    flex-shrink: 0; /* Ensures footer stays visible */
+}
+
+.repayment-error {
+    color: var(--danger-color);
+    display: block;
+    margin-bottom: 12px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.repayment-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.repayment-actions .btn-cancel {
+    flex: 1;
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-color);
+    color: var(--text-primary);
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.repayment-actions .btn-submit {
+    flex: 2;
+    padding: 14px;
+    border-radius: 8px;
+    border: none;
+    background: var(--navy-800, #1e3a8a);
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.repayment-actions .btn-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
