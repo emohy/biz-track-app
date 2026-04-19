@@ -125,8 +125,9 @@ service cloud.firestore {
     }
 
     function validateExpense(data) {
-      return data.keys().hasOnly(['userId', 'createdAt', 'updatedAt', 'description', 'amount', 'category', 'isDeleted', 'deletedAt'])
-        && data.description is string
+      return data.keys().hasOnly(['userId', 'createdAt', 'updatedAt', 'description', 'notes', 'paymentMode', 'linkedProductId', 'amount', 'category', 'isDeleted', 'deletedAt'])
+        && (!data.keys().hasAll(['description']) || data.description is string)
+        && (!data.keys().hasAll(['notes']) || data.notes is string)
         && isNum(data.amount) && data.amount >= 0;
     }
   }

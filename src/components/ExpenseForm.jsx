@@ -61,16 +61,21 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, initialData }) => {
         if (!formData.category || !formData.amount || Number(formData.amount) < 0 || isLoading) return;
 
         setIsLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 600));
 
-        onSubmit({
-            ...formData,
-            amount: Number(formData.amount)
-        });
+        try {
+            await onSubmit({
+                ...formData,
+                amount: Number(formData.amount)
+            });
 
-        notify(`Expense "${formData.category}" recorded`);
-        setIsLoading(false);
-        onClose();
+            notify(`Expense "${formData.category}" recorded`);
+            onClose();
+        } catch (error) {
+            console.error(error);
+            notify("Failed to save expense. Please try again.", "error");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const isValid = formData.category && formData.amount && Number(formData.amount) >= 0;

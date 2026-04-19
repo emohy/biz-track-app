@@ -94,8 +94,7 @@ const Layout = () => {
     };
 
     const submitExpense = (data) => {
-        addExpense(data);
-        setIsAddExpenseOpen(false);
+        return addExpense(data);
     };
 
     const actions = [

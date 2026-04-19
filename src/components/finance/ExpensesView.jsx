@@ -38,8 +38,7 @@ const ExpensesView = () => {
 
     const handleUpdate = (updatedData) => {
         if (editingExpense) {
-            updateExpense(editingExpense.id, updatedData);
-            setEditingExpense(null);
+            return updateExpense(editingExpense.id, updatedData);
         }
     };
 
