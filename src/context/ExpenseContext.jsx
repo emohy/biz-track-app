@@ -67,13 +67,18 @@ export const ExpenseProvider = ({ children }) => {
 
     const addExpense = async (data) => {
         if (!user) return;
+        const finalData = {
+            ...data,
+            ...getMetadata(user.uid)
+        };
         try {
-            return await addDoc(collection(db, 'users', user.uid, collectionName), {
-                ...data,
-                ...getMetadata(user.uid)
-            });
+            return await addDoc(collection(db, 'users', user.uid, collectionName), finalData);
         } catch (error) {
-            console.error("Error adding expense:", error);
+            console.error("Critical Expense Write Failure:", {
+                error,
+                path: `users/${user.uid}/${collectionName}`,
+                data: finalData
+            });
             throw error;
         }
     };

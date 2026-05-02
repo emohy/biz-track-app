@@ -4,6 +4,7 @@ import {
     Zap, Truck, FileText, MoreHorizontal
 } from 'lucide-react';
 import { useExpense } from '../../context/ExpenseContext';
+import { useProduct } from '../../context/ProductContext';
 import ExpenseForm from '../ExpenseForm';
 import { formatCurrency } from '../../utils';
 import UndoToast from '../UndoToast';
@@ -12,6 +13,7 @@ import './ExpensesView.css';
 
 const ExpensesView = () => {
     const { expenses, updateExpense, deleteExpense, undoDelete } = useExpense();
+    const { products } = useProduct() || { products: [] };
     const [editingExpense, setEditingExpense] = useState(null);
     const [lastDeletedId, setLastDeletedId] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -67,6 +69,12 @@ const ExpensesView = () => {
             minute: '2-digit'
         });
     };
+    
+    const getProductName = (id) => {
+        if (!id) return null;
+        const product = products?.find(p => p.id === id);
+        return product ? product.productName : null;
+    };
 
     return (
         <div className="expenses-view">
@@ -94,13 +102,20 @@ const ExpensesView = () => {
                                 <div className="expense-footer">
                                     <span className="expense-date">{formatDate(expense.createdAt)}</span>
                                     {expense.paymentMode && (
-                                        <span className="expense-mode-chip">{expense.paymentMode}</span>
+                                        <span className="expense-mode-chip">
+                                            {expense.paymentMode.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                                        </span>
+                                    )}
+                                    {expense.linkedProductId && getProductName(expense.linkedProductId) && (
+                                        <span className="expense-mode-chip product-link">
+                                            Linked: {getProductName(expense.linkedProductId)}
+                                        </span>
                                     )}
                                 </div>
 
-                                {expense.notes && (
+                                {expense.description && (
                                     <div className="expense-notes-preview">
-                                        "{expense.notes}"
+                                        "{expense.description}"
                                     </div>
                                 )}
                             </div>

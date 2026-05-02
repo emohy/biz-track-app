@@ -4,6 +4,7 @@ import { useProduct } from '../context/ProductContext';
 import { useCustomer } from '../context/CustomerContext';
 import { useSettings } from '../context/SettingsContext';
 import { formatCurrency, parseCurrency, normalizePhone } from '../utils';
+import { pickSingleContact, isContactPickerSupported } from '../utils/contactPicker';
 import BottomSheet from './BottomSheet';
 import './SalesForm.css';
 
@@ -41,7 +42,7 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
     // Contact Picker State
     const [phoneOptions, setPhoneOptions] = useState(null); // { name, numbers: [] }
     const [showPhonePicker, setShowPhonePicker] = useState(false);
-    const isContactPickerSupported = !!(navigator.contacts && window.isSecureContext);
+    // isContactPickerSupported is now imported from utility
 
     useEffect(() => {
         if (!isOpen) {
@@ -115,18 +116,16 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
     };
 
     const handlePickContact = async () => {
-        if (!isContactPickerSupported) return;
+        if (!isContactPickerSupported()) {
+            notify("Contact picker not supported on this device.", "error");
+            return;
+        }
 
         try {
-            const props = ['name', 'tel'];
-            const opts = { multiple: false };
-            const contacts = await navigator.contacts.select(props, opts);
+            const contactData = await pickSingleContact();
+            if (!contactData) return;
 
-            if (!contacts || contacts.length === 0) return;
-
-            const contact = contacts[0];
-            const name = contact.name?.[0] || 'Unknown';
-            const numbers = contact.tel || [];
+            const { name, numbers } = contactData;
 
             if (numbers.length === 0) {
                 notify("This contact has no phone numbers.", "error");
@@ -141,9 +140,7 @@ const SalesForm = ({ isOpen, onClose, onSubmit }) => {
             }
         } catch (err) {
             console.error("Contact picker error:", err);
-            if (err.name !== 'AbortError') {
-                notify("Failed to open contact picker.", "error");
-            }
+            notify("Failed to open contact picker.", "error");
         }
     };
 

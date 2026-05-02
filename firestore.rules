@@ -73,11 +73,26 @@ service cloud.firestore {
         allow read: if isOwner(userId);
         allow create: if isOwner(userId) 
           && request.resource.data.userId == userId
-          && request.resource.data.createdAt == request.time
+          && isValidTimestamp(request.resource.data.createdAt)
           && validateExpense(request.resource.data);
         allow update: if isOwner(userId)
           && request.resource.data.userId == userId
-          && request.resource.data.createdAt == resource.data.createdAt
+          // Allow internal createdAt to persist
+          && (request.resource.data.updatedAt == request.time || request.resource.data.updatedAt == resource.data.updatedAt)
+          && validateExpense(request.resource.data);
+        allow delete: if isOwner(userId);
+      }
+
+      // Test Expenses collection
+      match /test_expenses/{docId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) 
+          && request.resource.data.userId == userId
+          && isValidTimestamp(request.resource.data.createdAt)
+          && validateExpense(request.resource.data);
+        allow update: if isOwner(userId)
+          && request.resource.data.userId == userId
+          // Allow internal createdAt to persist
           && (request.resource.data.updatedAt == request.time || request.resource.data.updatedAt == resource.data.updatedAt)
           && validateExpense(request.resource.data);
         allow delete: if isOwner(userId);
@@ -125,10 +140,14 @@ service cloud.firestore {
     }
 
     function validateExpense(data) {
-      return data.keys().hasOnly(['userId', 'createdAt', 'updatedAt', 'description', 'notes', 'paymentMode', 'linkedProductId', 'amount', 'category', 'isDeleted', 'deletedAt'])
+      return data.keys().hasOnly(['userId', 'createdAt', 'updatedAt', 'description', 'notes', 'paymentMode', 'linkedProductId', 'amount', 'category', 'isDeleted', 'deletedAt', 'date'])
+        && data.category is string && data.category.size() > 0
+        && (data.amount is number || data.amount is int) && data.amount >= 0
         && (!data.keys().hasAll(['description']) || data.description is string)
         && (!data.keys().hasAll(['notes']) || data.notes is string)
-        && isNum(data.amount) && data.amount >= 0;
+        && (!data.keys().hasAll(['date']) || data.date is string || data.date is timestamp)
+        && (!data.keys().hasAll(['paymentMode']) || data.paymentMode in ['cash', 'mobile_money', 'bank', 'other', '', 'Cash', 'Mobile Money', 'Bank Transfer', 'Other'])
+        && (!data.keys().hasAll(['linkedProductId']) || data.linkedProductId is string);
     }
   }
 }

@@ -21,7 +21,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, initialData }) => {
         category: '',
         amount: '',
         paymentMode: '',
-        notes: '',
+        description: '',
         linkedProductId: '' // Optional Field
     });
 
@@ -29,10 +29,16 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, initialData }) => {
 
     useEffect(() => {
         if (initialData) {
-            setFormData(initialData);
+            setFormData({
+                category: initialData.category || '',
+                amount: initialData.amount || '',
+                paymentMode: initialData.paymentMode || '',
+                description: initialData.description || '',
+                linkedProductId: initialData.linkedProductId || ''
+            });
             setDisplayAmount(initialData.amount ? formatCurrency(initialData.amount) : '');
         } else if (!isOpen) {
-            setFormData({ category: '', amount: '', paymentMode: '', notes: '', linkedProductId: '' });
+            setFormData({ category: '', amount: '', paymentMode: '', description: '', linkedProductId: '' });
             setDisplayAmount('');
         }
     }, [initialData, isOpen]);
@@ -63,16 +69,33 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, initialData }) => {
         setIsLoading(true);
 
         try {
-            await onSubmit({
-                ...formData,
+            // Conditionally include optional fields to avoid sending empty strings if preferred, 
+            // though rules now allow them. We'll follow the user's request for "clean" data.
+            const submissionData = {
+                category: formData.category,
                 amount: Number(formData.amount)
-            });
+            };
+
+            if (formData.description) submissionData.description = formData.description;
+            if (formData.paymentMode) submissionData.paymentMode = formData.paymentMode;
+            if (formData.linkedProductId) submissionData.linkedProductId = formData.linkedProductId;
+
+            await onSubmit(submissionData);
 
             notify(`Expense "${formData.category}" recorded`);
             onClose();
         } catch (error) {
-            console.error(error);
-            notify("Failed to save expense. Please try again.", "error");
+            console.error("Form Submission Error:", error);
+            let userMessage = "Failed to save expense. Please try again.";
+            
+            if (error.code === 'permission-denied') {
+                userMessage = "Permission denied. Check if the amount/category is valid or if you're in Test Mode.";
+            } else if (error.message) {
+                userMessage = `Error: ${error.message}`;
+            }
+            
+            notify(userMessage, "error");
+            // Note: form stays open because we don't call onClose() here
         } finally {
             setIsLoading(false);
         }
@@ -127,17 +150,18 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, initialData }) => {
                         <label>Payment Mode (Optional)</label>
                         <select name="paymentMode" value={formData.paymentMode} onChange={handleChange} disabled={isLoading}>
                             <option value="">-- None --</option>
-                            <option value="Cash">Cash</option>
-                            <option value="Mobile Money">Mobile Money</option>
-                            <option value="Other">Other</option>
+                            <option value="cash">Cash</option>
+                            <option value="mobile_money">Mobile Money</option>
+                            <option value="bank">Bank Transfer</option>
+                            <option value="other">Other</option>
                         </select>
                     </div>
 
                     <div className="form-group">
-                        <label>Notes (Optional)</label>
+                        <label>Description (Optional)</label>
                         <textarea
-                            name="notes"
-                            value={formData.notes}
+                            name="description"
+                            value={formData.description}
                             onChange={handleChange}
                             placeholder="Description..."
                             rows="3"

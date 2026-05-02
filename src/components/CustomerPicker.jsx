@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
 import { X, Search, UserPlus, Contact, Phone, Clock } from 'lucide-react';
+import { pickSingleContact, isContactPickerSupported } from '../utils/contactPicker';
 import { useCustomer } from '../context/CustomerContext';
 import { normalizePhone } from '../utils';
 import './CustomerPicker.css';
@@ -47,37 +47,35 @@ const CustomerPicker = ({ isOpen, onClose, onSelect, currentCustomerId }) => {
     };
 
     const handlePickFromContacts = async () => {
+        if (!isContactPickerSupported()) {
+            alert('Contact picker is not supported on this device/browser. Please enter manually.');
+            return;
+        }
+
         try {
-            if (!('contacts' in navigator && 'select' in navigator.contacts)) {
-                alert('Contact picker is not supported on this device/browser.');
-                return;
-            }
+            const contactData = await pickSingleContact();
+            if (!contactData) return; // user cancelled
 
-            const props = ['name', 'tel'];
-            const contacts = await navigator.contacts.select(props, { multiple: false });
+            const name = contactData.name || 'Unknown';
+            const rawPhone = contactData.numbers?.[0] || '';
+            const phone = normalizePhone(rawPhone);
 
-            if (contacts && contacts.length > 0) {
-                const contact = contacts[0];
-                const name = contact.name?.[0] || 'Unknown';
-                const rawPhone = contact.tel?.[0] || '';
-                const phone = normalizePhone(rawPhone);
+            // Check if customer exists
+            let existing = safeCustomers.find(c =>
+                (phone && c.phone === phone) ||
+                (c.name && c.name.toLowerCase() === name.toLowerCase())
+            );
 
-                // Check if customer exists
-                let existing = safeCustomers.find(c =>
-                    (phone && c.phone === phone) ||
-                    (c.name && c.name.toLowerCase() === name.toLowerCase())
-                );
-
-                if (existing) {
-                    handleSelect(existing);
-                } else {
-                    setIsLoading(true);
-                    const newCust = await addCustomer({ name, phone });
-                    handleSelect(newCust);
-                }
+            if (existing) {
+                handleSelect(existing);
+            } else {
+                setIsLoading(true);
+                const newCust = await addCustomer({ name, phone });
+                handleSelect(newCust);
             }
         } catch (err) {
             console.error('Contact picker error:', err);
+            alert('Could not open contacts. Please enter customer manually.');
         } finally {
             setIsLoading(false);
         }
