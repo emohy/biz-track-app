@@ -2,5 +2,10 @@
     "appId": "com.biztrack.app",
     "appName": "BizTrack",
     "webDir": "dist",
-    "bundledWebRuntime": false
+    "bundledWebRuntime": false,
+    "plugins": {
+        "GoogleSignIn": {
+            "serverClientId": "483535048380-sgfnevsq46bk6borrmharrg5u23d85kv.apps.googleusercontent.com"
+        }
+    }
 }
