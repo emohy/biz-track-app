@@ -22,6 +22,13 @@ import debtsImg from '../assets/landing/debts.png';
 const LandingPage = () => {
   return (
     <div className="landing-container">
+      {/* Navigation/Header */}
+      <nav className="landing-nav">
+        <div className="landing-nav-content section">
+          <img src={splashLogo} alt="PesaFlow" className="landing-logo" />
+        </div>
+      </nav>
+
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-content section">
