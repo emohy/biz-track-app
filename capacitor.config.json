@@ -1,6 +1,6 @@
 {
     "appId": "com.biztrack.app",
-    "appName": "BizTrack",
+    "appName": "PesaFlow",
     "webDir": "dist",
     "bundledWebRuntime": false,
     "plugins": {

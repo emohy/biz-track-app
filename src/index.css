@@ -1,7 +1,7 @@
 :root {
   /* Universal Colors */
   --primary-color: #2F6FED;
-  --success-color: #16A34A;
+  --success-color: #10B981;
   --warning-color: #F59E0B;
   --danger-color: #DC2626;
 
@@ -316,4 +316,18 @@ textarea:focus {
     opacity: 1;
     transform: translateY(0);
   }
+}
+/* Global Loading Spinner */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border-color);
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

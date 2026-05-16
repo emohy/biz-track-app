@@ -1,13 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import {
-    onAuthStateChanged,
-    signInWithPopup,
-    GoogleAuthProvider,
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
-    signOut
-} from 'firebase/auth';
-import { auth } from '../firebase';
+import authService from '../services/authService';
 
 const AuthContext = createContext();
 
@@ -15,45 +7,72 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [userProfile, setUserProfile] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
+        const unsubscribe = authService.listenToAuth(async (authUser, profile) => {
+            setUser(authUser);
+            setUserProfile(profile);
             setLoading(false);
         });
+
         return () => unsubscribe();
     }, []);
 
-    const signInWithGoogle = () => {
-        const provider = new GoogleAuthProvider();
-        return signInWithPopup(auth, provider);
+    const login = async (email, password) => {
+        setError(null);
+        try {
+            return await authService.login(email, password);
+        } catch (err) {
+            setError(err.message);
+            throw err;
+        }
     };
 
-    const signInWithEmail = (email, password) => {
-        return signInWithEmailAndPassword(auth, email, password);
+    const signup = async (email, password) => {
+        setError(null);
+        try {
+            return await authService.signup(email, password);
+        } catch (err) {
+            setError(err.message);
+            throw err;
+        }
     };
 
-    const signUp = (email, password) => {
-        return createUserWithEmailAndPassword(auth, email, password);
+    const loginWithGoogle = async () => {
+        setError(null);
+        try {
+            return await authService.loginWithGoogle();
+        } catch (err) {
+            setError(err.message);
+            throw err;
+        }
     };
 
-    const logout = () => {
-        return signOut(auth);
+    const logout = async () => {
+        try {
+            await authService.logout();
+        } catch (err) {
+            console.error("Logout Error:", err);
+        }
     };
 
     const value = {
         user,
+        userProfile,
         loading,
-        signInWithGoogle,
-        signInWithEmail,
-        signUp,
+        error,
+        login,
+        signup,
+        loginWithGoogle,
         logout
     };
 
     return (
         <AuthContext.Provider value={value}>
-            {!loading && children}
+            {children}
         </AuthContext.Provider>
     );
 };

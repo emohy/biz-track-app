@@ -3,21 +3,23 @@ import { useAuth } from '../context/AuthContext';
 import { LogIn, Mail, Lock, UserPlus, Chrome } from 'lucide-react';
 import './SignIn.css';
 
+import logoFull from '../assets/branding/logo-full.jpeg';
+
 const SignIn = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const { signInWithGoogle, signInWithEmail, signUp } = useAuth();
+    const { loginWithGoogle, login, signup } = useAuth();
 
     const handleEmailAuth = async (e) => {
         e.preventDefault();
         setError('');
         try {
             if (isLogin) {
-                await signInWithEmail(email, password);
+                await login(email, password);
             } else {
-                await signUp(email, password);
+                await signup(email, password);
             }
         } catch (err) {
             setError(err.message);
@@ -27,7 +29,7 @@ const SignIn = () => {
     const handleGoogleSignIn = async () => {
         setError('');
         try {
-            await signInWithGoogle();
+            await loginWithGoogle();
         } catch (err) {
             setError(err.message);
         }
@@ -37,11 +39,11 @@ const SignIn = () => {
         <div className="signin-container">
             <div className="signin-card">
                 <div className="signin-header">
-                    <div className="logo-badge">
-                        <LogIn size={32} color="white" />
+                    <div className="logo-wrapper">
+                        <img src={logoFull} alt="PesaFlow" />
                     </div>
                     <h1>{isLogin ? 'Welcome Back' : 'Create Account'}</h1>
-                    <p>{isLogin ? 'Sign in to sync your business data' : 'Start tracking your business metrics today'}</p>
+                    <p>{isLogin ? 'Manage your business with ease' : 'Join thousands of Ugandan business owners'}</p>
                 </div>
 
                 {error && <div className="auth-error">{error}</div>}

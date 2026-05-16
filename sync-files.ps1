@@ -1,4 +1,4 @@
-# BizTrack - Sync Local to Deployed Version
+# PesaFlow - Sync Local to Deployed Version
 # This script copies all updated files from your local development to the deployed directory
 
 $source = "C:\Users\Ken\.gemini\antigravity\scratch\biz-track-app\src"

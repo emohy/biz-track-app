@@ -15,7 +15,7 @@ const Onboarding = () => {
     const screens = [
         {
             icon: <ShoppingCart size={48} className="onboarding-icon" />,
-            title: "BizTrack: Your Business, Organized",
+            title: "PesaFlow: Your Business, Organized",
             description: "A professional tool designed specifically for local retail and small business owners.",
             benefit: "Simplified sales tracking and customer management."
         },

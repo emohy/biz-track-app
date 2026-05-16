@@ -264,7 +264,7 @@ const Settings = () => {
                 </div>
 
                 <div className="privacy-info-box">
-                    <p><strong>Your data is secured in the cloud.</strong> BizTrack uses Firebase to securely sync your sales, expenses, and customer data across all your devices. Only you can access your data.</p>
+                    <p><strong>Your data is secured in the cloud.</strong> PesaFlow uses Firebase to securely sync your sales, expenses, and customer data across all your devices. Only you can access your data.</p>
                 </div>
 
                 <div className="setting-item">

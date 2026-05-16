@@ -3,20 +3,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: radial-gradient(circle at top right, #2F6FED, #0B1220);
+    background-color: #F8FAFC;
     padding: var(--spacing-md);
     font-family: var(--font-family);
 }
 
 .signin-card {
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
+    background: #FFFFFF;
     width: 100%;
     max-width: 420px;
-    border-radius: 28px;
+    border-radius: 24px;
     padding: 40px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+    border: 1px solid #E2E8F0;
     animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -25,16 +24,16 @@
     margin-bottom: 32px;
 }
 
-.logo-badge {
-    background: var(--primary-color);
-    width: 64px;
-    height: 64px;
-    border-radius: 16px;
+.logo-wrapper {
+    width: 140px;
+    margin: 0 auto 24px;
     display: flex;
-    align-items: center;
     justify-content: center;
-    margin: 0 auto 20px;
-    box-shadow: 0 8px 16px rgba(47, 111, 237, 0.3);
+}
+
+.logo-wrapper img {
+    width: 100%;
+    height: auto;
 }
 
 .signin-header h1 {

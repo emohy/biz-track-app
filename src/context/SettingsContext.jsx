@@ -114,7 +114,7 @@ export const SettingsProvider = ({ children }) => {
             metadata: {
                 exportVersion: 1,
                 exportedAt: new Date().toISOString(),
-                app: 'BizTrack'
+                app: 'PesaFlow'
             },
             data: {
                 products: JSON.parse(localStorage.getItem('products') || '[]'),
@@ -131,7 +131,7 @@ export const SettingsProvider = ({ children }) => {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `BizTrack_Backup_${new Date().toISOString().split('T')[0]}.json`;
+        link.download = `PesaFlow_Backup_${new Date().toISOString().split('T')[0]}.json`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

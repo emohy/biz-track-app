@@ -1,5 +1,5 @@
 {
-  "name": "biz-track-app",
+  "name": "pesaflow-app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -16,6 +16,7 @@
     "@capacitor/cli": "^8.2.0",
     "@capacitor/core": "^8.2.0",
     "@capacitor/haptics": "^8.0.1",
+    "@capawesome/capacitor-google-sign-in": "^0.1.2",
     "firebase": "^12.8.0",
     "lucide-react": "^0.563.0",
     "react": "^19.2.0",
