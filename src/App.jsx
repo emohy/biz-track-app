@@ -30,7 +30,7 @@ const TestModeBanner = () => {
   );
 };
 
-import splashLogo from './assets/branding/splash-logo.png';
+import splashLogo from './assets/branding/logo-full.png';
 
 const SplashScreen = () => (
   <div style={{ 
