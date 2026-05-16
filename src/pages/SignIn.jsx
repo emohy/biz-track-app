@@ -49,28 +49,34 @@ const SignIn = () => {
                 {error && <div className="auth-error">{error}</div>}
 
                 <form onSubmit={handleEmailAuth} className="auth-form">
-                    <div className="form-group">
-                        <label><Mail size={16} /> Email Address</label>
-                        <input
-                            type="email"
-                            placeholder="name@example.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
+                    <div className="input-group">
+                        <label>Email Address</label>
+                        <div className="input-wrapper">
+                            <Mail size={18} />
+                            <input
+                                type="email"
+                                placeholder="name@business.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
                     </div>
-                    <div className="form-group">
-                        <label><Lock size={16} /> Password</label>
-                        <input
-                            type="password"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
+                    <div className="input-group">
+                        <label>Password</label>
+                        <div className="input-wrapper">
+                            <Lock size={18} />
+                            <input
+                                type="password"
+                                placeholder="••••••••"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </div>
                     </div>
                     <button type="submit" className="primary-auth-btn">
-                        {isLogin ? 'Sign In' : 'Sign Up'}
+                        {isLogin ? 'Sign In' : 'Create Account'}
                     </button>
                 </form>
 
@@ -80,7 +86,7 @@ const SignIn = () => {
 
                 <button onClick={handleGoogleSignIn} className="google-btn">
                     <Chrome size={20} />
-                    Google
+                    Continue with Google
                 </button>
 
                 <div className="auth-toggle">

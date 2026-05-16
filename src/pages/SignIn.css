@@ -3,88 +3,153 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #F8FAFC;
-    padding: var(--spacing-md);
-    font-family: var(--font-family);
+    background: radial-gradient(circle at top right, #E0E7FF, #F8FAFC, #EFF6FF);
+    padding: 20px;
+    font-family: 'Inter', sans-serif;
 }
 
 .signin-card {
     background: #FFFFFF;
     width: 100%;
-    max-width: 420px;
-    border-radius: 24px;
-    padding: 40px;
-    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
-    border: 1px solid #E2E8F0;
-    animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    max-width: 440px;
+    border-radius: 32px;
+    padding: 48px 40px;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.08);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .signin-header {
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 40px;
 }
 
 .logo-wrapper {
-    width: 140px;
+    width: 180px;
+    height: 60px; /* Tighter height to crop top/bottom gray */
     margin: 0 auto 24px;
     display: flex;
     justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    /* The magic to hide the gray background on a white card */
+    mix-blend-mode: multiply;
 }
 
 .logo-wrapper img {
-    width: 100%;
+    width: 140%; /* Zoom in to crop side gray */
     height: auto;
+    object-fit: contain;
+    filter: contrast(1.1) brightness(1.02);
 }
 
 .signin-header h1 {
-    font-size: 1.75rem;
-    font-weight: 700;
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
     margin-bottom: 8px;
-    color: var(--text-primary);
+    color: #0F172A;
 }
 
 .signin-header p {
-    color: var(--text-secondary);
-    font-size: 0.95rem;
+    color: #64748B;
+    font-size: 1rem;
+    line-height: 1.5;
 }
 
 .auth-form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
 }
 
-.auth-form label {
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     font-weight: 600;
-    margin-bottom: 4px;
+    color: #475569;
+    margin-left: 4px;
 }
 
-.primary-auth-btn {
-    background: var(--primary-color);
-    color: white;
-    padding: 14px;
-    border-radius: 12px;
-    font-weight: 600;
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper svg {
+    position: absolute;
+    left: 16px;
+    color: #94A3B8;
+    transition: color 0.2s;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding: 14px 16px 14px 48px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
     font-size: 1rem;
-    margin-top: 8px;
+    color: #0F172A;
     transition: all 0.2s;
 }
 
+.input-wrapper input:focus {
+    outline: none;
+    background: #FFFFFF;
+    border-color: #2563EB;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.input-wrapper input:focus + svg {
+    color: #2563EB;
+}
+
+.primary-auth-btn {
+    background: #2563EB;
+    color: white;
+    padding: 16px;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 1.125rem;
+    margin-top: 8px;
+    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.25);
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
 .primary-auth-btn:hover {
-    filter: brightness(1.1);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.3);
+    filter: brightness(1.05);
+}
+
+.primary-auth-btn:active {
+    transform: translateY(0);
 }
 
 .divider {
     display: flex;
     align-items: center;
-    margin: 24px 0;
-    color: var(--text-secondary);
-    font-size: 0.85rem;
+    margin: 32px 0;
+    color: #94A3B8;
+    font-size: 0.875rem;
+    font-weight: 500;
 }
 
 .divider::before,
@@ -92,62 +157,90 @@
     content: "";
     flex: 1;
     height: 1px;
-    background: var(--border-color);
+    background: #E2E8F0;
 }
 
 .divider span {
-    padding: 0 12px;
+    padding: 0 16px;
 }
 
 .google-btn {
     width: 100%;
-    background: var(--bg-color);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    padding: 12px;
-    border-radius: 12px;
+    background: #FFFFFF;
+    color: #1E293B;
+    border: 1px solid #E2E8F0;
+    padding: 14px;
+    border-radius: 16px;
     font-weight: 600;
+    font-size: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 12px;
     transition: all 0.2s;
+    cursor: pointer;
 }
 
 .google-btn:hover {
-    background: var(--surface-color);
-    border-color: var(--text-secondary);
+    background: #F8FAFC;
+    border-color: #CBD5E1;
+    transform: translateY(-1px);
 }
 
 .auth-toggle {
     text-align: center;
-    margin-top: 24px;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
+    margin-top: 32px;
+    font-size: 0.95rem;
+    color: #64748B;
 }
 
 .auth-toggle button {
     background: none;
     border: none;
-    color: var(--primary-color);
-    font-weight: 600;
+    color: #2563EB;
+    font-weight: 700;
     padding: 0;
-    margin-left: 4px;
+    margin-left: 6px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.auth-toggle button:hover {
+    text-decoration: underline;
+    opacity: 0.8;
 }
 
 .auth-error {
-    background: rgba(220, 38, 38, 0.1);
-    color: #ef4444;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    margin-bottom: 20px;
-    border: 1px solid rgba(220, 38, 38, 0.2);
+    background: #FEF2F2;
+    color: #DC2626;
+    padding: 16px;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 24px;
+    border: 1px solid #FEE2E2;
     text-align: center;
+    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
 }
 
 @media (max-width: 480px) {
     .signin-card {
-        padding: 30px 20px;
+        padding: 40px 24px;
+        border-radius: 0;
+        min-height: 100vh;
+        max-width: none;
+        box-shadow: none;
+        border: none;
+    }
+    .signin-container {
+        padding: 0;
+        background: #FFFFFF;
     }
 }
