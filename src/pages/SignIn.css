@@ -30,22 +30,19 @@
 }
 
 .logo-wrapper {
-    width: 180px;
-    height: 60px; /* Tighter height to crop top/bottom gray */
+    width: 200px;
+    height: 80px;
     margin: 0 auto 24px;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    /* The magic to hide the gray background on a white card */
-    mix-blend-mode: multiply;
 }
 
 .logo-wrapper img {
-    width: 140%; /* Zoom in to crop side gray */
+    width: 130%; /* Less zoom needed now */
     height: auto;
     object-fit: contain;
-    filter: contrast(1.1) brightness(1.02);
 }
 
 .signin-header h1 {

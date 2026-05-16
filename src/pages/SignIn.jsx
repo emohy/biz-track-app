@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { LogIn, Mail, Lock, UserPlus, Chrome } from 'lucide-react';
 import './SignIn.css';
 
-import logoFull from '../assets/branding/logo-full.jpeg';
+import logoFull from '../assets/branding/logo-full.png';
 
 const SignIn = () => {
     const [isLogin, setIsLogin] = useState(true);
