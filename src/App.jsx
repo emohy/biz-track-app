@@ -111,6 +111,19 @@ const AppContent = () => {
       hasProjectId: !!import.meta.env.VITE_FIREBASE_PROJECT_ID,
       env: import.meta.env.MODE
     });
+
+    // Global Mobile Input / Keyboard UX Fix
+    const handleFocus = (e) => {
+      const target = e.target;
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) {
+        setTimeout(() => {
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300); // Wait for mobile keyboard to appear
+      }
+    };
+
+    document.addEventListener('focusin', handleFocus);
+    return () => document.removeEventListener('focusin', handleFocus);
   }, []);
 
   if (loading) {

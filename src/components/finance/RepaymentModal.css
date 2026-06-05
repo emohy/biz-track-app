@@ -4,8 +4,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    /* Use 100dvh for reliable mobile scaling, fallback 100vh */
-    height: 100vh;
+    /* Use 100dvh for reliable mobile scaling, fallback 100dvh */
+    height: 100dvh;
     height: 100dvh;
     background-color: rgba(0, 0, 0, 0.5);
     display: flex;

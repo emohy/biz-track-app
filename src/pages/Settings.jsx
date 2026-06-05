@@ -1,5 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../firebase';
 import { useSettings } from '../context/SettingsContext';
 import { useSales } from '../context/SalesContext';
 import { useExpense } from '../context/ExpenseContext';
@@ -15,7 +17,7 @@ import './Settings.css';
 
 const Settings = () => {
     const navigate = useNavigate();
-    const { user, logout } = useAuth();
+    const { user, userProfile, logout } = useAuth();
     const {
         testMode, setTestMode,
         alertsEnabled, setAlertsEnabled,
@@ -23,7 +25,7 @@ const Settings = () => {
         exportBackup, restoreBackup, resetAllData, clearTestData,
         setShowOnboarding,
         businessProfile, updateBusinessProfile,
-        holidaySettings, updateHolidaySettings
+        holidaySettings, updateHolidaySettings, notify
     } = useSettings();
 
     const [restorePreview, setRestorePreview] = useState(null);
@@ -34,6 +36,48 @@ const Settings = () => {
     const { expenses } = useExpense();
     const { products } = useProduct();
     const { customers } = useCustomer();
+
+    const [localProfile, setLocalProfile] = useState({
+        name: businessProfile.name || '',
+        owner: businessProfile.owner || ''
+    });
+    const [isSavingProfile, setIsSavingProfile] = useState(false);
+
+    useEffect(() => {
+        if (userProfile) {
+            setLocalProfile({
+                name: userProfile.businessName || businessProfile.name || '',
+                owner: userProfile.ownerName || businessProfile.owner || ''
+            });
+            updateBusinessProfile({
+                name: userProfile.businessName || businessProfile.name || '',
+                owner: userProfile.ownerName || businessProfile.owner || ''
+            });
+        }
+    }, [userProfile]);
+
+    const isProfileDirty = localProfile.name !== (userProfile?.businessName || businessProfile.name || '') || 
+                           localProfile.owner !== (userProfile?.ownerName || businessProfile.owner || '');
+
+    const handleSaveProfile = async () => {
+        if (!user) return;
+        setIsSavingProfile(true);
+        try {
+            const userRef = doc(db, 'users', user.uid);
+            await updateDoc(userRef, {
+                businessName: localProfile.name,
+                ownerName: localProfile.owner,
+                updatedAt: serverTimestamp()
+            });
+            updateBusinessProfile({ name: localProfile.name, owner: localProfile.owner });
+            notify('Business profile updated successfully', 'success');
+        } catch (error) {
+            console.error('Error saving profile:', error);
+            notify('Failed to save profile. Please try again.', 'error');
+        } finally {
+            setIsSavingProfile(false);
+        }
+    };
 
     const handleLogout = async () => {
         if (window.confirm('Are you sure you want to sign out?')) {
@@ -124,8 +168,8 @@ const Settings = () => {
                         <label className="setting-label">Business Name*</label>
                         <input
                             type="text"
-                            value={businessProfile.name}
-                            onChange={(e) => updateBusinessProfile({ name: e.target.value })}
+                            value={localProfile.name}
+                            onChange={(e) => setLocalProfile({ ...localProfile, name: e.target.value })}
                             placeholder="e.g. Ken's Electronics"
                         />
                     </div>
@@ -135,12 +179,21 @@ const Settings = () => {
                         <label className="setting-label">Owner Name (Optional)</label>
                         <input
                             type="text"
-                            value={businessProfile.owner}
-                            onChange={(e) => updateBusinessProfile({ owner: e.target.value })}
+                            value={localProfile.owner}
+                            onChange={(e) => setLocalProfile({ ...localProfile, owner: e.target.value })}
                             placeholder="e.g. Ken"
                         />
                     </div>
                 </div>
+                {isProfileDirty && (
+                    <button 
+                        className="save-btn" 
+                        onClick={handleSaveProfile} 
+                        disabled={isSavingProfile}
+                    >
+                        {isSavingProfile ? 'Saving...' : 'Save Changes'}
+                    </button>
+                )}
                 <div className="setting-item">
                     <div className="setting-info">
                         <label className="setting-label">Default Country Code</label>
