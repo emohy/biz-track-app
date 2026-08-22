@@ -14,10 +14,13 @@ import {
 import './LandingPage.css';
 
 // Import images
-import heroImg from '../assets/landing/hero.png';
-import salesImg from '../assets/landing/sales.png';
-import inventoryImg from '../assets/landing/inventory.png';
-import debtsImg from '../assets/landing/debts.png';
+import heroImg from '../assets/landing/dashboard.jpg';
+import salesImg from '../assets/landing/sales.jpg';
+import inventoryImg from '../assets/landing/inventory.jpg';
+import customersImg from '../assets/landing/customers.jpg';
+
+// Import Logo
+import splashLogo from '../assets/landing/pesaflow-logo.jpg';
 
 const LandingPage = () => {
   return (
@@ -25,7 +28,11 @@ const LandingPage = () => {
       {/* Navigation/Header */}
       <nav className="landing-nav">
         <div className="landing-nav-content section">
-          <img src={splashLogo} alt="PesaFlow" className="landing-logo" />
+          {splashLogo ? (
+            <img src={splashLogo} alt="PesaFlow" className="landing-logo" />
+          ) : (
+            <h2 style={{ margin: 0, color: '#2F6FED', fontWeight: 'bold' }}>PesaFlow</h2>
+          )}
         </div>
       </nav>
 
@@ -146,7 +153,7 @@ const LandingPage = () => {
           </div>
           <div className="screenshot-wrapper">
             <div className="phone-frame mini">
-              <img src={debtsImg} alt="Debt Records" />
+              <img src={customersImg} alt="Customer Debts" />
             </div>
             <p style={{ marginTop: '16px', fontWeight: '600' }}>Track every debt</p>
           </div>

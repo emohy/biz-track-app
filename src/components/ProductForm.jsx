@@ -78,19 +78,24 @@ const ProductForm = ({ isOpen, onClose, onSubmit, initialData }) => {
         }
 
         setIsLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 600));
 
-        onSubmit({
-            ...formData,
-            costPrice: Number(formData.costPrice),
-            sellingPrice: Number(formData.sellingPrice),
-            stockQuantity: Number(formData.stockQuantity),
-            minimumStockLevel: Number(formData.minimumStockLevel)
-        });
+        try {
+            await onSubmit({
+                ...formData,
+                costPrice: Number(formData.costPrice),
+                sellingPrice: Number(formData.sellingPrice),
+                stockQuantity: Number(formData.stockQuantity),
+                minimumStockLevel: Number(formData.minimumStockLevel)
+            });
 
-        notify(`Product "${formData.productName}" saved`);
-        setIsLoading(false);
-        onClose();
+            notify(`Product "${formData.productName}" saved`);
+            onClose();
+        } catch (error) {
+            console.error("Update failed:", error);
+            notify('Failed to save product. Please try again.', 'error');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const isValid = formData.productName && formData.costPrice && formData.sellingPrice && formData.stockQuantity && formData.minimumStockLevel;

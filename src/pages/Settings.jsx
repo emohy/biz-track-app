@@ -185,15 +185,14 @@ const Settings = () => {
                         />
                     </div>
                 </div>
-                {isProfileDirty && (
-                    <button 
-                        className="save-btn" 
-                        onClick={handleSaveProfile} 
-                        disabled={isSavingProfile}
-                    >
-                        {isSavingProfile ? 'Saving...' : 'Save Changes'}
-                    </button>
-                )}
+                <button 
+                    className="save-btn" 
+                    onClick={handleSaveProfile} 
+                    disabled={isSavingProfile || !isProfileDirty}
+                    style={{ marginTop: '8px' }}
+                >
+                    {isSavingProfile ? 'Saving...' : 'Save Changes'}
+                </button>
                 <div className="setting-item">
                     <div className="setting-info">
                         <label className="setting-label">Default Country Code</label>

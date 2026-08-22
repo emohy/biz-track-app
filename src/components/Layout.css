@@ -1,4 +1,6 @@
 .app-layout {
     min-height: 100dvh;
     background-color: var(--bg-color);
+    /* Safe area: push content below the status bar / notch */
+    padding-top: env(safe-area-inset-top, 0px);
 }

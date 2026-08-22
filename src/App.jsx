@@ -34,7 +34,7 @@ import splashLogo from './assets/branding/logo-full.png';
 
 const SplashScreen = () => (
   <div style={{ 
-    height: '100vh', 
+    height: '100dvh', 
     display: 'flex', 
     flexDirection: 'column',
     alignItems: 'center', 

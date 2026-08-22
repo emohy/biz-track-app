@@ -7,8 +7,9 @@
     border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: space-around;
-    padding: 12px 0 24px 0;
-    /* Extra padding for safe area on mobile */
+    padding: 12px 0;
+    /* Bottom safe area padding for gesture nav / 3-button nav */
+    padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
     z-index: 1000;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
 }

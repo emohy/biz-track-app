@@ -123,8 +123,8 @@ p {
   padding: var(--spacing-md);
   max-width: 100%;
   overflow-x: hidden;
-  padding-bottom: 80px;
-  /* Space for bottom nav */
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  /* Space for bottom nav + safe area */
 }
 
 button {

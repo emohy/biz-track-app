@@ -39,9 +39,9 @@ const Inventory = () => {
         setEditingProduct(product);
     };
 
-    const handleUpdate = (updatedData) => {
+    const handleUpdate = async (updatedData) => {
         if (editingProduct) {
-            updateProduct(editingProduct.id, updatedData);
+            await updateProduct(editingProduct.id, updatedData);
             setEditingProduct(null);
         }
     };
