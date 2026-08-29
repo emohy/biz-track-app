@@ -1,14 +1,21 @@
 .dashboard {
-    padding-bottom: 90px;
+    padding-bottom: calc(100px + env(safe-area-inset-bottom, 16px));
     display: flex;
     flex-direction: column;
     gap: 24px;
+    width: 100%;
 }
 
 .dashboard-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    gap: 12px;
+}
+
+.header-main {
+    flex: 1;
+    min-width: 0;
 }
 
 .settings-trigger {
@@ -16,6 +23,7 @@
     color: var(--text-secondary);
     padding: 8px;
     display: flex;
+    flex-shrink: 0;
 }
 
 .dashboard-header h1 {
@@ -24,6 +32,8 @@
     margin-bottom: 2px;
     color: var(--text-primary);
     line-height: 1.2;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .greeting-text {
@@ -137,8 +147,9 @@
 }
 
 .main-stat-card .value {
-    font-size: 2rem;
+    font-size: clamp(1.6rem, 7vw, 2rem);
     font-weight: 800;
+    word-break: break-word;
 }
 
 .main-stat-card .meta {
