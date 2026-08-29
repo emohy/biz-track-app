@@ -118,12 +118,37 @@ p {
   color: var(--text-secondary);
 }
 
+/* Universal Page Header / Sticky Header Styles */
+.sticky-header,
+.dashboard-header,
+.inventory-header,
+.sales-header,
+.finance-header,
+.customers-header,
+.settings-header,
+.detail-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--bg-color);
+  padding-top: calc(12px + env(safe-area-inset-top, 0px));
+  padding-bottom: 12px;
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+  margin-left: calc(-1 * var(--spacing-md));
+  margin-right: calc(-1 * var(--spacing-md));
+  margin-top: calc(-1 * var(--spacing-md));
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
 /* Helper Classes */
 .container {
   padding: var(--spacing-md);
   max-width: 100%;
   overflow-x: hidden;
-  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(100px + env(safe-area-inset-bottom, 16px));
   /* Space for bottom nav + safe area */
 }
 
@@ -309,12 +334,11 @@ textarea:focus {
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 /* Global Loading Spinner */

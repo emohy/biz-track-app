@@ -63,7 +63,9 @@ const Sales = () => {
 
     return (
         <div className="page container">
-            <h1>Sales History</h1>
+            <header className="sales-header">
+                <h1>Sales History</h1>
+            </header>
 
             {isLoading ? (
                 <SkeletonLoader type="list" count={4} />

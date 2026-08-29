@@ -117,10 +117,12 @@ const Customers = () => {
 
     return (
         <div className="page container">
-            <h1>
-                Customers
-                <span className="count-badge">{customers.length}</span>
-            </h1>
+            <header className="customers-header">
+                <h1>
+                    Customers
+                    <span className="count-badge">{customers.length}</span>
+                </h1>
+            </header>
 
             <div className="search-container">
                 <div className="premium-search-bar">
