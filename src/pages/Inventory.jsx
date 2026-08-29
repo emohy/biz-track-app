@@ -60,12 +60,12 @@ const Inventory = () => {
 
     return (
         <div className="page container fade-in">
-            <div className="inventory-header">
+            <header className="inventory-header">
                 <h1>
                     Inventory
                     <span className="count-badge">{stats.count}</span>
                 </h1>
-            </div>
+            </header>
 
             <div className="inventory-stats-row">
                 <div className="mini-stat-card">
