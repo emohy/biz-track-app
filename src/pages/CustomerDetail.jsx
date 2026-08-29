@@ -5,6 +5,7 @@ import { useCustomer } from '../context/CustomerContext';
 import { useSales } from '../context/SalesContext';
 import { formatCurrency, parseCurrency } from '../utils';
 import QuickPaymentModal from '../components/QuickPaymentModal';
+import PageShell from '../components/PageShell';
 import './CustomerDetail.css';
 
 const CustomerDetail = () => {
@@ -51,15 +52,17 @@ const CustomerDetail = () => {
     };
 
     return (
-        <div className="page container">
-            <div className="detail-header">
-                <button className="back-btn" onClick={() => navigate(-1)}>
-                    <ArrowLeft size={24} />
-                </button>
-                <h1>{customer.name}</h1>
-                <div style={{ width: 24 }}></div>
-            </div>
-
+        <PageShell
+            header={
+                <div className="detail-header">
+                    <button className="back-btn" onClick={() => navigate(-1)}>
+                        <ArrowLeft size={24} />
+                    </button>
+                    <h1>{customer.name}</h1>
+                    <div style={{ width: 24 }}></div>
+                </div>
+            }
+        >
             <div className="audit-stamps" style={{ marginBottom: 20 }}>
                 <span>Customer since: {customer.createdAt ? new Date(customer.createdAt).toLocaleString() : 'Just now'}</span>
                 {customer.updatedAt && (
@@ -114,7 +117,7 @@ const CustomerDetail = () => {
                 customerSales={customerSales}
                 customerName={customer.name}
             />
-        </div>
+        </PageShell>
     );
 };
 

@@ -6,6 +6,7 @@ import ProductForm from '../components/ProductForm';
 import UndoToast from '../components/UndoToast';
 import SkeletonLoader from '../components/SkeletonLoader';
 import { formatCurrency } from '../utils';
+import PageShell from '../components/PageShell';
 import './Inventory.css';
 
 const Inventory = () => {
@@ -59,14 +60,16 @@ const Inventory = () => {
     };
 
     return (
-        <div className="page container fade-in">
-            <header className="inventory-header">
-                <h1>
-                    Inventory
-                    <span className="count-badge">{stats.count}</span>
-                </h1>
-            </header>
-
+        <PageShell
+            header={
+                <header className="inventory-header">
+                    <h1>
+                        Inventory
+                        <span className="count-badge">{stats.count}</span>
+                    </h1>
+                </header>
+            }
+        >
             <div className="inventory-stats-row">
                 <div className="mini-stat-card">
                     <TrendingUp className="stat-icon purple" size={18} />
@@ -138,7 +141,7 @@ const Inventory = () => {
                     onDismiss={() => setLastDeletedId(null)}
                 />
             )}
-        </div>
+        </PageShell>
     );
 };
 

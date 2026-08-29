@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import ExpensesView from '../components/finance/ExpensesView';
 import LoansView from '../components/finance/LoansView';
+import PageShell from '../components/PageShell';
 import './FinancePage.css';
 
 const FinancePage = () => {
@@ -17,11 +18,13 @@ const FinancePage = () => {
     }, [location.pathname]);
 
     return (
-        <div className="page container finance-page">
-            <header className="finance-header">
-                <h1>Finance</h1>
-            </header>
-
+        <PageShell
+            header={
+                <header className="finance-header">
+                    <h1>Finance</h1>
+                </header>
+            }
+        >
             <div className="finance-tabs">
                 <button 
                     className={`finance-tab ${activeTab === 'expenses' ? 'active' : ''}`}
@@ -44,7 +47,7 @@ const FinancePage = () => {
                     <LoansView highlightLoanId={location.state?.highlightLoanId} />
                 )}
             </div>
-        </div>
+        </PageShell>
     );
 };
 

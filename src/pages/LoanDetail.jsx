@@ -5,6 +5,7 @@ import { useLoan } from '../context/LoanContext';
 import { formatCurrency } from '../utils';
 import LoanForm from '../components/LoanForm';
 import RepaymentModal from '../components/finance/RepaymentModal';
+import PageShell from '../components/PageShell';
 import './LoanDetail.css';
 
 const LoanDetail = () => {
@@ -87,18 +88,20 @@ const LoanDetail = () => {
         : 0;
 
     return (
-        <div className="page container loan-detail-page fade-in">
-            {/* Top App Bar */}
-            <header className="loans-header detail-header">
-                <button className="back-btn" onClick={() => navigate(-1)}><ArrowLeft size={24} /></button>
-                <h1>Loan Details</h1>
-                {!isCompleted && (
-                    <button className="action-icon-btn" onClick={() => setIsEditOpen(true)}>
-                        <Edit2 size={20} />
-                    </button>
-                )}
-            </header>
-
+        <PageShell
+            className="loan-detail-page"
+            header={
+                <header className="loans-header detail-header">
+                    <button className="back-btn" onClick={() => navigate(-1)}><ArrowLeft size={24} /></button>
+                    <h1>Loan Details</h1>
+                    {!isCompleted && (
+                        <button className="action-icon-btn" onClick={() => setIsEditOpen(true)}>
+                            <Edit2 size={20} />
+                        </button>
+                    )}
+                </header>
+            }
+        >
             {/* Primary Summary Card */}
             <section className="summary-card">
                 <div className="lender-header">
@@ -272,7 +275,7 @@ const LoanDetail = () => {
                 loan={loan} 
                 onSaveSuccess={fetchRepayments} 
             />
-        </div>
+        </PageShell>
     );
 };
 

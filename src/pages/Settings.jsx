@@ -13,6 +13,7 @@ import {
     Sun, Moon, Monitor, Palette, ArrowLeft, LogOut, User,
     Briefcase, Calendar, Check, Plus, X
 } from 'lucide-react';
+import PageShell from '../components/PageShell';
 import './Settings.css';
 
 const Settings = () => {
@@ -121,17 +122,20 @@ const Settings = () => {
     };
 
     return (
-        <div className="page container settings-page">
-            <header className="settings-header">
-                <div className="header-top">
-                    <button className="back-btn" onClick={() => navigate(-1)} aria-label="Go back">
-                        <ArrowLeft size={24} />
-                    </button>
-                    <h1>Settings</h1>
-                </div>
-                <p>Manage your data and account preferences.</p>
-            </header>
-
+        <PageShell
+            className="settings-page"
+            header={
+                <header className="settings-header">
+                    <div className="header-top">
+                        <button className="back-btn" onClick={() => navigate(-1)} aria-label="Go back">
+                            <ArrowLeft size={24} />
+                        </button>
+                        <h1>Settings</h1>
+                    </div>
+                    <p>Manage your data and account preferences.</p>
+                </header>
+            }
+        >
             <section className="settings-section">
                 <div className="section-header">
                     <User size={20} />
@@ -444,7 +448,7 @@ const Settings = () => {
                     </button>
                 </div>
             </section>
-        </div>
+        </PageShell>
     );
 };
 

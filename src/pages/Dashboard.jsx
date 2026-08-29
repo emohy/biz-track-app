@@ -12,6 +12,7 @@ import { useSettings } from '../context/SettingsContext';
 import { useLoan } from '../context/LoanContext';
 import { formatCurrency } from '../utils';
 import SkeletonLoader from '../components/SkeletonLoader';
+import PageShell from '../components/PageShell';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -527,17 +528,21 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="page container dashboard">
-            <header className="dashboard-header">
-                <div className="header-main">
-                    <span className="greeting-text">{greeting},</span>
-                    <h1>{businessProfile.name || <span className="setup-prompt">Set your business name in Settings</span>}</h1>
-                    <span className="current-date">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</span>
-                </div>
-                <button className="settings-trigger" onClick={() => navigate('/settings')}>
-                    <SettingsIcon size={24} />
-                </button>
-            </header>
+        <PageShell
+            className="dashboard"
+            header={
+                <header className="dashboard-header">
+                    <div className="header-main">
+                        <span className="greeting-text">{greeting},</span>
+                        <h1>{businessProfile.name || <span className="setup-prompt">Set your business name in Settings</span>}</h1>
+                        <span className="current-date">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</span>
+                    </div>
+                    <button className="settings-trigger" onClick={() => navigate('/settings')}>
+                        <SettingsIcon size={24} />
+                    </button>
+                </header>
+            }
+        >
 
             {activeHoliday && (
                 <div className="holiday-banner fade-in">
@@ -838,7 +843,8 @@ const Dashboard = () => {
                     </div>
                 </section>
             </div>
-        </div>
+
+        </PageShell>
     );
 };
 

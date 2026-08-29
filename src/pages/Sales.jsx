@@ -5,6 +5,7 @@ import { useProduct } from '../context/ProductContext';
 import { formatCurrency } from '../utils';
 import UndoToast from '../components/UndoToast';
 import SkeletonLoader from '../components/SkeletonLoader';
+import PageShell from '../components/PageShell';
 import './Sales.css';
 
 const Sales = () => {
@@ -62,11 +63,13 @@ const Sales = () => {
     };
 
     return (
-        <div className="page container">
-            <header className="sales-header">
-                <h1>Sales History</h1>
-            </header>
-
+        <PageShell
+            header={
+                <header className="sales-header">
+                    <h1>Sales History</h1>
+                </header>
+            }
+        >
             {isLoading ? (
                 <SkeletonLoader type="list" count={4} />
             ) : sales.length === 0 ? (
@@ -135,7 +138,7 @@ const Sales = () => {
                     onDismiss={() => setLastDeletedSale(null)}
                 />
             )}
-        </div>
+        </PageShell>
     );
 };
 

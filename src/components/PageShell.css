@@ -1,0 +1,31 @@
+/* PageShell: the header sits OUTSIDE the scroll region */
+.page-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* The fixed top bar — NEVER scrolls */
+.page-top-bar {
+    flex-shrink: 0;
+    background-color: var(--bg-color);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    /* Account for the Android status bar / notch */
+    padding-top: env(safe-area-inset-top, 0px);
+    z-index: 100;
+}
+
+/* The body — ONLY this area scrolls */
+.page-scroll-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* Allow momentum scrolling on iOS/Android WebView */
+    -webkit-overflow-scrolling: touch;
+    /* Bottom padding = nav bar height + safe area so last card is never hidden */
+    padding: var(--spacing-md);
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 16px));
+}

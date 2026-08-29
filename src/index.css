@@ -118,8 +118,7 @@ p {
   color: var(--text-secondary);
 }
 
-/* Universal Page Header / Sticky Header Styles */
-.sticky-header,
+/* Fixed Page Header Content Styling (Inside PageShell Top Bar) */
 .dashboard-header,
 .inventory-header,
 .sales-header,
@@ -127,20 +126,9 @@ p {
 .customers-header,
 .settings-header,
 .detail-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background-color: var(--bg-color);
-  padding-top: calc(12px + env(safe-area-inset-top, 0px));
-  padding-bottom: 12px;
-  padding-left: var(--spacing-md);
-  padding-right: var(--spacing-md);
-  margin-left: calc(-1 * var(--spacing-md));
-  margin-right: calc(-1 * var(--spacing-md));
-  margin-top: calc(-1 * var(--spacing-md));
-  margin-bottom: 16px;
-  border-bottom: 1px solid var(--border-color);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  padding: 12px var(--spacing-md);
+  margin: 0;
+  background: transparent;
 }
 
 /* Helper Classes */

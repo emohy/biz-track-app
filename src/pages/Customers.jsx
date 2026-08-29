@@ -8,6 +8,7 @@ import { formatCurrency } from '../utils';
 import CallIconButton from '../components/CallIconButton';
 import QuickPaymentModal from '../components/QuickPaymentModal';
 import SkeletonLoader from '../components/SkeletonLoader';
+import PageShell from '../components/PageShell';
 import './Customers.css';
 
 const Customers = () => {
@@ -116,14 +117,16 @@ const Customers = () => {
     };
 
     return (
-        <div className="page container">
-            <header className="customers-header">
-                <h1>
-                    Customers
-                    <span className="count-badge">{customers.length}</span>
-                </h1>
-            </header>
-
+        <PageShell
+            header={
+                <header className="customers-header">
+                    <h1>
+                        Customers
+                        <span className="count-badge">{customers.length}</span>
+                    </h1>
+                </header>
+            }
+        >
             <div className="search-container">
                 <div className="premium-search-bar">
                     <Search className="search-icon" size={20} />
@@ -249,7 +252,7 @@ const Customers = () => {
                     <span>{successMessage}</span>
                 </div>
             )}
-        </div>
+        </PageShell>
     );
 };
 
